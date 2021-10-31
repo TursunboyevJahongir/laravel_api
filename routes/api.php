@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,12 @@ Route::prefix('auth')->group(static function () {
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [UserController::class, 'me']);
-    Route::post('/me', [UserController::class, 'update']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [UserController::class, 'me']);
+    Route::post('me', [UserController::class, 'update']);
+
+    Route::get('category', [CategoryController::class, 'index']);
+    Route::post('category', [CategoryController::class, 'store']);
+    Route::post('category/update', [CategoryController::class, 'update']);
+    Route::delete('category/{id}', [CategoryController::class, 'delete']);
 });
