@@ -19,5 +19,5 @@
 7. Search for products by keywords
 8. Removing own products
 
-<a href="https://documenter.getpostman.com/view/9990014/UVByJAY3#a81f2dda-0b4a-4f14-9e9d-c6d832d99d30" target="_blank"><img src="public/postman.svg"></a>
+<a href="https://documenter.getpostman.com/view/9990014/UVByJAY3#a81f2dda-0b4a-4f14-9e9d-c6d832d99d30" target="_blank"><img src="public/postman.svg" width="200"> public documentation</a>
 <p><a href="public/Click.pdf" download>documentation Pdf</a></p>
