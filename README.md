@@ -1,7 +1,7 @@
 <p align="center"><a href="https://github.com/TursunboyevJahongir" target="_blank"><img src="public/image.jpg"></a></p>
 <p align="center"><img src="public/Db.png"></p>
 
-### used in the starter
+### used in the project
 
 - **[Laravel 8](https://laravel.com/)**
 - **[Laravel Sanctum](https://laravel.com/docs/8.x/sanctum)**
