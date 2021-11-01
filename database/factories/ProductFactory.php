@@ -33,7 +33,7 @@ class ProductFactory extends Factory
                 'name' => $fake->word(),
                 'type' => $fake->fileExtension,
                 'full_url' => $path,
-                'additional_identifier' => Product::PRODUCT_RESOURCES,
+                'additional_identifier' => Product::PRODUCT_MAIN_IMAGE_RESOURCES,
             ]);
 
 
@@ -47,7 +47,7 @@ class ProductFactory extends Factory
                     'name' => $fake->word(),
                     'type' => $fake->fileExtension,
                     'full_url' => $path,
-                    'additional_identifier' => Product::PRODUCT_RESOURCES,
+                    'additional_identifier' => Product::PRODUCT_IMAGES_RESOURCES,
                 ]);
             }
         });

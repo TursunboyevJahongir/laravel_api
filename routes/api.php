@@ -24,22 +24,24 @@ Route::prefix('auth')->group(static function () {
     Route::post('login', [AuthController::class, 'login']);
 });
 
+Route::get('category', [CategoryController::class, 'index']);
+Route::get('category/{id}/products', [CategoryController::class, 'products']);
+Route::get('product/{id}', [ProductController::class, 'show']);
+Route::get('product/{id}/similar', [ProductController::class, 'similar']);
+Route::get('search/{string}', [ProductController::class, 'search']);
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [UserController::class, 'me']);
     Route::post('me', [UserController::class, 'update']);
 
-    Route::get('category', [CategoryController::class, 'index']);
     Route::post('category', [CategoryController::class, 'store']);
     Route::post('category/update', [CategoryController::class, 'update']);
     Route::delete('category/{id}', [CategoryController::class, 'delete']);
 
-    Route::get('category/{id}/products', [CategoryController::class, 'products']);
     Route::get('my/products', [ProductController::class, 'myProducts']);
-    Route::get('product/{id}', [ProductController::class, 'show']);
-    Route::get('product/{id}/similar', [ProductController::class, 'similar']);
-
     Route::post('product', [ProductController::class, 'store']);
     Route::post('product/update', [ProductController::class, 'update']);
     Route::delete('product/{id}', [ProductController::class, 'delete']);
+
 });

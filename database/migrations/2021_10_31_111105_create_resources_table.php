@@ -19,7 +19,7 @@ class CreateResourcesTable extends Migration
             $table->string('name');
             $table->string('type');
             $table->string('full_url');
-            $table->uuidMorphs('resource');
+            $table->morphs('resource');
             $table->timestamps();
         });
     }

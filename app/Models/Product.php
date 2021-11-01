@@ -90,7 +90,6 @@ class Product extends Model
 
     public function moneyFormatter($number): string
     {
-
 //          show with residues
         list($whole, $decimal) = sscanf($number, '%d.%d');
         $money = number_format($number, 0, ',', ' ');

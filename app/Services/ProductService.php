@@ -14,22 +14,19 @@ class ProductService
 
     public function categoryProducts(Category $category, $size, $orderBy, $sort, $min, $max): array
     {
-        $query = $category->products()->active()
-            ->when($min, function ($query) use ($min) {
-                return $query->where('price', '>=', $min);
-            })
-            ->when($max, function ($query, $max) {
-                return $query->where('price', '<=', $max);
-            })
-            ->orderBy($orderBy, $sort);
-
+        $query = $category->products()->active();
         $minimal = $query->min('price');
         $maximal = $query->max('price');
-
+        $query->when($min, function ($query) use ($min) {
+                return $query->where('price', '>=', $min);
+            })->when($max, function ($query, $max) {
+            return $query->where('price', '<=', $max);
+        })
+            ->orderBy($orderBy, $sort);
         $data['products'] = $query->paginate($size);
         $data['append'] = [
-            'min' => $minimal,
-            'max' => $maximal
+            'min_price' => $minimal,
+            'max_price' => $maximal
         ];
 
         return $data;
@@ -37,22 +34,24 @@ class ProductService
 
     public function myProducts($size, $orderBy, $sort, $min, $max): array
     {
-        $query = Auth::user()->products()->active()
+        $query = Auth::user()->products()
             ->when($min, function ($query) use ($min) {
                 return $query->where('price', '>=', $min);
-            })
-            ->when($max, function ($query, $max) {
-                return $query->where('price', '<=', $max);
-            })
-            ->orderBy($orderBy, $sort);
-
+            });
         $minimal = $query->min('price');
         $maximal = $query->max('price');
+        $query->when($max, function ($query, $max) {
+            return $query->where('price', '<=', $max);
+        })
+            ->orderBy($orderBy, $sort);
+
+        $min = $query->min('price');
+        $max = $query->max('price');
 
         $data['products'] = $query->paginate($size);
         $data['append'] = [
-            'min' => $minimal,
-            'max' => $maximal
+            'min_price' => $minimal,
+            'max_price' => $maximal
         ];
 
         return $data;
@@ -142,9 +141,38 @@ class ProductService
 
     public function delete(Product $id): ?bool
     {
-        if ($id->user_id !== Auth::id()){
-            throw new \Exception(__('messages.not_your_product'),403);
+        if ($id->user_id !== Auth::id()) {
+            throw new \Exception(__('messages.not_your_product'), 403);
         }
         return $id->delete();
+    }
+
+    public function search(string $search, $size, $orderBy, $sort, $min, $max): array
+    {
+        $query = Product::query()->active()
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%")
+                    ->orWhere('tag', 'like', "%$search%")
+                    ->orWhereHas('category', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+            });
+        $minimal = $query->min('price');
+        $maximal = $query->max('price');
+
+        $query->when($min, function ($query) use ($min) {
+            return $query->where('price', '>=', $min);
+        })
+            ->when($max, function ($query, $max) {
+                return $query->where('price', '<=', $max);
+            })
+            ->orderBy($orderBy, $sort);
+        $data['products'] = $query->paginate($size);
+        $data['append'] = [
+            'min_price' => $minimal,
+            'max_price' => $maximal
+        ];
+        return $data;
     }
 }

@@ -33,8 +33,8 @@ class ProductController extends ApiController
         $size = $request->per_page ?? config('app.per_page');
         $orderBy = $request->orderby ?? "position";
         $sort = $request->sort ?? "DESC";
-        $min = $request->min ?? null;
-        $max = $request->max ?? null;
+        $min = $request->min_price ?? null;
+        $max = $request->max_price ?? null;
 
         $data = $productService->myProducts($size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
@@ -106,7 +106,24 @@ class ProductController extends ApiController
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), null, $e->getCode());
         }
-
     }
 
+    /**
+     * @param string $search
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function search(string $search, Request $request): JsonResponse
+    {
+        $size = $request->per_page ?? config('app.per_page');
+        $orderBy = $request->orderby ?? "position";
+        $sort = $request->sort ?? "DESC";
+        $min = $request->min_price ?? null;
+        $max = $request->max_price ?? null;
+        $search = rtrim($search, " \t.");
+        $data = $this->service->search($search, $size, $orderBy, $sort, $min, $max);
+        return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
+            ProductResource::class), $data['append']);
+    }
 }
