@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Category
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  */
 class Category extends Model
 {
-    use HasFactory, HasTranslatableJson;
+    use HasFactory, SoftDeletes;
 
     public const CATEGORY_RESOURCES = 'CATEGORY_RESOURCES';
 
@@ -41,10 +42,10 @@ class Category extends Model
         return $this->morphOne(Resource::class, 'resource');
     }
 
-//    public function products(): HasMany
-//    {
-//        return $this->hasMany(Product::class, 'category_id', 'id');
-//    }
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'category_id', 'id');
+    }
 
     public function scopeActive($q)
     {

@@ -16,6 +16,7 @@ trait HasJsonResponse
      */
     protected function success(string $message = '', mixed $data = null, mixed $append = null, int $code = 200): JsonResponse
     {
+
         $resp = [
             'status' => true,
             'message' => $message,

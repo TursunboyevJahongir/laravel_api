@@ -7,8 +7,10 @@ use App\Http\Requests\api\CategoryCreateRequest;
 use App\Http\Requests\api\CategoryUpdateRequest;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
+use App\Http\Resources\Api\ProductResource;
 use App\Models\Category;
 use App\Services\CategoryService;
+use App\Services\ProductService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,14 +73,20 @@ class CategoryController extends ApiController
 
     /**
      * @param Category $id
-     * @param ProductService $data
+     * @param ProductService $productService
      * @param Request $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function show(Category $id, ProductService $data, Request $request): JsonResponse
+    public function products(Category $id, ProductService $productService, Request $request): JsonResponse
     {
-        $data = $data->categoryProducts($id, $request);
+        $size = $request->per_page ?? config('app.per_page');
+        $orderBy = $request->orderby ?? "position";
+        $sort = $request->sort ?? "DESC";
+        $min = $request->min ?? null;
+        $max = $request->max ?? null;
+
+        $data = $productService->categoryProducts($id, $size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
             ProductResource::class), $data['append']);
     }

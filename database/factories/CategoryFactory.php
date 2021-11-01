@@ -30,7 +30,7 @@ class CategoryFactory extends Factory
                 'name' => $fake->word(),
                 'type' => $fake->fileExtension,
                 'full_url' => $path,
-                'additional_identifier' => 'parcel_adverts',
+                'additional_identifier' => Category::CATEGORY_RESOURCES,
             ]);
         });
     }
