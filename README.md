@@ -1,5 +1,5 @@
 <p align="center"><a href="https://github.com/TursunboyevJahongir" target="_blank"><img src="public/image.jpg"></a></p>
-<p align="center"><img src="public/db.png"></p>
+<p align="center"><img src="public/Db.png"></p>
 
 ### used in the starter
 
