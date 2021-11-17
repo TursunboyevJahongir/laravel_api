@@ -20,11 +20,12 @@ class UserWithAuthResource extends JsonResource
          * @var User $this
          */
         return [
+            "_token" => $this->auth_token,
             "id" => $this->id,
             "full_name" => $this->full_name,
             "phone" => $this->phone,
-            "email" => $this->email,
-            "auth_token" => $this->auth_token,
+            'roles' => RoleResource::collection($this->roles()->get()),
+            'permissions' => $this->getAllPermissions()->pluck('name')->toArray()
         ];
     }
 }

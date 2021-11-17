@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User
@@ -15,12 +13,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int id
  * @property string full_name
  * @property string phone
- * @property string email
  * @property string password
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +27,6 @@ class User extends Authenticatable
     protected $fillable = [
         'full_name',
         'phone',
-        'email',
         'password',
     ];
 
@@ -42,9 +38,4 @@ class User extends Authenticatable
     protected $hidden = [
         'password'
     ];
-
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
 }

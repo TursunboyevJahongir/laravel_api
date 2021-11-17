@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources\Api;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Spatie\Permission\Models\Role;
 
-class UserResource extends JsonResource
+class RoleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +17,11 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         /**
-         * @var User $this
+         * @var Role $this
          */
         return [
-            "id" => $this->id,
-            "full_name" => $this->full_name,
-            "phone" => $this->phone,
+            'name' => $this->name,
+            'permissions' => $this->permissions->count()
         ];
     }
 }

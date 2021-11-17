@@ -35,10 +35,10 @@ trait HasJsonResponse
     /**
      * @param string $message
      * @param mixed|null $errors
-     * @param int $code
+     * @param $code
      * @return JsonResponse
      */
-    protected function error(string $message = '', mixed $errors = null, int $code = 404): JsonResponse
+    protected function error(string $message = '', mixed $errors = null, $code = 404): JsonResponse
     {
         return response()->json([
             'status' => false,
