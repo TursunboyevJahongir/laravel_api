@@ -6,17 +6,19 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\api\Auth\LoginRequest;
 use App\Http\Requests\api\Auth\RegistrationRequest;
 use App\Http\Resources\Api\UserWithAuthResource;
-use App\Models\User;
-use App\Services\UserService;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends ApiController
 {
+    public function __construct(private AuthService $service)
+    {
+    }
+
     public function registration(RegistrationRequest $request): JsonResponse
     {
-        return $this->success(__('sms.success'), new UserWithAuthResource(UserService::Register($request->validated())));
+        return $this->success(__('messages.success'), new UserWithAuthResource($this->service->Register($request->validated())));
     }
 
     /**
@@ -26,11 +28,16 @@ class AuthController extends ApiController
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            return $this->success(__('sms.success'), new UserWithAuthResource(UserService::Login($request->validated())));
+            return $this->success(__('messages.success'), new UserWithAuthResource($this->service->Login($request->validated())));
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), null, $e->getCode());
         }
 
+    }
+
+    public function refresh(Request $request)
+    {
+        return $this->success(__('messages.success'), $this->service->refresh($request));
     }
 
     public function logout(Request $request): JsonResponse
@@ -40,4 +47,5 @@ class AuthController extends ApiController
 
         return $this->success(__('messages.success'));
     }
+
 }

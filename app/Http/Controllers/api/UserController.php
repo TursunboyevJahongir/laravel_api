@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\api\UserAddressUpdateRequest;
 use App\Http\Requests\api\UserUpdateRequest;
 use App\Http\Resources\Api\UserResource;
 use App\Services\UserService;
@@ -17,16 +16,10 @@ class UserController extends ApiController
     {
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
     public function me(): JsonResponse
     {
         return $this->success(__('messages.success'), new UserResource(auth()->user()));
     }
-
 
     public function update(UserUpdateRequest $request): JsonResponse
     {

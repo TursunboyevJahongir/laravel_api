@@ -32,6 +32,8 @@ Route::get('search/{string}', [ProductController::class, 'search']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+
     Route::get('me', [UserController::class, 'me']);
     Route::put('me', [UserController::class, 'update']);
 
