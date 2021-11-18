@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Hash;
 class UserFactory extends Factory
 {
     protected $model = User::class;
+
+    /**
+     * @throws \Exception
+     */
+    public function configure()
+    {
+        return $this->afterCreating(static function (User $user){
+            $user->assignRole('customer');
+        });
+    }
     /**
      * Define the model's default state.
      *

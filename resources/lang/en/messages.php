@@ -11,7 +11,7 @@ return [
     'cannot_change_admin' => "You don't have access to delete or update Admin",
     'position_deleted' => "':attribute' position removed",
     'employee_deleted' => "Director ':attribute' removed",
-    'admin_deleted' => "':attribute' Admin removed",
+    'user_deleted' => "':attribute' User removed",
     'company_deleted' => "':attribute' company removed",
     'isnt_your_worker' => "This is not your worker",
     'product_not_found' => "Product not found",

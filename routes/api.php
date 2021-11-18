@@ -36,8 +36,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
 
     Route::get('me', [UserController::class, 'me']);
-    Route::put('me', [UserController::class, 'update']);
+    Route::put('me', [UserController::class, 'updateProfile']);
     Route::prefix('admin')->group(function () {
+
+        Route::get('user', [UserController::class, 'index'])->middleware('can:read user');
+        Route::get('user/{id}', [UserController::class, 'show'])->middleware('can:read user');
+        Route::post('user', [UserController::class, 'create'])->middleware('can:create user');
+        Route::put('user', [UserController::class, 'update'])->middleware('can:update user');
+        Route::delete('user/{id}', [UserController::class, 'delete'])->middleware('can:delete user');
+
         Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
         Route::get('permissions', [RoleController::class, 'permissions'])->middleware('can:read role');
         Route::get('role/{name}', [RoleController::class, 'show'])->middleware('can:read role');
