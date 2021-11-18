@@ -27,7 +27,7 @@ class ProductCreateRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string',
+            'title' => 'required|string',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'position' => 'nullable|integer',

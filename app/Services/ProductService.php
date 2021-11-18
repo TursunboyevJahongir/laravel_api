@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ProductService
 {
@@ -18,8 +19,28 @@ class ProductService
         $minimal = $query->min('price');//productlarni filterlashdan olishdan maqsad ,undan keyin olinsa min_price max_price o'zgaib ketmasligi uchun
         $maximal = $query->max('price');
         $query->when($min, function ($query) use ($min) {
-                return $query->where('price', '>=', $min);
-            })->when($max, function ($query, $max) {
+            return $query->where('price', '>=', $min);
+        })->when($max, function ($query, $max) {
+            return $query->where('price', '<=', $max);
+        })
+            ->orderBy($orderBy, $sort);
+        $data['products'] = $query->paginate($size);
+        $data['append'] = [
+            'min_price' => $minimal,
+            'max_price' => $maximal
+        ];
+
+        return $data;
+    }
+
+    public function AdminCategoryProducts(Category $category, $size, $orderBy, $sort, $min, $max): array
+    {
+        $query = $category->products();
+        $minimal = $query->min('price');
+        $maximal = $query->max('price');
+        $query->when($min, function ($query) use ($min) {
+            return $query->where('price', '>=', $min);
+        })->when($max, function ($query, $max) {
             return $query->where('price', '<=', $max);
         })
             ->orderBy($orderBy, $sort);
@@ -35,7 +56,7 @@ class ProductService
     public function show($id)
     {
         $product = Product::query()->whereId($id)->active()->first();
-        if(is_null($product)){
+        if (is_null($product)) {
             throw new \Exception(__('messages.product_not_found'), 404);
         }
         return $product;
@@ -51,15 +72,18 @@ class ProductService
                 foreach ($tags as $tag)
                     $query->orWhere('tag', 'LIKE', "%$tag%");
             })
+            ->when(!auth('sanctum')->check(), function ($query) {//ro'yhatdan o'tgan va productlarni ko'rishga huquqi bor bo'lganlarga ko'rinadi
+                return $query->active();
+            })
             ->orderBy('position', 'DESC')
             ->orderBy("title", 'ASC')
             ->paginate($size);
     }
 
 
-    public function myProducts($size, $orderBy, $sort, $min, $max): array
+    public function products($size, $orderBy, $sort, $min, $max): array
     {
-        $query = Auth::user()->products()
+        $query = Product::query()
             ->when($min, function ($query) use ($min) {
                 return $query->where('price', '>=', $min);
             });
@@ -69,9 +93,6 @@ class ProductService
             return $query->where('price', '<=', $max);
         })
             ->orderBy($orderBy, $sort);
-
-        $min = $query->min('price');
-        $max = $query->max('price');
 
         $data['products'] = $query->paginate($size);
         $data['append'] = [
@@ -84,7 +105,7 @@ class ProductService
 
     public static function create(array $data)
     {
-        $data['user_id'] = Auth::id();
+        $data['slug'] = Str::slug($data['title']);
         $product = Product::create($data);
         if (array_key_exists('main_image', $data)) {
             self::saveResource($data['main_image'], $product->mainImage(), Product::PRODUCT_MAIN_IMAGE_RESOURCES, self::FILE_PATH);
@@ -102,9 +123,9 @@ class ProductService
         return $product;
     }
 
-    public static function update(array $data)
+    public static function update(array $data, Product $product)
     {
-        $product = Product::query()->find($data['id']);
+        $data['slug'] = Str::slug($data['title']);
         $product->update($data);
         if (array_key_exists('main_image', $data)) {
             if ($product->mainImage()->exists()) {
@@ -149,17 +170,30 @@ class ProductService
         ]);
     }
 
-    public function delete(Product $id): ?bool
+    public function delete(Product $product): ?bool
     {
-        if ($id->user_id !== Auth::id()) {
-            throw new \Exception(__('messages.not_your_product'), 403);
+        if ($product->mainImage()->exists()) {
+            $product->mainImage->removeFile();
+            $product->mainImage()->delete();
         }
-        return $id->delete();
+        foreach ($product->images as $image)
+            if ($image->exists()) {
+                $image->removeFile();
+                $image->delete();
+            }
+        if ($product->video()->exists()) {
+            $product->video->removeFile();
+            $product->video()->delete();
+        }
+        return $product->delete();
     }
 
     public function search(string $search, $size, $orderBy, $sort, $min, $max): array
     {
-        $query = Product::query()->active()
+        $query = Product::query()
+            ->when(!auth('sanctum')->check(), function ($query) {
+                return $query->active();
+            })
             ->where(function ($query) use ($search) {
                 $query->where('title', 'like', "%$search%")
                     ->orWhere('description', 'like', "%$search%")

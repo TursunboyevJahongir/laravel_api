@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
 use App\Http\Resources\Api\AdminCategoryResource;
+use App\Http\Resources\Api\AdminProductResource;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;
@@ -95,11 +96,31 @@ class CategoryController extends ApiController
         $size = $request->per_page ?? config('app.per_page');
         $orderBy = $request->orderby ?? "position";
         $sort = $request->sort ?? "DESC";
-        $min = $request->min ?? null;
-        $max = $request->max ?? null;
+        $min = $request->min_price ?? null;
+        $max = $request->max_price ?? null;
 
         $data = $productService->categoryProducts($id, $size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
             ProductResource::class), $data['append']);
+    }
+
+    /**
+     * @param Category $id
+     * @param ProductService $productService
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function AdminCategoryProducts(Category $id, ProductService $productService, Request $request): JsonResponse
+    {
+        $size = $request->per_page ?? config('app.per_page');
+        $orderBy = $request->orderby ?? "position";
+        $sort = $request->sort ?? "DESC";
+        $min = $request->min_price ?? null;
+        $max = $request->max_price ?? null;
+
+        $data = $productService->AdminCategoryProducts($id, $size, $orderBy, $sort, $min, $max);
+        return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
+            AdminProductResource::class), $data['append']);
     }
 }

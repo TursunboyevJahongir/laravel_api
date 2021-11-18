@@ -27,14 +27,8 @@ class ProductUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['required','exists:products,id',function ($attribute, $value, $fail) {
-                $product = Product::query()->findOrFail($value);
-                if ($product->user_id !== Auth::id()) {
-                    $fail(__('messages.not_your_product'));
-                }
-            }],
             'category_id' => 'nullable|exists:categories,id',
-            'name' => 'nullable|string',
+            'title' => 'nullable|string',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'position' => 'nullable|integer',

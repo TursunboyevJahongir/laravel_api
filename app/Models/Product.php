@@ -16,9 +16,10 @@ use Illuminate\Support\Str;
  * @property int id
  * @property int creator_id creator
  * @property int category_id
- * @property string name
  * @property string description
  * @property string tag
+ * @property string slug
+ * @property string title
  * @property int price
  * @property int position
  * @property boolean active
@@ -43,6 +44,7 @@ class Product extends Model
         'description',
         'price',
         'position',
+        'slug',
         'tag',
         'active',
     ];

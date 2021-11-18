@@ -6,6 +6,9 @@ use App\Http\Controllers\ApiController;
 
 use App\Http\Requests\Api\ProductCreateRequest;
 use App\Http\Requests\Api\ProductUpdateRequest;
+use App\Http\Resources\Api\AdminAllProductsResource;
+use App\Http\Resources\Api\AdminProductResource;
+use App\Http\Resources\Api\AdminProductShowResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;
 use App\Http\Resources\Api\ProductShowResource;
@@ -23,22 +26,21 @@ class ProductController extends ApiController
     }
 
     /**
-     * @param ProductService $productService
      * @param Request $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function myProducts(Request $request): JsonResponse
+    public function products(Request $request): JsonResponse
     {
         $size = $request->per_page ?? config('app.per_page');
         $orderBy = $request->orderby ?? "position";
         $sort = $request->sort ?? "DESC";
         $min = $request->min_price ?? null;
-        $max = $request->max_price ?? null;
+        $max = $request->min_price ?? null;
 
-        $data = $this->service->myProducts($size, $orderBy, $sort, $min, $max);
+        $data = $this->service->products($size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
-            ProductResource::class), $data['append']);
+            AdminAllProductsResource::class), $data['append']);
     }
 
     /**
@@ -52,7 +54,15 @@ class ProductController extends ApiController
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), null, $e->getCode());
         }
+    }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function AdminShow(Product $id): JsonResponse
+    {
+        return $this->success(__('messages.success'), new AdminProductShowResource($id));
     }
 
     /**
@@ -78,20 +88,20 @@ class ProductController extends ApiController
      */
     public function create(ProductCreateRequest $request): JsonResponse
     {
-        $Category = $this->service->create($request->validated());
-        return $this->success(__('messages.success'), new ProductShowResource($Category));
+        return $this->success(__('messages.success'), new AdminProductShowResource($this->service->create($request->validated())));
     }
 
     /**
      * Display a listing of the resource.
      *
      * @param ProductUpdateRequest $request
+     * @param Product $id
      * @return JsonResponse
      */
-    public function update(ProductUpdateRequest $request): JsonResponse
+    public function update(ProductUpdateRequest $request, Product $id): JsonResponse
     {
-        $Category = $this->service->update($request->validated());
-        return $this->success(__('messages.success'), new ProductShowResource($Category));
+        $Category = $this->service->update($request->validated(), $id);
+        return $this->success(__('messages.success'), new AdminProductShowResource($Category));
     }
 
     /**
@@ -127,6 +137,6 @@ class ProductController extends ApiController
         $search = rtrim($search, " \t.");
         $data = $this->service->search($search, $size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
-            ProductResource::class), $data['append']);
+            AdminProductResource::class), $data['append']);
     }
 }
