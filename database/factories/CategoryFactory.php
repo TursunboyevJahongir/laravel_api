@@ -43,7 +43,7 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->unique()->word,
+            'title' => $this->faker->unique()->word,
             'position' => $this->faker->boolean ? $this->faker->numberBetween(0, 150) : null
         ];
     }

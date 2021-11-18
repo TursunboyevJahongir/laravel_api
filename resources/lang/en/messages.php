@@ -1,8 +1,18 @@
 <?php
 
 return [
+    'success' => 'Success',
+    'fail' => 'fail',
+    'invalid_login' => 'login or password is incorrect',
+    'cant_logged' => 'Sorry, user cannot be logged out',
     'phone_invalid_format' => 'The phone format is invalid.',
-    'invalid_phone' => 'phone or password is incorrect',
     'invalid_password' => 'password is incorrect',
-    'not_your_product' => "It's not your product!",
+    'cannot_delete_using_element' => 'You cannot delete the used element, the but can edit',
+    'cannot_change_superadmin' => "You don't have access to delete or update SuperAdmin",
+    'position_deleted' => "':attribute' position removed",
+    'employee_deleted' => "Director ':attribute' removed",
+    'admin_deleted' => "':attribute' Admin removed",
+    'company_deleted' => "':attribute' company removed",
+    'isnt_your_worker' => "This is not your worker",
+    'product_not_found' => "Product not found",
 ];

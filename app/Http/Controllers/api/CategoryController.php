@@ -41,7 +41,7 @@ class CategoryController extends ApiController
      * @param CategoryCreateRequest $request
      * @return JsonResponse
      */
-    public function store(CategoryCreateRequest $request): JsonResponse
+    public function create(CategoryCreateRequest $request): JsonResponse
     {
         $Category = $this->service->create($request->validated());
         return $this->success(__('messages.success'), new CategoryResource($Category));

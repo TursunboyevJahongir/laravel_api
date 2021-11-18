@@ -28,7 +28,7 @@ class ProductController extends ApiController
      * @return JsonResponse
      * @throws Exception
      */
-    public function myProducts(ProductService $productService, Request $request): JsonResponse
+    public function myProducts(Request $request): JsonResponse
     {
         $size = $request->per_page ?? config('app.per_page');
         $orderBy = $request->orderby ?? "position";
@@ -36,20 +36,23 @@ class ProductController extends ApiController
         $min = $request->min_price ?? null;
         $max = $request->max_price ?? null;
 
-        $data = $productService->myProducts($size, $orderBy, $sort, $min, $max);
+        $data = $this->service->myProducts($size, $orderBy, $sort, $min, $max);
         return $this->success(__('messages.success'), new PaginationResourceCollection($data['products'],
             ProductResource::class), $data['append']);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param Product $id
+     * @param $id
      * @return JsonResponse
      */
-    public function show(Product $id): JsonResponse
+    public function show($id): JsonResponse
     {
-        return $this->success(__('messages.success'), new ProductShowResource($id));
+        try {
+            return $this->success(__('messages.success'), new ProductShowResource($this->service->show($id)));
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), null, $e->getCode());
+        }
+
     }
 
     /**
@@ -73,7 +76,7 @@ class ProductController extends ApiController
      * @param ProductCreateRequest $request
      * @return JsonResponse
      */
-    public function store(ProductCreateRequest $request): JsonResponse
+    public function create(ProductCreateRequest $request): JsonResponse
     {
         $Category = $this->service->create($request->validated());
         return $this->success(__('messages.success'), new ProductShowResource($Category));

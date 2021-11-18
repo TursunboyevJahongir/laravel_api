@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
  * Class Product
  * @package App\Models
  * @property int id
- * @property int $user_id creator
+ * @property int creator_id creator
  * @property int category_id
  * @property string name
  * @property string description
@@ -37,9 +37,9 @@ class Product extends Model
     public const PRODUCT_IMAGES_RESOURCES = 'PRODUCT_IMAGES_RESOURCES';
 
     protected $fillable = [
-        'user_id',
+        'creator_id',
         'category_id',
-        'name',
+        'title',
         'description',
         'price',
         'position',
@@ -80,7 +80,7 @@ class Product extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'creator_id');
     }
 
     public function getSubDescriptionAttribute(): string

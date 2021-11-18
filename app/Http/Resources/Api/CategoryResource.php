@@ -21,7 +21,7 @@ class CategoryResource extends JsonResource
          */
         return [
             "id" => $this->id,
-            "name" => $this->name,
+            "title" => $this->title,
             "ico" => $this->ico?->file_url,
         ];
     }

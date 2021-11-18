@@ -15,7 +15,7 @@ class ProductService
     public function categoryProducts(Category $category, $size, $orderBy, $sort, $min, $max): array
     {
         $query = $category->products()->active();
-        $minimal = $query->min('price');
+        $minimal = $query->min('price');//productlarni filterlashdan olishdan maqsad ,undan keyin olinsa min_price max_price o'zgaib ketmasligi uchun
         $maximal = $query->max('price');
         $query->when($min, function ($query) use ($min) {
                 return $query->where('price', '>=', $min);
@@ -31,6 +31,31 @@ class ProductService
 
         return $data;
     }
+
+    public function show($id)
+    {
+        $product = Product::query()->whereId($id)->active()->first();
+        if(is_null($product)){
+            throw new \Exception(__('messages.product_not_found'), 404);
+        }
+        return $product;
+    }
+
+    public function similar(Product $id, $size): LengthAwarePaginator
+    {
+        $tags = explode(',', $id->tag);
+
+        return Product::query()
+            ->where('id', '!=', $id->id)
+            ->where(function ($query) use ($tags) {
+                foreach ($tags as $tag)
+                    $query->orWhere('tag', 'LIKE', "%$tag%");
+            })
+            ->orderBy('position', 'DESC')
+            ->orderBy("title", 'ASC')
+            ->paginate($size);
+    }
+
 
     public function myProducts($size, $orderBy, $sort, $min, $max): array
     {
@@ -124,21 +149,6 @@ class ProductService
         ]);
     }
 
-    public function similar(Product $id, $size): LengthAwarePaginator
-    {
-        $tags = explode(',', $id->tag);
-
-        return Product::query()
-            ->where('id', '!=', $id->id)
-            ->where(function ($query) use ($tags) {
-                foreach ($tags as $tag)
-                    $query->orWhere('tag', 'LIKE', "%$tag%");
-            })
-            ->orderBy('position', 'DESC')
-            ->orderBy("name", 'ASC')
-            ->paginate($size);
-    }
-
     public function delete(Product $id): ?bool
     {
         if ($id->user_id !== Auth::id()) {
@@ -151,11 +161,11 @@ class ProductService
     {
         $query = Product::query()->active()
             ->where(function ($query) use ($search) {
-                $query->where('name', 'like', "%$search%")
+                $query->where('title', 'like', "%$search%")
                     ->orWhere('description', 'like', "%$search%")
                     ->orWhere('tag', 'like', "%$search%")
                     ->orWhereHas('category', function ($query) use ($search) {
-                        $query->where('name', 'like', "%$search%");
+                        $query->where('title', 'like', "%$search%")->active();
                     });
             });
         $minimal = $query->min('price');

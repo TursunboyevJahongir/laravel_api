@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int id
  * @property int parent_id
  * @property int position
- * @property string name
+ * @property string title
  * @property boolean active
  * @property Resource ico
  */
@@ -26,7 +26,8 @@ class Category extends Model
     public const CATEGORY_RESOURCES = 'CATEGORY_RESOURCES';
 
     protected $fillable = [
-        'name',
+        'title',
+        'slug',
         'position',
         'active',
     ];

@@ -7,7 +7,6 @@ use App\Models\Product;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Faker\Generator as Generator;
 
 class ProductFactory extends Factory
 {
@@ -61,9 +60,9 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => User::all()->random()->id,
+            'creator_id' => User::all()->random()->id,
             'category_id' => Category::all()->random()->id,
-            'name' => $this->faker->word,
+            'title' => $this->faker->word,
             'description' => $this->faker->text(200),
             'price' => $this->faker->numberBetween(10000, 500000),
             'position' => $this->faker->boolean ? $this->faker->numberBetween(0, 150) : null,
