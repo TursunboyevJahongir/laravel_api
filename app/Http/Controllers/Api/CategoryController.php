@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
+use App\Http\Resources\Api\CategoriesResource;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;
@@ -38,13 +39,26 @@ class CategoryController extends ApiController
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function categories(Request $request): JsonResponse
+    {
+        $orderBy = $request->orderby ?? "position";
+        $sort = $request->sort ?? "DESC";
+        return $this->success(__('messages.success'), CategoriesResource::collection($this->service->all($orderBy, $sort)));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
      * @param CategoryCreateRequest $request
      * @return JsonResponse
      */
     public function create(CategoryCreateRequest $request): JsonResponse
     {
         $Category = $this->service->create($request->validated());
-        return $this->success(__('messages.success'), new CategoryResource($Category));
+        return $this->success(__('messages.success'), new CategoriesResource($Category));
     }
 
     /**

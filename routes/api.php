@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('me', [UserController::class, 'me']);
     Route::put('me', [UserController::class, 'update']);
-    
+
     Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
     Route::get('permissions', [RoleController::class, 'permissions'])->middleware('can:read role');
     Route::get('role/{name}', [RoleController::class, 'show'])->middleware('can:read role');
@@ -45,10 +45,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('role/{name}', [RoleController::class, 'update'])->middleware('can:update role');
     Route::delete('role/{name}', [RoleController::class, 'delete'])->middleware('can:delete role');
 
-
-    Route::post('category', [CategoryController::class, 'create']);
-    Route::post('category/update', [CategoryController::class, 'update']);
-    Route::delete('category/{id}', [CategoryController::class, 'delete']);
+    Route::get('categories', [CategoryController::class, 'categories'])->middleware('can:read category');
+    Route::post('category', [CategoryController::class, 'create'])->middleware('can:create category');
+    Route::put('category/update', [CategoryController::class, 'update'])->middleware('can:update category');
+    Route::delete('category/{id}', [CategoryController::class, 'delete'])->middleware('can:delete category');
 
     Route::get('my/products', [ProductController::class, 'myProducts']);
     Route::post('product', [ProductController::class, 'create']);

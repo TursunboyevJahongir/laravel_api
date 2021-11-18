@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Resource;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class CategoryService
 {
@@ -20,13 +21,18 @@ class CategoryService
         return Category::active()->orderBy($orderBy, $sort)->get();
     }
 
+    public function all($orderBy, $sort): Collection|array
+    {
+        return Category::orderBy($orderBy, $sort)->get();
+    }
+
     public static function create(array $data)
     {
+        $data['slug'] = Str::slug($data['title']);
         $category = Category::create($data);
         if (array_key_exists('ico', $data)) {
             self::saveResource($data['ico'], $category, Category::CATEGORY_RESOURCES);
         }
-        $category->load('ico');
         return $category;
     }
 

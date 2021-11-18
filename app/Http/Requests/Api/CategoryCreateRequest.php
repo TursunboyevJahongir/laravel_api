@@ -5,6 +5,7 @@ namespace App\Http\Requests\Api;
 use App\Rules\PhoneRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CategoryCreateRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class CategoryCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return Auth::user()->can('create category');
     }
 
     /**
@@ -26,7 +27,7 @@ class CategoryCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:categories,name',
+            'title' => 'required|string|unique:categories,title',
             'position' => 'nullable|numeric',
             'ico' => 'nullable|image',
         ];
