@@ -38,6 +38,7 @@ class CategoryService
 
     public static function update(array $data)
     {
+        $data['slug'] = Str::slug($data['title']);
         $category = Category::query()->find($data['id']);
         $category->update($data);
         if (array_key_exists('ico', $data)) {

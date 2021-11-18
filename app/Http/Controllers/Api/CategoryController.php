@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
-use App\Http\Resources\Api\CategoriesResource;
+use App\Http\Resources\Api\AdminCategoryResource;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;
@@ -46,7 +46,7 @@ class CategoryController extends ApiController
     {
         $orderBy = $request->orderby ?? "position";
         $sort = $request->sort ?? "DESC";
-        return $this->success(__('messages.success'), CategoriesResource::collection($this->service->all($orderBy, $sort)));
+        return $this->success(__('messages.success'), AdminCategoryResource::collection($this->service->all($orderBy, $sort)));
     }
 
     /**
@@ -57,8 +57,7 @@ class CategoryController extends ApiController
      */
     public function create(CategoryCreateRequest $request): JsonResponse
     {
-        $Category = $this->service->create($request->validated());
-        return $this->success(__('messages.success'), new CategoriesResource($Category));
+        return $this->success(__('messages.success'), new AdminCategoryResource($this->service->create($request->validated())));
     }
 
     /**
@@ -69,8 +68,7 @@ class CategoryController extends ApiController
      */
     public function update(CategoryUpdateRequest $request): JsonResponse
     {
-        $Category = $this->service->update($request->validated());
-        return $this->success(__('messages.success'), new CategoryResource($Category));
+        return $this->success(__('messages.success'), new AdminCategoryResource($this->service->update($request->validated())));
     }
 
     /**

@@ -15,7 +15,7 @@ class CategoryUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return Auth::user()->can('update category');
     }
 
     /**
@@ -27,7 +27,7 @@ class CategoryUpdateRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:categories,id',
-            'name' => 'nullable|string|unique:categories,name,' . $this->id . ',id',
+            'title' => 'nullable|string|unique:categories,title,' . $this->id . ',id',
             'position' => 'nullable|numeric',
             'ico' => 'nullable|image',
             'active' => 'nullable|boolean',
