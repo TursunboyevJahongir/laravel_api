@@ -31,7 +31,7 @@ class UserController extends ApiController
     public function update(UserUpdateRequest $request): JsonResponse
     {
         try {
-            $this->service->update($request->validated(), auth()->user());
+            $this->service->updateProfile($request->validated());
             return $this->success(__('messages.success'), new UserResource(Auth::user()));
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), null, $e->getCode());

@@ -33,7 +33,7 @@ Route::get('search/{string}', [ProductController::class, 'search']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [UserController::class, 'me']);
-    Route::post('me', [UserController::class, 'update']);
+    Route::put('me', [UserController::class, 'update']);
 
     Route::post('category', [CategoryController::class, 'create']);
     Route::post('category/update', [CategoryController::class, 'update']);

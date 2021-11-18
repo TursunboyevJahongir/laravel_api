@@ -41,7 +41,7 @@ class UserService
             ];
     }
 
-    public static function update(array $data, User $user): User
+    public function update(array $data, User $user): User
     {
         if (isset($data['current_password'])) {
             if (!Hash::check($data['current_password'], $user->password))
@@ -50,5 +50,11 @@ class UserService
         }
         $user->update($data);
         return $user;
+    }
+
+    public function updateProfile(array $data)
+    {
+        !isset($data['new_password']) ?: $data['password'] = Hash::make($data['new_password']);
+        auth()->user()->update($data);
     }
 }

@@ -23,6 +23,8 @@ class UserResource extends JsonResource
             "id" => $this->id,
             "full_name" => $this->full_name,
             "phone" => $this->phone,
+            'roles' => RoleResource::collection($this->roles()->get()),
+            'permissions' => $this->getAllPermissions()->pluck('name')->toArray()
         ];
     }
 }

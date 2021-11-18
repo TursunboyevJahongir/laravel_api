@@ -5,6 +5,7 @@ namespace App\Http\Requests\api;
 use App\Rules\PhoneRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -29,8 +30,10 @@ class UserUpdateRequest extends FormRequest
         return [
             'phone' => 'nullable|unique:users,phone,' . $id . ',id|regex:/^998[0-9]{9}/',
             'full_name' => 'nullable|string',
-//            'email' => 'required|email|unique:users,email',//email will not be updated
-            'current_password' => 'required_with:new_password|min:6',
+            'current_password' => ['required_with:new_password', 'min:6', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, auth()->user()->password))
+                    $fail(__('messages.invalid_password'));
+            }],
             'new_password' => 'required_with:current_password|confirmed|min:6'
         ];
     }
