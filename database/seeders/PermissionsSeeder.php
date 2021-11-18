@@ -18,15 +18,17 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         $admin = Role::create(['name' => 'admin']);
-        $customer = Role::create(['name' => 'customer']);
+        Role::create(['name' => 'customer']);
         $manager = Role::create(['name' => 'manager']);
         $content_manager = Role::create(['name' => 'content_manager']);
 
+        Permission::create(['name' => 'read product']);
         Permission::create(['name' => 'create product']);
         Permission::create(['name' => 'update product']);
         $content_manager->syncPermissions(Permission::all());
 
         Permission::create(['name' => 'delete product']);
+        Permission::create(['name' => 'read category']);
         Permission::create(['name' => 'create category']);
         Permission::create(['name' => 'update category']);
         Permission::create(['name' => 'delete category']);

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\api\CategoryCreateRequest;
-use App\Http\Requests\api\CategoryUpdateRequest;
+use App\Http\Requests\Api\CategoryCreateRequest;
+use App\Http\Requests\Api\CategoryUpdateRequest;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;

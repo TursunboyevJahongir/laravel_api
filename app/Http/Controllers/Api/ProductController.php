@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
 
-use App\Http\Requests\api\ProductCreateRequest;
-use App\Http\Requests\api\ProductUpdateRequest;
+use App\Http\Requests\Api\ProductCreateRequest;
+use App\Http\Requests\Api\ProductUpdateRequest;
 use App\Http\Resources\Api\PaginationResourceCollection;
 use App\Http\Resources\Api\ProductResource;
 use App\Http\Resources\Api\ProductShowResource;

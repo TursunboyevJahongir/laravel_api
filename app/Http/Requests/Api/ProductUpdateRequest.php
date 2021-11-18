@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\api;
+namespace App\Http\Requests\Api;
 
 use App\Models\Product;
 use App\Rules\PhoneRule;

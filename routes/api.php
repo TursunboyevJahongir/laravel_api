@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\api\AuthController;
-use App\Http\Controllers\api\CategoryController;
-use App\Http\Controllers\api\ProductController;
-use App\Http\Controllers\api\UserController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +37,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('me', [UserController::class, 'me']);
     Route::put('me', [UserController::class, 'update']);
+    
+    Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
+    Route::get('permissions', [RoleController::class, 'permissions'])->middleware('can:read role');
+    Route::get('role/{name}', [RoleController::class, 'show'])->middleware('can:read role');
+    Route::post('role', [RoleController::class, 'create'])->middleware('can:create role');
+    Route::put('role/{name}', [RoleController::class, 'update'])->middleware('can:update role');
+    Route::delete('role/{name}', [RoleController::class, 'delete'])->middleware('can:delete role');
+
 
     Route::post('category', [CategoryController::class, 'create']);
     Route::post('category/update', [CategoryController::class, 'update']);

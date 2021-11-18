@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\api\UserUpdateRequest;
+use App\Http\Requests\Api\UserUpdateRequest;
 use App\Http\Resources\Api\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;

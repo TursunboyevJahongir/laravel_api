@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\api;
+namespace App\Http\Requests\Api;
 
 use App\Rules\PhoneRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryUpdateRequest extends FormRequest
+class CategoryCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,9 @@ class CategoryUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|exists:categories,id',
-            'name' => 'nullable|string|unique:categories,name,' . $this->id . ',id',
+            'name' => 'required|string|unique:categories,name',
             'position' => 'nullable|numeric',
             'ico' => 'nullable|image',
-            'active' => 'nullable|boolean',
         ];
     }
 }

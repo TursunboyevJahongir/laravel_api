@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Requests\api;
+namespace App\Http\Requests\Api;
 
-use App\Rules\PhoneRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryCreateRequest extends FormRequest
+/**
+ * Class RoleCreateRequest
+ * @package App\Http\Requests
+ */
+class RoleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +18,7 @@ class CategoryCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return Auth::user()->can('update role');
     }
 
     /**
@@ -23,12 +26,10 @@ class CategoryCreateRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:categories,name',
-            'position' => 'nullable|numeric',
-            'ico' => 'nullable|image',
+            'permissions.*' => 'required|exists:permissions,name',
         ];
     }
 }
