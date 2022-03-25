@@ -30,7 +30,7 @@ class CategoryUpdateRequest extends FormRequest
             'title' => 'nullable|string|unique:categories,title,' . $this->id . ',id',
             'position' => 'nullable|numeric',
             'ico' => 'nullable|image',
-            'active' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

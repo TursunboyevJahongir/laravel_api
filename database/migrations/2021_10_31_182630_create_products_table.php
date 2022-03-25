@@ -15,16 +15,15 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('creator_id')->nullable();//creator
-            $table->foreign('creator_id')->references('id')->on('users')->nullOnDelete();//creator
+            $table->foreignId('author_id')->constrained('users');
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
-            $table->text('description')->nullable();
+            $table->jsonb('name');
+            $table->jsonb('description')->nullable();
             $table->unsignedDouble('price');
-            $table->string('tag')->nullable();
-            $table->string('slug')->unique()->nullable();
-            $table->unsignedBigInteger('position')->nullable();
-            $table->boolean('active')->default(true);
+            $table->unsignedBigInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->string('barcode_path');
+            $table->string('barcode')->unique();
             $table->softDeletes();
             $table->timestamps();
         });

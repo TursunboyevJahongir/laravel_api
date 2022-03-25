@@ -15,10 +15,12 @@ class CreateCategoriesTable extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
-            $table->string('slug')->unique()->nullable();
-            $table->unsignedBigInteger('position')->nullable();
-            $table->boolean('active')->default(true);
+            $table->jsonb('name');
+            $table->jsonb('description')->nullable();
+            $table->unsignedBigInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('author_id')->constrained('users');
+            $table->foreignId('parent_id')->nullable()->constrained('categories');
             $table->softDeletes();
             $table->timestamps();
         });

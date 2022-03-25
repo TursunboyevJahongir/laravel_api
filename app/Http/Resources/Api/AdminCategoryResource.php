@@ -24,7 +24,7 @@ class AdminCategoryResource extends JsonResource
             "title" => $this->title,
             "slug" => $this->slug,
             "position" => $this->position,
-            "active" => $this->active,
+            "is_active" => $this->is_active,
             "ico" => $this->ico?->file_url,
         ];
     }

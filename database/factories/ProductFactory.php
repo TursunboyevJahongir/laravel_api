@@ -60,7 +60,7 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'creator_id' => User::all()->random()->id,
+            'author_id' => User::all()->random()->id,
             'category_id' => Category::all()->random()->id,
             'title' => $this->faker->word,
             'description' => $this->faker->text(200),

@@ -18,7 +18,9 @@ class CreateResourcesTable extends Migration
             $table->string('additional_identifier');
             $table->string('name');
             $table->string('type');
-            $table->string('full_url');
+            $table->string('path_original');
+            $table->string('path_1024')->nullable();
+            $table->string('path_512')->nullable();
             $table->morphs('resource');
             $table->timestamps();
         });
