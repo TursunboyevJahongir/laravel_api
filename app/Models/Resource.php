@@ -13,7 +13,6 @@ class Resource extends CoreModel
 
     protected $fillable = [
         'additional_identifier',
-        'name',
         'type',
         'path_512',
         'path_1024',

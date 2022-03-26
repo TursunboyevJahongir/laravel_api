@@ -36,7 +36,6 @@ class UserController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        dd(auth()->user()->hasPermissionTo('read-user'));
         $users = $this->service->get($request);
 
         return $this->responseWith(['users' => $users]);
@@ -55,7 +54,7 @@ class UserController extends Controller
         try {
             $user = $this->service->create($request);
 
-            return $this->responseWith(['user' => $user], 201);
+            return $this->responseWith(compact('user'), 201);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -79,6 +78,7 @@ class UserController extends Controller
     public function delete(User $user): JsonResponse
     {
         try {
+            $this->authorize('delete', $user);
             $this->service->delete($user);
 
             return $this->responseWith(code: 204);

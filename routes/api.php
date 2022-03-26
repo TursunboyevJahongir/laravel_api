@@ -29,8 +29,8 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
         Route::get('/', 'index')->permission('read-user');
         Route::get('/{user}', 'show')->permission('read-user');
         Route::post('/', 'create')->permission('create-user');
-        Route::put('/', 'update')->permission('update-user');
-        Route::delete('/{user}', 'delete')->permission('delete-user');
+        Route::put('/{user}', 'update')->middleware(['can:delete,user', 'permission:update-user']);
+        Route::delete('/{user}', 'delete')->middleware(['can:delete,user', 'permission:delete-user']);
     });
 
     Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');

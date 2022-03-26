@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use Modules\Resource\Contracts\ResourceServiceContract;
-use Modules\Resource\Events\AttachImages;
+use App\Contracts\ResourceServiceContract;
+use App\Events\AttachImages;
 
 class AttachImagesListener
 {

@@ -16,7 +16,6 @@ class CreateResourcesTable extends Migration
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
             $table->string('additional_identifier');
-            $table->string('name');
             $table->string('type');
             $table->string('path_original');
             $table->string('path_1024')->nullable();

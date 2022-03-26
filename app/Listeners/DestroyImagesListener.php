@@ -2,8 +2,9 @@
 
 namespace App\Listeners;
 
-use Modules\Resource\Contracts\ResourceServiceContract;
-use Modules\Resource\Events\DestroyImages;
+
+use App\Contracts\ResourceServiceContract;
+use App\Events\DestroyImages;
 
 class DestroyImagesListener
 {
