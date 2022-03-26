@@ -3,58 +3,48 @@
 
 namespace App\Services;
 
+use App\Contracts\UserRepositoryContract;
+use App\Contracts\UserServiceContract;
+use App\Core\Models\CoreModel;
+use App\Core\Services\CoreService;
+use App\Events\UpdateImage;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-
-class UserService
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
+class UserService extends CoreService implements UserServiceContract
 {
-    public function index($size, $role = null): LengthAwarePaginator
+    public function __construct(UserRepositoryContract $repository)
     {
-        return User::query()
-            ->when(isset($role), function ($query) use ($role) {
-                return $query->whereHas('roles', function ($query) use ($role) {
-                    $query->where('name', $role);
-                });
-            })
-            ->paginate($size);
-    }
-
-    public function updateProfile(array $data)
-    {
-        !isset($data['new_password']) ?: $data['password'] = Hash::make($data['new_password']);
-        auth()->user()->update($data);
+        parent::__construct($repository);
     }
 
 
-    public function create(array $data)
+    public function create(FormRequest $request): mixed
     {
-        $data['password'] = Hash::make($data['password']);
-
-        $user = User::create($data);
-        if (isset($data['roles']) && !in_array('superadmin', $data['roles']))
-            $user->assignRole($data['roles']);
-        return $user;
+        return DB::transaction(function () use ($request) {
+            $user = $this->repository->create($request->validated());
+            ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
+                $this->repository->syncRoleToUser($user, $request['roles']) :
+                $this->repository->syncRoleToUser($user, ['customer']);
+            return $user;
+        });
     }
 
-    public function update(User $user, array $data)
+    public function update(CoreModel $user, FormRequest $request): bool
     {
-        $data['password'] = Hash::make($data['password']);
-        if (isset($data['roles']))
-            $user->syncRoles($data['roles']);
-        $user->update($data);
-    }
+        $validated = $request->validated();
+        DB::transaction(function () use ($request, $validated, $user) {
+            if ($request->exists('roles')) {
+                $this->repository->syncRoleToUser($user, $validated['roles']);
+            }
 
-    public function delete(User $id)
-    {
-        if ($id->id === Auth::id())
-            throw new \Exception(__('messages.fail'), 403);
+            return $this->repository->update($user, $validated);
+        });
 
-        if ($id === 1)
-            throw new \Exception(__('messages.cannot_change_superadmin'), 403);
-        $name = $id->full_name;
-        $id->delete();
-        return $name;
+        if ($request->hasFile('avatar')) {
+            UpdateImage::dispatch($request['avatar'], $user->avatar(), User::USER_AVATAR_RESOURCES, User::PATH);
+        }
+
+        return true;
     }
 }

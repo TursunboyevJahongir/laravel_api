@@ -53,7 +53,7 @@ if (!function_exists('moneyFormatter')) {
         function barcodeGenerator(string $table, string $column,string $path): array
         {
             $random = random_int(1000000000, 9999999999);
-            DB::table($table)->where($column, $random)->doesntExist() ? : self::generate($table, $column, $path);
+            DB::table($table)->where($column, $random)->doesntExist() ? : barcodeGenerator($table, $column, $path);
             $generator = new BarcodeGeneratorSVG();
             Storage::disk('public')
                 ->put("uploads/$path/barcodes/$random.svg", $generator

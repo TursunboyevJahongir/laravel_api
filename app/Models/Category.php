@@ -31,6 +31,10 @@ class Category extends CoreModel
         'description' => TranslatableJson::class,
     ];
 
+    protected $searchable = ['name', 'description'];
+
+    protected $json = ['name', 'description'];
+
     public function ico(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource');
@@ -51,9 +55,9 @@ class Category extends CoreModel
         return $this->belongsTo(self::class,'parent_id');
     }
 
-    public function scopeActive($q)
+    public function scopeActive($query)
     {
-        return $q->whereActive('=', true);
+        return $query->whereActive(true);
     }
 
     public function getSubDescriptionAttribute(): string|null

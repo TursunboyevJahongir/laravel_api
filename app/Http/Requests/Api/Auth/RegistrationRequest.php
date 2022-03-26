@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\Auth;
 
 use App\Rules\PhoneRule;
+use App\Rules\UniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegistrationRequest extends FormRequest
@@ -17,10 +18,11 @@ class RegistrationRequest extends FormRequest
         return [
             'phone' => [
                 'required',
-                'unique:users,phone',
-                new PhoneRule()
+                new PhoneRule(),
+                new UniqueRule('users','phone'),
             ],
-            'full_name' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'nullable|string',
             'password' => 'required|confirmed|min:6'
         ];
     }

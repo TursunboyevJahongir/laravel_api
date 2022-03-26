@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
-        'password',
+        'phone',
         'is_active',
         'phone_confirmed',
         'phone_confirmed_at',
@@ -38,8 +38,7 @@ class User extends Authenticatable
 
     protected $searchable = ['first_name',
         'last_name',
-        'phone',
-        'email'];
+        'phone'];
 
     public const USER_AVATAR_RESOURCES = 'USER_AVATAR_RESOURCES';
     public const PATH = 'avatars';

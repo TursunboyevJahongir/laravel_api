@@ -2,22 +2,26 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
+use App\Events\AttachImages;
+use App\Events\DestroyImages;
+use App\Events\UpdateImage;
+use App\Listeners\AttachImagesListener;
+use App\Listeners\DestroyImagesListener;
+use App\Listeners\UpdateImagesListener;
 
 class EventServiceProvider extends ServiceProvider
 {
-    /**
-     * The event listener mappings for the application.
-     *
-     * @var array
-     */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        UpdateImage::class   => [
+            UpdateImagesListener::class
         ],
+        AttachImages::class  => [
+            AttachImagesListener::class
+        ],
+        DestroyImages::class => [
+            DestroyImagesListener::class
+        ]
     ];
 
     /**
