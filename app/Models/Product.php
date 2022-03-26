@@ -2,58 +2,41 @@
 
 namespace App\Models;
 
+use App\Core\Models\CoreModel;
+use App\Helpers\TranslatableJson;
+use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-/**
- * Class Product
- * @package App\Models
- * @property int id
- * @property int creator_id creator
- * @property int category_id
- * @property string description
- * @property string tag
- * @property string slug
- * @property string title
- * @property int price
- * @property int position
- * @property boolean active
- * @property Resource mainImage
- * @property Resource video
- * @property Resource images
- * @property Category category
- * @property User user
- */
-class Product extends Model
+class Product extends CoreModel
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Author;
 
     public const PRODUCT_MAIN_IMAGE_RESOURCES = 'PRODUCT_MAIN_IMAGE_RESOURCES';
     public const PRODUCT_VIDEO_RESOURCES = 'PRODUCT_VIDEO_RESOURCES';
     public const PRODUCT_IMAGES_RESOURCES = 'PRODUCT_IMAGES_RESOURCES';
 
     protected $fillable = [
-        'creator_id',
+        'author_id',
         'category_id',
-        'title',
+        'name',
         'description',
         'price',
         'position',
-        'slug',
         'tag',
-        'active',
+        'is_active',
+        'barcode',
+        'barcode_path'
     ];
 
     protected $casts = [
-        'active' => 'boolean',
+        'name' => TranslatableJson::class,
+        'description' => TranslatableJson::class,
     ];
-    private $descendants = [];
-
 
     public function mainImage(): MorphOne
     {
@@ -72,7 +55,7 @@ class Product extends Model
 
     public function scopeActive($q)
     {
-        return $q->where('active', '=', true);
+        return $q->whereActive('=', true);
     }
 
     public function category(): BelongsTo
@@ -82,23 +65,11 @@ class Product extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'creator_id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 
-    public function getSubDescriptionAttribute(): string
+    public function getSubDescriptionAttribute(): string|null
     {
-        return $this->description ? Str::limit($this->description, 15, '...') : "";
-    }
-
-    public function moneyFormatter($number): string
-    {
-//          show with residues
-        list($whole, $decimal) = sscanf($number, '%d.%d');
-        $money = number_format($number, 0, ',', ' ');
-        return $decimal ? $money . ",$decimal" : $money;
-
-//        without residues
-//        return number_format(ceil($number), 0, ',', ' ');
-
+        return subText($this->description);
     }
 }

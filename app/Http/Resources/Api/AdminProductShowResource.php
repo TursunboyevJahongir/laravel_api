@@ -22,7 +22,7 @@ class AdminProductShowResource extends JsonResource
         return [
             "id" => $this->id,
             "slug" => $this->slug,
-            "active" => $this->active,
+            "is_active" => $this->is_active,
             "title" => $this->title,
             "description" => $this->description ?? null,
             "price" => $this->moneyFormatter($this->price),

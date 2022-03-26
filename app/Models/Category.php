@@ -2,40 +2,34 @@
 
 namespace App\Models;
 
+use App\Core\Models\CoreModel;
+use App\Helpers\TranslatableJson;
+use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- * Class Category
- * @package App\Models
- * @property int id
- * @property int parent_id
- * @property int position
- * @property string title
- * @property boolean active
- * @property Resource ico
- */
-class Category extends Model
+class Category extends CoreModel
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Author;
 
     public const CATEGORY_RESOURCES = 'CATEGORY_RESOURCES';
 
     protected $fillable = [
-        'title',
-        'slug',
+        'name',
+        'description',
+        'author_id',
+        'parent_id',
         'position',
-        'active',
+        'is_active'
     ];
 
     protected $casts = [
-        'active' => 'bool',
+        'name' => TranslatableJson::class,
+        'description' => TranslatableJson::class,
     ];
-    private $descendants = [];
-
 
     public function ico(): MorphOne
     {
@@ -44,11 +38,26 @@ class Category extends Model
 
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'category_id', 'id');
+        return $this->hasMany(Product::class);
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class,'parent_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class,'parent_id');
     }
 
     public function scopeActive($q)
     {
-        return $q->where('active', '=', true);
+        return $q->whereActive('=', true);
+    }
+
+    public function getSubDescriptionAttribute(): string|null
+    {
+        return subText($this->description);
     }
 }

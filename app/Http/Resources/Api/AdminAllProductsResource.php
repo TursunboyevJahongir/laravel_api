@@ -26,7 +26,7 @@ class AdminAllProductsResource extends JsonResource
             "description" => $this->sub_description,
             "price" => $this->moneyFormatter($this->price),
             "slug" => $this->slug,
-            "active" => $this->active,
+            "is_active" => $this->is_active,
             "main_image" => $this->mainImage?->file_url,
         ];
     }
