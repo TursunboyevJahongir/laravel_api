@@ -72,13 +72,12 @@ class UserService extends CoreService implements UserServiceContract
 
     public function update(CoreModel $user, FormRequest $request): bool
     {
-        $validated = $request->validated();
-        DB::transaction(function () use ($request, $validated, $user) {
+        DB::transaction(function () use ($request, $user) {
             if ($request->exists('roles')) {
                 $this->repository->syncRoleToUser($user, $request['roles']);
             }
 
-            return $this->repository->update($user, $validated);
+            return $this->repository->update($user, $request->validated());
         });
 
         if ($request->hasFile('avatar')) {

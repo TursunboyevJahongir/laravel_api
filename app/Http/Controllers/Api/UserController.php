@@ -60,30 +60,19 @@ class UserController extends Controller
         }
     }
 
-    public function update(User $user,UserUpdateRequest $request): JsonResponse
+    public function update(User $user, UserUpdateRequest $request): JsonResponse
     {
         try {
             $this->service->update($user, $request);
-
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
     }
 
-    /**
-     * @param User $user
-     * @return JsonResponse
-     */
     public function delete(User $user): JsonResponse
     {
-        try {
-            $this->authorize('delete', $user);
-            $this->service->delete($user);
-
-            return $this->responseWith(code: 204);
-        } catch (\Exception $e) {
-            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
-        }
+        $this->service->delete($user);
+        return $this->responseWith(code: 204);
     }
 }

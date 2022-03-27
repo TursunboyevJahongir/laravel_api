@@ -79,9 +79,9 @@ abstract class CoreService implements CoreServiceContract
      * @param CoreModel $model
      * @param FormRequest $request
      *
-     * @return mixed
+     * @return bool
      */
-    public function update(CoreModel $model, FormRequest $request): mixed
+    public function update(CoreModel $model, FormRequest $request): bool
     {
         return $this->repository->update($model, $request->validated());
     }

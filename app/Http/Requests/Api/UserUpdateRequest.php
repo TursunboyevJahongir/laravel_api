@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Api;
 
 use App\Rules\PhoneRule;
+use App\Rules\UniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -16,7 +16,7 @@ class UserUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return true;
     }
 
     /**
@@ -26,15 +26,18 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $id = Auth::user()->id;
         return [
-            'phone' => 'nullable|unique:users,phone,' . $id . ',id|regex:/^998[0-9]{9}/',
-            'full_name' => 'nullable|string',
-            'current_password' => ['required_with:new_password', 'min:6', function ($attribute, $value, $fail) {
-                if (!Hash::check($value, auth()->user()->password))
-                    $fail(__('messages.invalid_password'));
-            }],
-            'new_password' => 'required_with:current_password|confirmed|min:6'
+            'first_name' => 'filled|string',
+            'last_name' => 'nullable|string',
+            'phone' => [
+                'filled',
+                new PhoneRule(),
+                new UniqueRule('users', 'phone', $this->route('user',auth()->user())->id),
+            ],
+            'password' => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'avatar' => 'image',
+            'roles' => 'array',
+            'roles.*' => 'nullable|exists:roles,name',
         ];
     }
 }

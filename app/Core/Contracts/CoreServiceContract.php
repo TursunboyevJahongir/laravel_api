@@ -36,9 +36,9 @@ interface CoreServiceContract
      * @param CoreModel $model
      * @param FormRequest $request
      *
-     * @return mixed
+     * @return bool
      */
-    public function update(CoreModel $model, FormRequest $request): mixed;
+    public function update(CoreModel $model, FormRequest $request): bool;
 
     /**
      * Delete entity

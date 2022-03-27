@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')
     ->controller(AuthController::class)
     ->group(function () {
-        Route::post('register', 'registration');
+        Route::post('register', 'registration');//todo
         Route::post('login', 'login');
         Route::post('logout', 'logout')->middleware('auth:api');
-        Route::post('refresh', 'refresh')->middleware('auth:api');
+        Route::post('refresh', 'refresh')->middleware('auth:api');//todo refresh token
     });
 
 Route::get('category', [CategoryController::class, 'index']);
@@ -29,8 +29,8 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
         Route::get('/', 'index')->permission('read-user');
         Route::get('/{user}', 'show')->permission('read-user');
         Route::post('/', 'create')->permission('create-user');
-        Route::put('/{user}', 'update')->middleware(['can:delete,user', 'permission:update-user']);
-        Route::delete('/{user}', 'delete')->middleware(['can:delete,user', 'permission:delete-user']);
+        Route::put('/{user}', 'update')->permission('update-user')->can('update,user');
+        Route::delete('/{user}', 'delete')->permission('delete-user')->can('delete,user');
     });
 
     Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
