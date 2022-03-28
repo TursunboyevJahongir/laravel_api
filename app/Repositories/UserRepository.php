@@ -17,15 +17,17 @@ class UserRepository extends CoreRepository implements UserRepositoryContract
 
     public function selfExclude(
         Builder $query,
-        bool $selfExclude = false
-    ) {
+        bool    $selfExclude = false
+    )
+    {
         return $query->whenWhere($selfExclude, 'id', '!=', auth()->id());
     }
 
     public function filterByRole(
-        Builder $query,
+        Builder      $query,
         array|string $role = null,
-    ) {
+    )
+    {
         return $query->when($role, function ($query) use ($role) {
             $query->role($role);
         });
@@ -47,7 +49,7 @@ class UserRepository extends CoreRepository implements UserRepositoryContract
 
     public function syncRoleToUser(
         User|CoreModel|int $user,
-        array|int          $roles
+        array|int|string   $roles
     )
     {
         $this->model = is_int($user) ? $this->findById($user) : $user;

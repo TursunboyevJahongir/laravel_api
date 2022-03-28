@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Contracts\UserServiceContract;
 use App\Core\Http\Controllers\BaseController as Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
-use App\Http\Requests\Api\Auth\RegistrationRequest;
-use App\Http\Resources\Api\UserWithAuthResource;
+use App\Http\Requests\Api\UserCreateRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +16,7 @@ class AuthController extends Controller
         parent::__construct($service);
     }
 
-    public function registration(RegistrationRequest $request): JsonResponse
+    public function register(UserCreateRequest $request): JsonResponse
     {
         $user = $this->service->register($request->validated());
 
