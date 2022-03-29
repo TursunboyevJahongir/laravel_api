@@ -2,26 +2,33 @@
 
 namespace App\Exceptions;
 
-use App\Traits\HasJsonResponse;
+use App\Core\Traits\Responsable as ResponsableTrait;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Router;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use Spatie\Permission\Exceptions\PermissionAlreadyExists;
+use Spatie\Permission\Exceptions\RoleAlreadyExists;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use TypeError;
 
 class Handler extends ExceptionHandler
 {
-    use HasJsonResponse;
+    use ResponsableTrait;
 
     /**
      * A list of the exception types that are not reported.
      *
-     * @var array
+     * @var string[]
      */
     protected $dontReport = [
         //
@@ -30,9 +37,10 @@ class Handler extends ExceptionHandler
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
-     * @var array
+     * @var string[]
      */
     protected $dontFlash = [
+        'current_password',
         'password',
         'password_confirmation',
     ];
@@ -42,49 +50,121 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register(): void
+    public function register()
     {
-        $this->reportable(function (Throwable $e) {
-        });
     }
 
-    public function render($request, Throwable $e): \Illuminate\Http\Response|JsonResponse|Response
+    public function render($request, Throwable $e)
     {
-        Log::error($e);
-        if ($request->expectsJson()) {
-            if ($e instanceof ValidationException && $request->wantsJson()) {
-                $errors = $e->errors();
-                $preparedErrors = [];
-                foreach ($errors as $key => $value) {
-                    $preparedErrors[] = [
-                        'field' => $key,
-                        'message' => $value[0] ?? ''
-                    ];
-                }
-                return $this->error($e->getMessage(), $preparedErrors);
+        // Non standard errors handler
+        if ($e instanceof ModelNotFoundException) {
+            $message = $e->getMessage();
+            if (str_contains($message, 'No query results for model')) {
+                $message = 'No records found, try another request';
             }
 
-            if ($e instanceof NotFoundHttpException || $e instanceof ModelNotFoundException) {
-                return $this->error($e->getMessage());
-            }
-
-            return $this->error($e->getMessage());
+            return response()->json(['code' => 404,
+                'message' => $message,
+                'data' => []],
+                404);
+        }
+        if ($e instanceof PermissionAlreadyExists) {
+            return response()->json(['code' => 422,
+                'message' => 'Permission already exists for this guard',
+                'data' => []],
+                422);
+        }
+        if ($e instanceof AuthorizationException) {
+            return response()->json(['code' => 403,
+                'message' => $e->getMessage(),
+                'data' => []],
+                403);
         }
 
-        return parent::render($request, $e);
+        if ($e instanceof UnauthorizedException) {
+            return response()->json(['code' => 403,
+                'message' => 'You dont have permissions to do this action',
+                'data' => []],
+                403);
+        }
+        if ($e instanceof RoleAlreadyExists) {
+            return response()->json(['code' => 422,
+                'message' => 'This role already exists',
+                'data' => []],
+                422);
+        }
+
+        if ($e instanceof TypeError) {
+            return response()->json(['code' => 500,
+                'message' => $e->getMessage(),
+                'data' => []],
+                500);
+        }
+
+        if ($e instanceof MethodNotAllowedHttpException) {
+            return response()->json(['code' => 405,
+                'message' => $e->getMessage(),
+                'data' => []],
+                405);
+        }
+
+        if ($e instanceof AuthenticationException) {
+            return response()->json(['code' => 401,
+                'message' => $e->getMessage(),
+                'data' => []],
+                401);
+        }
+        // End
+
+        if (method_exists($e, 'render') && $response = $e->render($request)) {
+            return Router::toResponse($request, $response);
+        } elseif ($e instanceof Responsable) {
+            return $e->toResponse($request);
+        }
+
+        $e = $this->prepareException($this->mapException($e));
+
+        foreach ($this->renderCallbacks as $renderCallback) {
+            foreach ($this->firstClosureParameterTypes($renderCallback) as $type) {
+                if (is_a($e, $type)) {
+                    $response = $renderCallback($e, $request);
+
+                    if (!is_null($response)) {
+                        return $response;
+                    }
+                }
+            }
+        }
+
+        if ($e instanceof HttpResponseException) {
+            return $e->getResponse();
+        }
+        if ($e instanceof ValidationException) {
+            return $this->convertValidationExceptionToResponse($e, $request);
+        }
+
+        if ($e instanceof \Exception) {
+            return response()->json(['code' => 500,
+                'message' => $e->getMessage(),
+                'data' => $e->getTrace()],
+                500);
+        }
+
+        return $this->shouldReturnJson($request, $e)
+            ? $this->prepareJsonResponse($request, $e)
+            : $this->prepareResponse($request, $e);
     }
 
     /**
-     * Convert an authentication exception into a response.
+     * Convert a validation exception into a JSON response.
      *
      * @param Request $request
-     * @param AuthenticationException $exception
-     * @return Response
+     * @param ValidationException $exception
+     *
+     * @return JsonResponse
      */
-    protected function unauthenticated($request, AuthenticationException $exception): Response
+    protected function invalidJson($request, ValidationException $exception): JsonResponse
     {
-        return $request->expectsJson()
-            ? response()->json(['status' => false, 'message' => $exception->getMessage(), 'data' => new \stdClass(), 'append' => new \stdClass()], 401)
-            : parent::unauthenticated($request, $exception);
+        return $this->responseWith(['errors' => $exception->errors()], $exception->status, $exception->getMessage());
     }
 }

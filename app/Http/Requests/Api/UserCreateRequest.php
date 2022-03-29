@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Api;
 
+use App\Rules\PhoneRule;
+use App\Rules\UniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserCreateRequest extends FormRequest
 {
@@ -16,7 +16,7 @@ class UserCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::user()->can('create user');
+        return true;
     }
 
     /**
@@ -27,10 +27,17 @@ class UserCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'nullable|string',
-            'phone' => 'nullable|unique:users,phone|regex:/^998[0-9]{9}/',
-            'password' => 'nullable|min:6',
-            'roles.*' => ['nullable', 'exists:roles,name'],
+            'first_name' => 'required|string',
+            'last_name' => 'nullable|string',
+            'phone' => [
+                'required',
+                new PhoneRule(),
+                new UniqueRule('users', 'phone'),
+            ],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'avatar' => 'image',
+            'roles' => 'array',
+            'roles.*' => 'nullable|exists:roles,name',
         ];
     }
 }

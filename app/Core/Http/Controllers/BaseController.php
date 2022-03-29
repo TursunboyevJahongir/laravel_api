@@ -2,8 +2,8 @@
 
 namespace App\Core\Http\Controllers;
 
-use App\Core\Http\Controllers\Traits\Responsable;
 use App\Core\Services\CoreService;
+use App\Core\Traits\Responsable;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;

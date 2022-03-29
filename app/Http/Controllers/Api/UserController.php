@@ -2,93 +2,77 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\ApiController;
+use App\Contracts\UserServiceContract;
 use App\Http\Requests\Api\UserCreateRequest;
-use App\Http\Requests\Api\UserUpdateFromAdminRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
-use App\Http\Resources\Api\AllAdminResource;
-use App\Http\Resources\Api\PaginationResourceCollection;
-use App\Http\Resources\Api\UserResource;
-use App\Http\Resources\Api\UserWithRoleResource;
+use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\User;
-use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Core\Http\Controllers\BaseController as Controller;
 
-class UserController extends ApiController
+class UserController extends Controller
 {
 
-    public function __construct(private UserService $service)
+    public function __construct(UserServiceContract $service)
     {
+        parent::__construct($service);
     }
 
-    public function me(): JsonResponse
+    public function me(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        return $this->success(__('messages.success'), new UserResource(auth()->user()));
+        $user = $this->service->show(auth()->user(), $request);
+        return $this->responseWith(compact('user'));
     }
 
     public function updateProfile(UserUpdateRequest $request): JsonResponse
     {
         try {
-            $this->service->updateProfile($request->validated());
-            return $this->success(__('messages.success'), new UserResource(Auth::user()));
+            $this->service->update(auth()->user(), $request);
+            return $this->responseWith(code: 204);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), null, $e->getCode());
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $size = $request->get('per_page') ?? config('app.per_page');
-        $role = $request->role ?? null;
-        try {
-            return $this->success(__('messages.success'),
-                new PaginationResourceCollection($this->service->index($size, $role), UserWithRoleResource::class));
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), null, $e->getCode());
-        }
+        $users = $this->service->get($request);
+
+        return $this->responseWith(['users' => $users]);
     }
 
-    public function show(User $id): JsonResponse
+    public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        return $this->success(__('messages.success'), new UserResource($id));
+        $user = $this->service->show($user, $request);
+
+        return $this->responseWith(compact('user'));
     }
 
 
     public function create(UserCreateRequest $request): JsonResponse
     {
         try {
-            return $this->success(__('messages.success'),
-                new UserResource($this->service->create($request->validated())));
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), null, $e->getCode());
-        }
+            $user = $this->service->create($request);
 
+            return $this->responseWith(compact('user'), 201);
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
     }
 
-    public function update(UserUpdateFromAdminRequest $request): JsonResponse
+    public function update(User $user, UserUpdateRequest $request): JsonResponse
     {
-        $user = User::find($request->id);
         try {
-            $this->service->update($user, $request->validated());
-            return $this->success(__('messages.success'), new UserResource($user));
+            $this->service->update($user, $request);
+            return $this->responseWith(code: 204);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), null, $e->getCode());
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
-
     }
 
-    /**
-     * @param User $id
-     * @return JsonResponse
-     */
-    public function delete(User $id): JsonResponse
+    public function delete(User $user): JsonResponse
     {
-        try {
-            return $this->success(__('messages.user_deleted', ['attribute' => $this->service->delete($id)]));
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), null, $e->getCode());
-        }
+        $this->service->delete($user);
+        return $this->responseWith(code: 204);
     }
 }

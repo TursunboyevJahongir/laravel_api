@@ -9,8 +9,20 @@ use function __;
 class UniqueRule implements Rule
 {
     /**
-     * проверить уникальность json столбца
+     * Create a new rule instance.
      *
+     * @return void
+     */
+    public function __construct(
+        protected string   $table,
+        protected string   $column,
+        protected int|null $id = null,
+        protected bool     $softDeletes = true
+    )
+    {
+    }
+
+    /**
      * @param string $attribute
      * @param mixed $value
      *
@@ -19,32 +31,12 @@ class UniqueRule implements Rule
     public function passes($attribute, $value)
     {
         return DB::table($this->table)
-                ->when($this->softDeletes, function ($query) {
-                    $query->whereNull('deleted_at');
-                })
-                ->where($this->column, $value)
-                ->when($this->pivotColumn && $this->pivotValue, function ($query) {
-                    $query->where($this->pivotColumn, $this->pivotValue);
-                })
-                ->when($this->id, function ($query) {
-                    $query->where('id', '!=', $this->id);
-                })
-                ->doesntExist();
-    }
-
-    /**
-     * Create a new rule instance.
-     *
-     * @return void
-     */
-    public function __construct(
-            protected string $table,
-            protected string $column,
-            protected string|null $pivotColumn = null,
-            protected string|null $pivotValue = null,
-            protected int|null $id = null,
-            protected bool $softDeletes = true
-    ) {
+            ->when($this->softDeletes, function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->where($this->column, $value)
+            ->when($this->id, fn($query) => $query->where('id', '!=', $this->id))
+            ->doesntExist();
     }
 
     /**

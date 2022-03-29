@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('phone');
             $table->string('password');
-            $table->boolean('is_active')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->boolean('phone_confirmed')->default(false);
             $table->dateTime('phone_confirmed_at')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('users');

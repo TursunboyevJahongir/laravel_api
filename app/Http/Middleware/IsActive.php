@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Core\Http\Controllers\Traits\Responsable;
+use App\Core\Traits\Responsable;
 use Closure;
 use Illuminate\Http\Request;
 

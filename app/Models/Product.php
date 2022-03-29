@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class Product extends CoreModel
 {
@@ -38,6 +37,16 @@ class Product extends CoreModel
         'description' => TranslatableJson::class,
     ];
 
+    protected $dates = ['created_at',
+        'updated_at',
+        'deleted_at'];
+
+    protected $json = ['name', 'description'];
+
+    protected $searchable = ['name',
+        'description',
+        'barcode'];
+
     public function mainImage(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource')->where('additional_identifier', self::PRODUCT_MAIN_IMAGE_RESOURCES);
@@ -53,9 +62,9 @@ class Product extends CoreModel
         return $this->morphMany(Resource::class, 'resource')->where('additional_identifier', self::PRODUCT_IMAGES_RESOURCES);
     }
 
-    public function scopeActive($q)
+    public function scopeActive($query)
     {
-        return $q->whereActive('=', true);
+        return $query->whereActive(true);
     }
 
     public function category(): BelongsTo

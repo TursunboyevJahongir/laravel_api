@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Core\Http\Controllers\Traits;
+namespace App\Core\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
@@ -16,7 +16,7 @@ trait Responsable
      *
      * @var string
      */
-    private string $message = '';
+    private $message = '';
     /**
      * Response data
      *
@@ -30,7 +30,7 @@ trait Responsable
      */
     private int $statusCode;
 
-    public function responseWith(array|Collection $data = [], int $code = 200, string $message = ''): JsonResponse
+    public function responseWith(array|Collection $data = [], int $code = 200, string $message = 'OK'): JsonResponse
     {
         $this->message = empty($message) ? Response::$statusTexts[$code] : $message;
         $this->data = $data;

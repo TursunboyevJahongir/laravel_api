@@ -3,58 +3,87 @@
 
 namespace App\Services;
 
+use App\Contracts\UserRepositoryContract;
+use App\Contracts\UserServiceContract;
+use App\Core\Models\CoreModel;
+use App\Core\Services\CoreService;
+use App\Events\UpdateImage;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
-class UserService
+class UserService extends CoreService implements UserServiceContract
 {
-    public function index($size, $role = null): LengthAwarePaginator
+    public function __construct(UserRepositoryContract $repository)
     {
-        return User::query()
-            ->when(isset($role), function ($query) use ($role) {
-                return $query->whereHas('roles', function ($query) use ($role) {
-                    $query->where('name', $role);
-                });
-            })
-            ->paginate($size);
+        parent::__construct($repository);
     }
 
-    public function updateProfile(array $data)
+    /**
+     * @param FormRequest $request
+     * @param mixed ...$appends
+     *
+     * @return Collection|LengthAwarePaginator
+     */
+    public function get(FormRequest $request, ...$appends): Collection|LengthAwarePaginator
     {
-        !isset($data['new_password']) ?: $data['password'] = Hash::make($data['new_password']);
-        auth()->user()->update($data);
+        $query = $this->repository->mainQuery($request->get('columns', ['*']),
+            $request->get('relations', []),
+            $request->get('status'),
+            $request->get('start', 1),
+            $request->get('search'),
+            $request->get('filters'),
+            $request->get('not_filters'),
+            $request->get('filterBy', 'id'),
+            $request->get('order', 'desc'));
+
+        $query = $this->repository->selfExclude($query,
+            $request->get('self_exclude', false));
+        $query = $this->repository->filterByRole($query, $request->get('role'));
+
+        return match ($request->get('list_type')) {
+            'collection' => $this->repository->collection($query,
+                $request->get('limit', config('app.page_size')),
+                $request->get('appends', [])),
+            default => $this->repository->pagination($query,
+                $request->get('per_page', config('app.pagination_size')),
+                $request->get('appends', [])),
+        };
     }
 
 
-    public function create(array $data)
+    public function create(FormRequest $request): mixed
     {
-        $data['password'] = Hash::make($data['password']);
+        $user = DB::transaction(function () use ($request) {
+            $user = $this->repository->create($request->validated());
+            ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
+                $this->repository->syncRoleToUser($user, $request['roles']) :
+                $this->repository->syncRoleToUser($user, ['customer']);
+            return $user;
+        });
 
-        $user = User::create($data);
-        if (isset($data['roles']) && !in_array('superadmin', $data['roles']))
-            $user->assignRole($data['roles']);
-        return $user;
+        if ($request->hasFile('avatar')) {
+            UpdateImage::dispatch($request['avatar'], $user->avatar(), User::USER_AVATAR_RESOURCES, User::PATH);
+        }
+        return $user->load('roles', 'avatar');
     }
 
-    public function update(User $user, array $data)
+    public function update(CoreModel $user, FormRequest $request): bool
     {
-        $data['password'] = Hash::make($data['password']);
-        if (isset($data['roles']))
-            $user->syncRoles($data['roles']);
-        $user->update($data);
-    }
+        DB::transaction(function () use ($request, $user) {
+            if ($request->exists('roles')) {
+                $this->repository->syncRoleToUser($user, $request['roles']);
+            }
 
-    public function delete(User $id)
-    {
-        if ($id->id === Auth::id())
-            throw new \Exception(__('messages.fail'), 403);
+            return $this->repository->update($user, $request->validated());
+        });
 
-        if ($id === 1)
-            throw new \Exception(__('messages.cannot_change_superadmin'), 403);
-        $name = $id->full_name;
-        $id->delete();
-        return $name;
+        if ($request->hasFile('avatar')) {
+            UpdateImage::dispatch($request['avatar'], $user->avatar(), User::USER_AVATAR_RESOURCES, User::PATH);
+        }
+
+        return true;
     }
 }
