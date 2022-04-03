@@ -25,7 +25,6 @@ class GetAllFilteredRecordsRequest extends FormRequest
                 'status'    => 'boolean',
                 'search'    => 'nullable|string',
                 'filters'   => 'array',
-                'start'     => 'integer',
                 'filterBy'  => 'string',
                 'order'     => 'in:desc,asc'
         ];

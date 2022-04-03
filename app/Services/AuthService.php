@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Contracts\UserRepositoryContract;
 use App\Core\Services\CoreService;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,42 +17,49 @@ class AuthService extends CoreService
         parent::__construct($repository);
     }
 
-    public function register(array $data)
+    public function register(FormRequest $request)
     {
-        $user = DB::transaction(function () use ($data) {
-            $user = $this->repository->create($data);
+        $user = DB::transaction(function () use ($request) {
+            $user = $this->repository->create($request->validated());
             $this->repository->syncRoleToUser($user, 'customer');
             return $user;
         });
 
-        return $this->getToken($user);
+        return $this->repository->generateRefreshToken($user);
     }
 
     public function login(FormRequest $request)
     {
-        $data = $request->validated();
-        $user = $this->repository->findByPhone($data['phone']);
-        if ($user && Hash::check($data['password'], $user->password)) {
+        $user = $this->repository->findByPhone($request['phone']);
+        if (!$user && !Hash::check($request['password'], $user->password)) {
             throw new \Exception(__('auth.failed'), 401);
         }
-        return $this->getToken($user);
+        return $this->repository->generateRefreshToken($user);
     }
 
     public function refresh(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return $this->getToken($request->user()->createToken('api')->plainTextToken);
+        $token = $this->repository->findByRefreshToken($request);
+        if ($token) {
+            if ($token->refresh_expired_at->greaterThan(now())) {
+                $user = $token->user;
+                $this->repository->delete($token);
+                return $this->repository->generateRefreshToken($user);
+            }
+            $this->repository->delete($token);
+        }
+
+        throw new \Exception('Unauthenticated', 401);
     }
 
-    public static function getToken(User $user)
+    public function logout(Request $request)
     {
-        $token = $user->createToken('user_' . $user->phone)->plainTextToken;
-        return
-            [
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => config('sanctum.expiration'),
-                'user' => $user->load('roles', 'avatar'),
-            ];
+        $token = $this->repository->findByToken($request);
+        if (!$token) {
+            return throw new \Exception('Unauthenticated', 401);
+        }
+        auth()->user()->currentAccessToken()?->delete();
+
+        $this->repository->delete($token);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Core\Models\Authenticatable;
 use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
@@ -41,8 +42,8 @@ class User extends Authenticatable
         'phone'];
 
     protected $casts = [
-        'created_at'=>'datetime:d.m.Y H:i',
-        'updated_at'=>'datetime:d.m.Y H:i',
+        'created_at' => 'datetime:d.m.Y H:i',
+        'updated_at' => 'datetime:d.m.Y H:i',
     ];
 
     public const USER_AVATAR_RESOURCES = 'USER_AVATAR_RESOURCES';
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::make($password);
+    }
+
+    public function token(): MorphMany
+    {
+        return $this->morphMany(RefreshToken::class, 'user');
     }
 }

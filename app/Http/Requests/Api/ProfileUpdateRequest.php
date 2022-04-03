@@ -7,7 +7,7 @@ use App\Rules\UniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class UserCreateRequest extends FormRequest
+class ProfileUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,17 +27,15 @@ class UserCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required|string',
+            'first_name' => 'filled|string',
             'last_name' => 'nullable|string',
             'phone' => [
-                'required',
+                'filled',
                 new PhoneRule(),
-                new UniqueRule('users', 'phone'),
+                new UniqueRule('users', 'phone', $this->route('user',auth()->user())->id),
             ],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'password' => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
             'avatar' => 'image',
-            'roles' => 'array',
-            'roles.*' => 'nullable|exists:roles,name|not_in:superadmin',
         ];
     }
 }

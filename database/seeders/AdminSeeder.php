@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class AdminSeeder extends Seeder
 {
@@ -21,6 +20,7 @@ class AdminSeeder extends Seeder
             'last_name' => 'Admin',
             'phone' => '998999999999',
             'password' => Hash::make('111111'),
+            'phone_confirmed' => 1,
         ])->assignRole('superadmin');
     }
 }

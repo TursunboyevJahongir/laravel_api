@@ -32,12 +32,12 @@ class UserUpdateRequest extends FormRequest
             'phone' => [
                 'filled',
                 new PhoneRule(),
-                new UniqueRule('users', 'phone', $this->route('user',auth()->user())->id),
+                new UniqueRule('users', 'phone', $this->route('user', auth()->user())->id),
             ],
             'password' => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
             'avatar' => 'image',
             'roles' => 'array',
-            'roles.*' => 'nullable|exists:roles,name',
+            'roles.*' => 'nullable|exists:roles,name|not_in:superadmin',
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\UserServiceContract;
+use App\Http\Requests\Api\ProfileUpdateRequest;
 use App\Http\Requests\Api\UserCreateRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
 use App\Http\Requests\GetAllFilteredRecordsRequest;
@@ -24,7 +25,7 @@ class UserController extends Controller
         return $this->responseWith(compact('user'));
     }
 
-    public function updateProfile(UserUpdateRequest $request): JsonResponse
+    public function updateProfile(ProfileUpdateRequest $request): JsonResponse
     {
         try {
             $this->service->update(auth()->user(), $request);
