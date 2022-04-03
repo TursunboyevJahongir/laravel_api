@@ -18,7 +18,7 @@ class AuthController extends Controller
 
     public function register(UserCreateRequest $request): JsonResponse
     {
-        $user = $this->service->register($request->validated());
+        $user = $this->service->register($request);
 
         return $this->responseWith(compact('user'), 201);
     }
@@ -30,33 +30,32 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            return $this->responseWith($this->service->login($request));
+            $token = $this->service->login($request);
+            return $this->responseWith(compact('token'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
-
     }
 
     public function refresh(Request $request)
     {
-        return $this->success(__('messages.success'), $this->service->refresh($request));
-        return $this->responseWith(message: __('messages.logout'));
+        try {
+            $token = $this->service->refresh($request);
+            return $this->responseWith(compact('token'));
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        try {
+            $this->service->logout($request);
 
-        return $this->responseWith(message: __('messages.logout'));
-    }
-
-    protected function respondWithToken(string $token)
-    {
-        return $this->responseWith(['access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => config('sanctum.expiration'),
-                'user' => auth()->user()->load('roles', 'avatar')
-            ]);
+            return $this->responseWith(message: __('messages.logout'));
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
     }
 
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\ApiController;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
 use App\Http\Resources\Api\AdminCategoryResource;
@@ -16,11 +15,13 @@ use App\Services\ProductService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Core\Http\Controllers\BaseController as Controller;
 
-class CategoryController extends ApiController
+class CategoryController extends Controller
 {
-    public function __construct(private CategoryService $service)
+    public function __construct(CategoryService $service)
     {
+        parent::__construct($service);
     }
 
     /**

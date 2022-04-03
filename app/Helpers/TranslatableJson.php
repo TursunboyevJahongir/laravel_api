@@ -13,7 +13,7 @@ class TranslatableJson implements CastsAttributes
 
     public function set($model, string $key, $value, array $attributes)
     {
-            return json_encode($value);
+        return json_encode($value);
     }
 
     public static function translatable($attribute, $key = null)

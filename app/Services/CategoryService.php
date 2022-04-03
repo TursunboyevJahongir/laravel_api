@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Core\Services\CoreService;
 use App\Models\Category;
 use App\Models\Resource;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-class CategoryService
+class CategoryService extends CoreService
 {
     public function __construct(private Resource $ico)
     {

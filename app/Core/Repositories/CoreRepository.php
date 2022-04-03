@@ -26,7 +26,7 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     public function availability(
         Builder|CoreModel $query
-    ): CoreModel|Builder
+    ): Builder|CoreModel
     {
         return $query;
     }
