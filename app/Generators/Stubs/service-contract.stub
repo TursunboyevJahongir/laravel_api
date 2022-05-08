@@ -1,0 +1,7 @@
+<?php
+
+namespace App\Contracts;
+use App\Core\Contracts\CoreServiceContract;
+interface $classnameServiceContract extends CoreServiceContract
+{
+}
