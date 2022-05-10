@@ -46,27 +46,6 @@ abstract class CoreModel extends Model
     }
 
     /**
-     * Apply the callback if the given "value" is truthy.
-     *
-     * @param $query
-     * @param $conditional
-     * @param $column
-     * @param $operator
-     * @param mixed $value
-     * @method whenWhere($conditional, $column, $operator = null, $value = null)    conditional
-     *
-     * @return $this|mixed
-     */
-    public function scopeWhenWhere($query, $conditional, $column, $operator = null, $value = null)
-    {
-        if ($conditional) {
-            return $value ? $query->where($column, $operator, $value) : $query->where($column, $operator);
-        }
-
-        return $query;
-    }
-
-    /**
      * it did to orderBy Column or relation column
      * если надо на каком нибудь запросе его надо изменить копируй его и поставь на модель и измени
      * if you need to change it on some request, copy it and put it on the model and change it
@@ -79,37 +58,44 @@ abstract class CoreModel extends Model
      * @return Builder|\Illuminate\Support\HigherOrderWhenProxy|mixed
      */
     public function scopeFilterBy(
-            Builder $query,
-            string $filterBy = "id",
-            string $order = 'DESC',
-            array $columns = ['*']
-    ) {
-        return $query->when(str_contains($filterBy, ':'),
-                function (Builder $query) use ($filterBy, $order, $columns) {
-                    $table = explode(':', $filterBy)[0];
-                    $key = Str::singular($table) . "_id";
-                    $column = explode(':', $filterBy)[1];
-                    if ((($table == 'products' || $table == 'categories' || $table == 'attributes') && $column == 'name') ||
-                            (($table == 'products' || $table == 'categories') && $column == 'description')) {
-                        $column = "$column->" . app()->getLocale();
-                    }
-                    $selfTable = $this->getTable();
-                    $query->leftJoin($table, "$selfTable.$key", "$table.id")
-                            ->when($columns !== ['*'],
-                                    function ($query) use ($columns, $selfTable) {
-                                        $columns = array_map(function ($column) use ($selfTable) {
-                                            return "$selfTable.$column";
-                                        }, $columns);
-                                        $query->select($columns);
-                                    },
-                                    fn($query) => $query->select(["$selfTable.*"]))
-                            ->orderBy("$table.$column", $order);
-                },
-                function ($query) use ($filterBy, $order) {
-                    $filterBy = $this->isJson($filterBy) ?
-                            $filterBy . "->" . app()->getLocale() : $filterBy;
-                    $query->orderBy($filterBy, $order);
-                });
+        Builder $query,
+        string $filterBy = "id",
+        string $order = 'DESC',
+        array $columns = ['*']
+    ): Builder {
+        if (str_contains($filterBy, ',')) {
+            $fields = explode(',', $filterBy);
+            foreach ($fields as $field) {
+                $field = $this->isJson($field) ?
+                    $field . "->" . app()->getLocale() : $field;
+                $query->orderBy($field, $order);
+            }
+        } elseif (str_contains($filterBy, ':')) {
+            $table  = explode(':', $filterBy)[0];
+            $key    = Str::singular($table) . "_id";
+            $column = explode(':', $filterBy)[1];
+            if ((($table == 'products' || $table == 'categories' || $table == 'attributes') && $column == 'name') ||
+                (($table == 'products' || $table == 'categories') && $column == 'description')) {
+                $column = "$column->" . app()->getLocale();
+            }
+            $selfTable = $this->getTable();
+            $query->leftJoin($table, "$selfTable.$key", "$table.id")
+                ->when($columns !== ['*'],
+                    function ($query) use ($columns, $selfTable) {
+                        $columns = array_map(function ($column) use ($selfTable) {
+                            return "$selfTable.$column";
+                        }, $columns);
+                        $query->select($columns);
+                    },
+                    fn($query) => $query->select(["$selfTable.*"]))
+                ->orderBy("$table.$column", $order);
+        } else {
+            $filterBy = $this->isJson($filterBy) ?
+                $filterBy . "->" . app()->getLocale() : $filterBy;
+            $query->orderBy($filterBy, $order);
+        }
+
+        return $query;
     }
 
     public function isJson(string $field): bool

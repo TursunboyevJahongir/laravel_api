@@ -26,23 +26,22 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     public function availability(
         Builder|CoreModel $query
-    ): Builder|CoreModel
-    {
+    ): CoreModel|Builder {
         return $query;
     }
 
     public function mainQuery(
-        array      $columns = ['*'],
-        array      $relations = [],
-        int|null   $status = null,
-        int        $start = 1,
-        string     $search = null,
+        array $columns = ['*'],
+        array $relations = [],
+        int|null $status = null,
+        int $start = 1,
+        string $search = null,
         array|null $filters = null,
         array|null $notFilters = null,
-        string     $filterBy = 'id',
-        string     $order = 'desc'
-    ): Builder
-    {
+        string $filterBy = 'id',
+        string $order = 'desc',
+        bool $trashed = false
+    ): Builder {
         return $this->model
             //->where('id', '>=', $start)
             ->when(!is_null($status), function ($query) use ($status) {
@@ -81,77 +80,58 @@ abstract class CoreRepository implements CoreRepositoryContract
                 });
             })
             ->when($filters, function ($query, $filters) {
-                $filters = $filters[array_key_first($filters)];
-                $query->where(function ($query) use ($filters) {
-                    foreach ($filters as $key => $filter) {
-                        $query->when(in_array($key, $this->model->getFillable(), true)
-                            || in_array($key, $this->model->getDates(), true),
-                            function ($query) use ($key, $filter) {
-                                if ($this->isSearchable($key)) {
-                                    if ($this->isJson($key)) {
-                                        $query->where(function ($query) use ($key, $filter) {
-                                            foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                                $query->orWhere("$key->$lang", "like", "%$filter%");
-                                            }
-                                        });
-                                    } elseif (in_array($key, $this->model->getDates(), true)) {
-                                        $time = Carbon::createFromTimestamp(strtotime($filter));
-                                        $query->orWhereDate($key, $time);
-                                    } else {
-                                        $query->where($key, 'like', "%$filter%");
-                                    }
-                                } elseif (in_array($key, $this->model->getDates(), true)) {
-                                    $time = Carbon::createFromTimestamp(strtotime($filter));
-                                    $query->orWhereDate($key, $time);
-                                } else {
-                                    $query->where($key, '=', $filter);
-                                }
-                            });
-                    }
-                });
+                $this->filters($query, $filters);
             })
             ->when($notFilters, function ($query, $filters) {
-                $filters = $filters[array_key_first($filters)];
                 $query->whereNot(function ($query) use ($filters) {
-                    $query->where(function ($query) use ($filters) {
-                        foreach ($filters as $key => $filter) {
-                            $query->when(in_array($key, $this->model->getFillable(), true)
-                                || in_array($key, $this->model->getDates(), true),
-                                function ($query) use ($key, $filter) {
-                                    if ($this->isSearchable($key)) {
-                                        if ($this->isJson($key)) {
-                                            $query->where(function ($query) use ($key, $filter) {
-                                                foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                                    $query->orWhere("$key->$lang", "like", "%$filter%");
-                                                }
-                                            });
-                                        } elseif (in_array($key, $this->model->getDates(), true)) {
-                                            $time = Carbon::createFromTimestamp(strtotime($filter));
-                                            $query->orWhereDate($key, $time);
-                                        } else {
-                                            $query->where($key, 'like', "%$filter%");
-                                        }
-                                    } elseif (in_array($key, $this->model->getDates(), true)) {
-                                        $time = Carbon::createFromTimestamp(strtotime($filter));
-                                        $query->orWhereDate($key, $time);
-                                    } else {
-                                        $query->where($key, '=', $filter);
-                                    }
-                                });
-                        }
-                    });
+                    $this->filters($query, $filters);
                 });
             })
-            ->orderBy($filterBy, $order)
+            ->when($trashed, fn($query) => $query->onlyTrashed())
+            ->filterBy($filterBy, $order, $columns)
             ->with($relations);
     }
 
-    public function collection(
-        Builder    $query,
-        int|string $limit = 30,
-        array      $appends = [],
-    ): Collection
+    private function filters($query, $filters): void
     {
+        $query->where(function ($query) use ($filters) {
+            $filters = $filters[array_key_first($filters)];
+            foreach ($filters as $key => $filter) {
+                $query->when(in_array($key, $this->model->getFillable(), true)
+                             || in_array($key, $this->model->getDates(), true)
+                             || $key === "id",
+                    function ($query) use ($key, $filter) {
+                        if ($this->isSearchable($key)) {
+                            if ($this->isJson($key)) {
+                                $query->where(function ($query) use ($key, $filter) {
+                                    foreach (AvailableLocalesEnum::toArray() as $lang) {
+                                        $query->orWhere("$key->$lang", "like", "%$filter%");
+                                    }
+                                });
+                            } elseif (in_array($key, $this->model->getDates(), true)) {
+                                $time = Carbon::createFromTimestamp(strtotime($filter));
+                                $query->orWhereDate($key, $time);
+                            } else {
+                                $query->where($key, 'like', "%$filter%");
+                            }
+                        } elseif (in_array($key, $this->model->getDates(), true)) {
+                            $time = Carbon::createFromTimestamp(strtotime($filter));
+                            $query->orWhereDate($key, $time);
+                        } elseif ($key === "id") {
+                            $query->whereIn($key, explode(',', $filter));
+                        } else {
+                            $query->where($key, '=', $filter);
+                        }
+                    });
+            }
+        });
+    }
+
+    public function collection(
+        Builder $query,
+        int|string $limit = 30,
+        array $appends = [],
+    ): Collection {
         return $this->availability($query)
             ->when($limit !== 'all', function ($query) use ($limit) {
                 $query->limit($limit);
@@ -162,10 +142,9 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     public function pagination(
         Builder $query,
-        int     $per_page = 30,
-        array   $appends = [],
-    ): LengthAwarePaginator
-    {
+        int $per_page = 30,
+        array $appends = [],
+    ): LengthAwarePaginator {
         return $this->availability($query)
             ->paginate($per_page);
     }
@@ -197,11 +176,10 @@ abstract class CoreRepository implements CoreRepositoryContract
      */
     public function show(
         CoreModel|int $model,
-        array         $columns = ['*'],
-        array         $relations = [],
-        array         $appends = []
-    ): ?CoreModel
-    {
+        array $columns = ['*'],
+        array $relations = [],
+        array $appends = []
+    ): ?CoreModel {
         $id = ($model instanceof CoreModel) ? $model->id : $model;
 
         return $this->findById($id, $columns, $relations, $appends);
@@ -212,9 +190,9 @@ abstract class CoreRepository implements CoreRepositoryContract
      *
      * @param array $payload
      *
-     * @return CoreModel|Model|Pivot|null
+     * @return mixed
      */
-    public function create(array $payload): CoreModel|Model|Pivot|null
+    public function create(array $payload): mixed
     {
         return $this->model->create($payload);
     }
@@ -259,15 +237,14 @@ abstract class CoreRepository implements CoreRepositoryContract
      * @return CoreModel|null
      */
     public function findById(
-        int   $modelId,
+        int $modelId,
         array $columns = ['*'],
         array $relations = [],
         array $appends = [],
-    ): ?CoreModel
-    {
-        return $this->availability($this->model)
+    ): ?CoreModel {
+        return $this->availability($this->model)->select($columns)
             ->with($relations)
-            ->findOrFail($modelId, $columns)
+            ->findOrFail($modelId)
             ->append($appends);
     }
 }
