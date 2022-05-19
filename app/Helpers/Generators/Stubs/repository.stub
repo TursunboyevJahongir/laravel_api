@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Contracts\#ClassNameRepositoryContract;
+use App\Core\Repositories\CoreRepository;
+use App\Models\#ModelName;
+
+class #ClassNameRepository extends CoreRepository implements #ClassNameRepositoryContract
+{
+      public function __construct(#ModelName $model)
+        {
+            parent::__construct($model);
+        }
+}

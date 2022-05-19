@@ -31,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
         }
         $this->app->bind(CoreServiceContract::class, CoreService::class);
         $this->app->bind(CoreRepositoryContract::class, CoreRepository::class);
+        #biding to here
+
         $this->app->bind(UserServiceContract::class, UserService::class);
         $this->app->bind(ResourceServiceContract::class, ResourceService::class);
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);

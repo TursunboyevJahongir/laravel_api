@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Generators;
+namespace App\Helpers\Generators;
 
 class ContractGenerator extends BaseGenerator
 {
-    protected string $path = 'App/Contracts';
-    protected array $stub = [
+    protected $path = 'App/Contracts';
+    protected $stub = [
         'repository-contract',
         'service-contract',
     ];

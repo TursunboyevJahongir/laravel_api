@@ -2,6 +2,6 @@
 
 namespace App\Contracts;
 use App\Core\Contracts\CoreRepositoryContract;
-interface $classnameRepositoryContract extends CoreRepositoryContract
+interface #ClassNameRepositoryContract extends CoreRepositoryContract
 {
 }

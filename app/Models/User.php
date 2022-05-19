@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Models\Authenticatable;
+use App\Core\Traits\EnumCasts;
 use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -42,7 +43,7 @@ class User extends Authenticatable
         'phone'];
 
     protected $casts = [
-        'created_at' => 'datetime:d.m.Y H:i',
+        'created_at' => EnumCasts::class,
         'updated_at' => 'datetime:d.m.Y H:i',
     ];
 

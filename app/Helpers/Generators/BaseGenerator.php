@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Generators;
+namespace App\Helpers\Generators;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class BaseGenerator
 {
-    protected string $path;
-    protected array $stub;
+    protected $path;
+    protected $stub;
 
     public function __construct(protected string $name, protected string|null $model = null)
     {
@@ -19,9 +19,11 @@ class BaseGenerator
     public function getStubVariables()
     {
         return [
-            '$namespace' => str_replace('/', '\\', $this->path),
-            '$classname' => $this->name,
-            '$modelname' => $this->model??$this->name,
+            '#namespace'          => str_replace('/', '\\', $this->path),
+            '#ClassName'          => $this->name,
+            '#ModelName'          => $this->model ?? $this->name,
+            '#modelPlural'        => Str::plural(Str::camel($this->model ?? $this->name)),
+            '#modelSingular' => Str::singular(Str::camel($this->model ?? $this->name)),
         ];
     }
 
@@ -43,11 +45,12 @@ class BaseGenerator
 
     public function getContents($stub)
     {
-        $contents = file_get_contents(app_path('Generators/Stubs/' . $stub . '.stub'));
+        $contents = file_get_contents(app_path('Helpers/Generators/Stubs/' . $stub . '.stub'));
 
         foreach ($this->getStubVariables() as $search => $replace) {
             $contents = str_replace($search, $replace, $contents);
         }
+
         return $contents;
     }
 

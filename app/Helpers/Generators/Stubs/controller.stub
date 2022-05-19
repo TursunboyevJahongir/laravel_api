@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Contracts\#ClassNameServiceContract;
+use App\Http\Requests\Api\#ClassNameCreateRequest;
+use App\Http\Requests\Api\#ClassNameUpdateRequest;
+use App\Http\Requests\GetAllFilteredRecordsRequest;
+use App\Models\#ModelName;
+use Illuminate\Http\JsonResponse;
+use App\Core\Http\Controllers\CoreController as Controller;
+
+class #ClassNameController extends Controller
+{
+
+    public function __construct(#ClassNameServiceContract $service)
+    {
+        parent::__construct($service);
+        $this->authorizeResource(#ModelName::class);
+    }
+
+    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    {
+        $#modelPlural = $this->service->get($request);
+
+        return $this->responseWith(compact('#modelPlural'));
+    }
+
+    public function show(#ModelName $#modelSingular, GetAllFilteredRecordsRequest $request): JsonResponse
+    {
+        $#modelSingular = $this->service->show($#modelSingular, $request);
+
+        return $this->responseWith(compact('#modelSingular'));
+    }
+
+
+    public function create(#ClassNameCreateRequest $request): JsonResponse
+    {
+        try {
+            $#modelSingular = $this->service->create($request);
+
+            return $this->responseWith(compact('#modelSingular'), 201);
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
+    }
+
+    public function update(#ModelName $#modelSingular, #ClassNameUpdateRequest $request): JsonResponse
+    {
+        try {
+            $this->service->update($#modelSingular, $request);
+            return $this->responseWith(code: 204);
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
+    }
+
+    public function delete(#ModelName $#modelSingular): JsonResponse
+    {
+        $this->service->delete($#modelSingular);
+        return $this->responseWith(code: 204);
+    }
+}

@@ -1,0 +1,16 @@
+<?php
+
+
+namespace App\Services;
+
+use App\Contracts\#ClassNameRepositoryContract;
+use App\Contracts\#ClassNameServiceContract;
+use App\Core\Services\CoreService;
+
+class #ClassNameService extends CoreService implements #ClassNameServiceContract
+{
+    public function __construct(#ClassNameRepositoryContract $repository)
+    {
+        parent::__construct($repository);
+    }
+}

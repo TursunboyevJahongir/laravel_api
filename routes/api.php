@@ -17,7 +17,7 @@ Route::prefix('auth')
     });
 
 Route::get('category', [CategoryController::class, 'index']);
-Route::get('category/{id}/products', [CategoryController::class, 'products']);
+Route::get('category-products/{categoryProducts}/products', [CategoryController::class, 'products']);
 Route::get('product/{id}', [ProductController::class, 'show']);
 Route::get('product/{id}/similar', [ProductController::class, 'similar']);
 Route::get('search/{string}', [ProductController::class, 'search']);
@@ -53,4 +53,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
     Route::post('product', [ProductController::class, 'create'])->middleware('can:create product');
     Route::put('product/{id}', [ProductController::class, 'update'])->middleware('can:update product');
     Route::delete('product/{id}', [ProductController::class, 'delete'])->middleware('can:delete product');
+
+    #new Resource to here
 });

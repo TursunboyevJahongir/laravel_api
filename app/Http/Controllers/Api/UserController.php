@@ -9,7 +9,7 @@ use App\Http\Requests\Api\UserUpdateRequest;
 use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\BaseController as Controller;
+use App\Core\Http\Controllers\CoreController as Controller;
 
 class UserController extends Controller
 {

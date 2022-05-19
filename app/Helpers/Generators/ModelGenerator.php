@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Generators;
+namespace App\Helpers\Generators;
 
 class ModelGenerator extends BaseGenerator
 {
