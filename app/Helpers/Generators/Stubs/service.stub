@@ -1,11 +1,11 @@
 <?php
 
 
-namespace App\Services;
+namespace #servicePath;
 
-use App\Contracts\#ClassNameRepositoryContract;
-use App\Contracts\#ClassNameServiceContract;
-use App\Core\Services\CoreService;
+use #contractPath\#ClassNameRepositoryContract;
+use #contractPath\#ClassNameServiceContract;
+use #BaseService as Service;
 
 class #ClassNameService extends CoreService implements #ClassNameServiceContract
 {

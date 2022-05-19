@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Repositories;
+namespace #repasitoryPath;
 
-use App\Contracts\#ClassNameRepositoryContract;
-use App\Core\Repositories\CoreRepository;
-use App\Models\#ModelName;
+use #contractPath\#ClassNameRepositoryContract;
+use #BaseRepository as Repository;
+use #modelPath\#ModelName;
 
-class #ClassNameRepository extends CoreRepository implements #ClassNameRepositoryContract
+class #ClassNameRepository extends Repository implements #ClassNameRepositoryContract
 {
       public function __construct(#ModelName $model)
         {

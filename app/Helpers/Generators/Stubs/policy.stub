@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Policies;
+namespace #policyPath;
 
-use App\Models\#ModelName;
-use App\Models\User;
+use #modelPath\#ModelName;
+use #modelPath\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 

@@ -19,11 +19,30 @@ class BaseGenerator
     public function getStubVariables()
     {
         return [
-            '#namespace'          => str_replace('/', '\\', $this->path),
-            '#ClassName'          => $this->name,
-            '#ModelName'          => $this->model ?? $this->name,
-            '#modelPlural'        => Str::plural(Str::camel($this->model ?? $this->name)),
+            '#namespace'     => str_replace('/', '\\', $this->path),
+            '#ClassName'     => $this->name,
+            '#ModelName'     => $this->model ?? $this->name,
+            '#modelPlural'   => Str::plural(Str::camel($this->model ?? $this->name)),
             '#modelSingular' => Str::singular(Str::camel($this->model ?? $this->name)),
+
+            '#BaseController'         => config('modulegenerator.base_controller'),
+            '#BaseService'            => config('modulegenerator.base_service'),
+            '#BaseRepository'         => config('modulegenerator.base_repository'),
+            '#BaseRepositoryContract' => config('modulegenerator.base_repository_contract'),
+            '#BaseServiceContract'    => config('modulegenerator.base_service_contract'),
+
+            '#webController' => config('modulegenerator.web.controller_path'),
+            '#webRoute'      => config('modulegenerator.web.route'),
+
+            '#apiController' => config('modulegenerator.api.controller_path'),
+            '#apiRoute'      => config('modulegenerator.api.route'),
+
+            '#repasitoryPath' => config('modulegenerator.repository_path'),
+            '#servicePath'    => config('modulegenerator.service_path'),
+            '#policyPath'     => config('modulegenerator.policy_path'),
+            '#modelPath'      => config('modulegenerator.model_path'),
+            '#contractPath'   => config('modulegenerator.contract_path'),
+            '#requestsPath'   => config('modulegenerator.request_path'),
         ];
     }
 

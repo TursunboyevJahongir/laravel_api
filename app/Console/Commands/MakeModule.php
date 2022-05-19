@@ -44,29 +44,34 @@ class MakeModule extends Command
             die();
         }
 
-        if (File::exists("App/Contracts/{$module}RepositoryContract.php")) {
+        if (File::exists(config('modulegenerator.contract_path') . "/{$module}RepositoryContract.php")) {
             $this->error("RepositoryContract already exists");
             die();
         }
-        if (File::exists("App/Repositories/{$module}Repository.php")) {
+        if (File::exists(config('modulegenerator.repository_path') . "/{$module}Repository.php")) {
             $this->error("Repository already exists");
             die();
         }
-        if (File::exists("App/Contracts/{$module}ServiceContract.php")) {
+        if (File::exists(config('modulegenerator.contract_path') . "/{$module}ServiceContract.php")) {
             $this->error("ServiceContract already exists");
             die();
         }
-        if (File::exists("App/Services/{$module}Service.php")) {
+        if (File::exists(config('modulegenerator.service_path') . "/{$module}Service.php")) {
             $this->error("Service already exists");
             die();
         }
 
-        if (File::exists("App/Http/Controllers/Api/{$module}Service.php")) {
-            $this->error("Service already exists");
+        if (config('modulegenerator.web') && File::exists(config('modulegenerator.web.controller_path') . "/{$module}Controller.php")) {
+            $this->error("Controller already exists");
             die();
         }
 
-        if (File::exists("App/Policies/{$module}Policy.php")) {
+        if (config('modulegenerator.api') && File::exists(config('modulegenerator.api.controller_path') . "/{$module}Controller.php")) {
+            $this->error("Controller already exists");
+            die();
+        }
+
+        if (File::exists(config('modulegenerator.policy_path') . "/{$module}Policy.php")) {
             $this->error("Policy already exists");
             die();
         }
@@ -74,7 +79,7 @@ class MakeModule extends Command
         $progressBar = $this->output->createProgressBar(10);
         $progressBar->start();
         $model = $this->option('model') ?? $module;
-        Artisan::call("make:model $model $migrate");
+        Artisan::call("make:model " . str_replace('\\', '/', config('modulegenerator.model_path')) . '/' . $model . "$migrate");
         $progressBar->advance();
         $this->info("\n" . '<fg=green> Model created</>');
 
@@ -94,7 +99,7 @@ class MakeModule extends Command
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Controller created</>');
 
-        Artisan::call("make:request {$module}CreateRequest");
+        Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "CreateRequest");
         Artisan::call("make:request {$module}UpdateRequest");
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Requests created</>');

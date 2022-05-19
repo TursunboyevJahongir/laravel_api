@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace #apiController;
 
-use App\Contracts\#ClassNameServiceContract;
-use App\Http\Requests\Api\#ClassNameCreateRequest;
-use App\Http\Requests\Api\#ClassNameUpdateRequest;
-use App\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Models\#ModelName;
+use #contractPath\#ClassNameServiceContract;
+use #requestsPath\#ClassNameCreateRequest;
+use #requestsPath\#ClassNameUpdateRequest;
+use #contractPath\GetAllFilteredRecordsRequest;
+use #modelPath\#ModelName;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\CoreController as Controller;
+use #BaseController as Controller;
 
 class #ClassNameController extends Controller
 {
-
     public function __construct(#ClassNameServiceContract $service)
     {
         parent::__construct($service);
@@ -32,7 +31,6 @@ class #ClassNameController extends Controller
 
         return $this->responseWith(compact('#modelSingular'));
     }
-
 
     public function create(#ClassNameCreateRequest $request): JsonResponse
     {
