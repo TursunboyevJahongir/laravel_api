@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\TestakssddfController;
+use App\Http\Controllers\Api\TestakssdController;
+use App\Http\Controllers\Api\TestaksController;
+use App\Http\Controllers\Api\TestController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
@@ -55,4 +59,12 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
     Route::delete('product/{id}', [ProductController::class, 'delete'])->middleware('can:delete product');
 
     #new Resource to here
+
+        Route::apiResource('testakssddfs', TestakssddfController::class);
+
+        Route::apiResource('testakssds', TestakssdController::class);
+
+        Route::apiResource('testaks', TestaksController::class);
+
+        Route::apiResource('tests', TestController::class);
 });

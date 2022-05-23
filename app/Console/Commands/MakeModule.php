@@ -6,8 +6,10 @@ use App\Helpers\Generators\ContractGenerator;
 use App\Helpers\Generators\ControllerGenerator;
 use App\Helpers\Generators\EditAppServiceProvider;
 use App\Helpers\Generators\EditRoute;
+use App\Helpers\Generators\Generator;
 use App\Helpers\Generators\PolicyGenerator;
 use App\Helpers\Generators\RepositoryGenerator;
+use App\Helpers\Generators\RequestGenerator;
 use App\Helpers\Generators\ServiceGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -44,34 +46,34 @@ class MakeModule extends Command
             die();
         }
 
-        if (File::exists(config('modulegenerator.contract_path') . "/{$module}RepositoryContract.php")) {
+        if (File::exists(config('customizegenerator.contract_path') . "/{$module}RepositoryContract.php")) {
             $this->error("RepositoryContract already exists");
             die();
         }
-        if (File::exists(config('modulegenerator.repository_path') . "/{$module}Repository.php")) {
+        if (File::exists(config('customizegenerator.repository_path') . "/{$module}Repository.php")) {
             $this->error("Repository already exists");
             die();
         }
-        if (File::exists(config('modulegenerator.contract_path') . "/{$module}ServiceContract.php")) {
+        if (File::exists(config('customizegenerator.contract_path') . "/{$module}ServiceContract.php")) {
             $this->error("ServiceContract already exists");
             die();
         }
-        if (File::exists(config('modulegenerator.service_path') . "/{$module}Service.php")) {
+        if (File::exists(config('customizegenerator.service_path') . "/{$module}Service.php")) {
             $this->error("Service already exists");
             die();
         }
 
-        if (config('modulegenerator.web') && File::exists(config('modulegenerator.web.controller_path') . "/{$module}Controller.php")) {
+        if (config('customizegenerator.web') && File::exists(config('customizegenerator.web.controller_path') . "/{$module}Controller.php")) {
             $this->error("Controller already exists");
             die();
         }
 
-        if (config('modulegenerator.api') && File::exists(config('modulegenerator.api.controller_path') . "/{$module}Controller.php")) {
+        if (config('customizegenerator.api') && File::exists(config('customizegenerator.api.controller_path') . "/{$module}Controller.php")) {
             $this->error("Controller already exists");
             die();
         }
 
-        if (File::exists(config('modulegenerator.policy_path') . "/{$module}Policy.php")) {
+        if (File::exists(config('customizegenerator.policy_path') . "/{$module}Policy.php")) {
             $this->error("Policy already exists");
             die();
         }
@@ -79,28 +81,30 @@ class MakeModule extends Command
         $progressBar = $this->output->createProgressBar(10);
         $progressBar->start();
         $model = $this->option('model') ?? $module;
-        Artisan::call("make:model " . str_replace('\\', '/', config('modulegenerator.model_path')) . '/' . $model . "$migrate");
+        Artisan::call("make:model " . str_replace('\\', '/', config('customizegenerator.model_path')) . '/' . $model . "$migrate");
         $progressBar->advance();
         $this->info("\n" . '<fg=green> Model created</>');
 
-        new ContractGenerator($module, $model);
+        new Generator($module, config('customizegenerator.contract_path'),
+                      ['repository-contract', 'service-contract',], $model);
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Contract created</>');
 
-        new RepositoryGenerator($module, $model);
+        new Generator($module, config('customizegenerator.repository_path'), 'repository', $model);
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Repository created</>');
 
-        new ServiceGenerator($module, $model);
+        new Generator($module, config('customizegenerator.service_path'), 'service', $model);
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Service created</>');
 
-        new ControllerGenerator($module, $model);
+        new Generator($module, config('customizegenerator.api.controller_path'), 'controller', $model);
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Controller created</>');
 
-        Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "CreateRequest");
-        Artisan::call("make:request {$module}UpdateRequest");
+        //new Generator($module, config('customizegenerator.request_path'), 'request', $model);
+        Artisan::call("make:request " . str_replace('\\', '/', config('customizegenerator.request_path')) . '/' . $module . "CreateRequest");
+        Artisan::call("make:request " . str_replace('\\', '/', config('customizegenerator.request_path')) . '/' . $module . "UpdateRequest");
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Requests created</>');
 
@@ -108,7 +112,7 @@ class MakeModule extends Command
         $progressBar->advance();
         $this->info("\n" . '<fg=green>AppServiceProvider edited</>');
 
-        new PolicyGenerator($module, $model);
+        new Generator($module, config('customizegenerator.policy_path'), 'policy', $model);
         $progressBar->advance();
         $this->info("\n" . '<fg=green>Policy created</>');
 

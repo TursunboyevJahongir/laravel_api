@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Generators;
 
-class ContractGenerator extends BaseGenerator
+class ContractGenerator extends Generator
 {
     protected $path = 'App/Contracts';
     protected $stub = [

@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Generators;
 
-class RepositoryGenerator extends BaseGenerator
+class RepositoryGenerator extends Generator
 {
     protected $path = 'App/Repositories';
     protected $stub = [
