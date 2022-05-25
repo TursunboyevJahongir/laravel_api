@@ -2,22 +2,6 @@
 
 namespace App\Providers;
 
-use App\Contracts\TestakssddfServiceContract;
-use App\Services\TestakssddfService;
-use App\Contracts\TestakssddfRepositoryContract;
-use App\Repositories\TestakssddfRepository;
-use App\Contracts\TestakssdServiceContract;
-use App\Services\TestakssdService;
-use App\Contracts\TestakssdRepositoryContract;
-use App\Repositories\TestakssdRepository;
-use App\Contracts\TestaksServiceContract;
-use App\Services\TestaksService;
-use App\Contracts\TestaksRepositoryContract;
-use App\Repositories\TestaksRepository;
-use App\Contracts\TestServiceContract;
-use App\Services\TestService;
-use App\Contracts\TestRepositoryContract;
-use App\Repositories\TestRepository;
 use App\Contracts\ResourceRepositoryContract;
 use App\Contracts\ResourceServiceContract;
 use App\Contracts\UserRepositoryContract;
@@ -48,18 +32,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CoreServiceContract::class, CoreService::class);
         $this->app->bind(CoreRepositoryContract::class, CoreRepository::class);
         #biding to here
-
-$this->app->bind(TestakssddfServiceContract::class, TestakssddfService::class);
-$this->app->bind(TestakssddfRepositoryContract::class, TestakssddfRepository::class);
-
-$this->app->bind(TestakssdServiceContract::class, TestakssdService::class);
-$this->app->bind(TestakssdRepositoryContract::class, TestakssdRepository::class);
-
-$this->app->bind(TestaksServiceContract::class, TestaksService::class);
-$this->app->bind(TestaksRepositoryContract::class, TestaksRepository::class);
-
-$this->app->bind(TestServiceContract::class, TestService::class);
-$this->app->bind(TestRepositoryContract::class, TestRepository::class);
 
         $this->app->bind(UserServiceContract::class, UserService::class);
         $this->app->bind(ResourceServiceContract::class, ResourceService::class);

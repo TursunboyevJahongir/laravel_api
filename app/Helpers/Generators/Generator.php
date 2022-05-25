@@ -65,9 +65,8 @@ class Generator
         return $this->name . Str::studly($stub) . '.php';
     }
 
-    public function getContents(
-        $stub
-    ) {
+    public function getContents($stub)
+    {
         $contents = file_get_contents(app_path('Helpers/Generators/Stubs/' . $stub . '.stub'));
 
         foreach ($this->getStubVariables() as $search => $replace) {
