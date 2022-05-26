@@ -59,9 +59,7 @@ class Generator
         }
     }
 
-    public function getFilename(
-        $stub
-    ) {
+    public function getFilename($stub) {
         return $this->name . Str::studly($stub) . '.php';
     }
 
