@@ -16,6 +16,72 @@
 > <a href="public/kesh_app.pdf" download>documentation Pdf</a><br>
 
 [//]: # (> <a href="public/kesh_app.postman_collection.json" download>Postman Collection</a>)
+## Possible params for `get` method
+
+###### params are not required
+
+*   `list_type`\->string\[pagination,collection\] default pagination
+*   `columns`\->array default all columns
+*   `relations`\->array default null
+*   `limit`\->integer default 30
+    *   **working with colection**
+*   `per_page`\->integer default 30
+    *   **working with pagination**
+*   `status`\->boolean\[or 0,1\] default all
+    *   or `filters[][is_active]=0` \[0,1\]
+*   `start`\->integer default 1
+*   `filterBy`\->string default id
+*   `search`\->string default null
+*   `filters`\->array default null
+    *   array accessive key=column value=searching text
+        *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
+*   `not_filters`\->**not_filters** reverse **filters**
+*   `only_deleted`\->boolean\[0,1\] default 0(*false*)
+*   `order`\-> string\[asc,desc\] default desc
+
+
+* * *
+
+## `Headers`
+
+*   `Accept-Language`:ru \[ru,uz,en\] default ru
+*   `Accept`:application/json `required`
+
+
+* * *
+
+## `Response`
+
+```
+{
+    "code": 200,
+    "message": "OK",
+    "data": {
+         //data
+    }
+}
+
+```
+
+#### ~~Error~~ `Response`
+
+```
+{
+    "code": 422,
+    "message": "The given data was invalid.",
+    "data": {
+        "errors": {
+             //Errors
+        }
+     }
+}
+
+```
+
+*   `code`\->**int** \[200,201,204,401,403,404,422,500\]
+*   `message`\->**string** default ''
+    *   *the language of the message will be changed by the header Accept-Language*
+*   `data`\->**array|Collection** default \[\]
 
 <details><summary><b style="color:#355C7D;font-size:20px">User</b></summary>
 
