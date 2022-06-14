@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\LoggerController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
@@ -48,11 +49,20 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
     Route::delete('category/{id}', [CategoryController::class, 'delete'])->middleware('can:delete category');
 
     Route::get('products', [ProductController::class, 'products'])->middleware('can:read product');
-    Route::get('category/{id}/products', [CategoryController::class, 'AdminCategoryProducts'])->middleware('can:read product');
+    Route::get('category/{id}/products', [CategoryController::class, 'AdminCategoryProducts'])
+        ->middleware('can:read product');
     Route::get('product/{id}', [ProductController::class, 'AdminShow'])->middleware('can:read product');
     Route::post('product', [ProductController::class, 'create'])->middleware('can:create product');
     Route::put('product/{id}', [ProductController::class, 'update'])->middleware('can:update product');
     Route::delete('product/{id}', [ProductController::class, 'delete'])->middleware('can:delete product');
 
     #new Resource to here
+
+    Route::prefix('logger')
+        ->middleware(['auth:api', 'isActive', 'permission:system|logger-read'])
+        ->controller(LoggerController::class)
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::get('/{logger}', 'show');
+        });
 });

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\LoggerEvent;
+use App\Listeners\LoggerListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\AttachImages;
 use App\Events\DestroyImages;
@@ -13,15 +15,18 @@ use App\Listeners\UpdateImagesListener;
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
+        LoggerEvent::class   => [
+            LoggerListener::class,
+        ],
         UpdateImage::class   => [
-            UpdateImagesListener::class
+            UpdateImagesListener::class,
         ],
         AttachImages::class  => [
-            AttachImagesListener::class
+            AttachImagesListener::class,
         ],
         DestroyImages::class => [
-            DestroyImagesListener::class
-        ]
+            DestroyImagesListener::class,
+        ],
     ];
 
     /**

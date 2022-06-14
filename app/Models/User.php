@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Core\Models\Authenticatable;
-use App\Core\Traits\EnumCasts;
 use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -30,7 +29,7 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     protected $dates = [
@@ -38,26 +37,26 @@ class User extends Authenticatable
         'updated_at',
         'deleted_at'];
 
-    protected $searchable = ['first_name',
-        'last_name',
-        'phone'];
+    protected array $searchable = ['first_name',
+                                   'last_name',
+                                   'phone'];
 
     protected $casts = [
-        'created_at' => EnumCasts::class,
+        'created_at' => 'datetime:d.m.Y H:i',
         'updated_at' => 'datetime:d.m.Y H:i',
     ];
 
     public const USER_AVATAR_RESOURCES = 'USER_AVATAR_RESOURCES';
-    public const PATH = 'avatars';
+    public const PATH                  = 'avatars';
 
     public function avatar(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource')
             ->withDefault([
-                'path_original' => 'images/default/avatar_original.png',
-                'path_1024' => 'images/default/avatar_1024.png',
-                'path_512' => 'images/default/avatar_512.png'
-            ]);
+                              'path_original' => 'images/default/avatar_original.png',
+                              'path_1024'     => 'images/default/avatar_1024.png',
+                              'path_512'      => 'images/default/avatar_512.png',
+                          ]);
     }
 
     public function setPasswordAttribute($password)
