@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 
 abstract class CoreModel extends Model
 {
-    protected $json = [];
+    protected array $json = [];
 
-    protected $searchable = [];
+    protected array $searchable = [];
 
     /**
      * Get the json attributes for the model.

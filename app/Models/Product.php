@@ -41,11 +41,11 @@ class Product extends CoreModel
         'updated_at',
         'deleted_at'];
 
-    protected $json = ['name', 'description'];
+    protected array $json = ['name', 'description'];
 
-    protected $searchable = ['name',
-        'description',
-        'barcode'];
+    protected array $searchable = ['name',
+                                   'description',
+                                   'barcode'];
 
     public function mainImage(): MorphOne
     {

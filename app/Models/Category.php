@@ -31,9 +31,9 @@ class Category extends CoreModel
         'description' => TranslatableJson::class,
     ];
 
-    protected $searchable = ['name', 'description'];
+    protected array $searchable = ['name', 'description'];
 
-    protected $json = ['name', 'description'];
+    protected array $json = ['name', 'description'];
 
     public function ico(): MorphOne
     {
