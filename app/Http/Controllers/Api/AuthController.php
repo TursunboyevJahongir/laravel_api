@@ -25,12 +25,14 @@ class AuthController extends Controller
 
     /**
      * @param LoginRequest $request
+     *
      * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
         try {
             $token = $this->service->login($request);
+
             return $this->responseWith(compact('token'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
@@ -41,6 +43,7 @@ class AuthController extends Controller
     {
         try {
             $token = $this->service->refresh($request);
+
             return $this->responseWith(compact('token'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
