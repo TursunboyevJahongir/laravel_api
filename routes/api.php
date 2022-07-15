@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\LoggerController;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -16,12 +15,6 @@ Route::prefix('auth')
         Route::post('refresh', 'refresh');
         Route::post('logout', 'logout');
     });
-
-Route::get('category', [CategoryController::class, 'index']);
-Route::get('category-products/{categoryProducts}/products', [CategoryController::class, 'products']);
-Route::get('product/{id}', [ProductController::class, 'show']);
-Route::get('product/{id}/similar', [ProductController::class, 'similar']);
-Route::get('search/{string}', [ProductController::class, 'search']);
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
     Route::prefix('users')
@@ -52,8 +45,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
     Route::post('role', [RoleController::class, 'create'])->middleware('can:create role');
     Route::patch('role/{name}', [RoleController::class, 'update'])->middleware('can:update role');
     Route::delete('role/{name}', [RoleController::class, 'delete'])->middleware('can:delete role');
-
-    Route::get('products', [ProductController::class, 'products'])->middleware('can:read product');
 
     #new Resource to here
 
