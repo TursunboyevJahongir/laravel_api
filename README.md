@@ -29,14 +29,15 @@
 *   `status`\->boolean\[or 0,1\] default all
     *   or `filters[][is_active]=0` \[0,1\]
 *   `start`\->integer default 1
-*   `filterBy`\->string default id
+*   `order`\->string default id
+*   `sort`\-> string\[asc,desc\] default desc
 *   `search`\->string default null
 *   `filters`\->array default null
     *   array accessive key=column value=searching text
-        *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
+    *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
 *   `not_filters`\->**not_filters** reverse **filters**
+*   `or_filters`->**or_filters** from request, if any of them are equal it will work
 *   `only_deleted`\->boolean\[0,1\] default 0(*false*)
-*   `order`\-> string\[asc,desc\] default desc
 
 
 * * *
@@ -87,9 +88,9 @@
 ```
 - Profile RU
 - User CRUD --- set role
-- Role CRUD
 - Category CRUD
-- Product CRUD
+- Role CRUD //todo
+- Product CRUD //todo
 ```
 
 </details>

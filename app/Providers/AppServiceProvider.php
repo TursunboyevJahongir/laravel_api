@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\CategoryRepositoryContract;
+use App\Contracts\CategoryServiceContract;
 use App\Contracts\LoggerRepositoryContract;
 use App\Contracts\LoggerServiceContract;
 use App\Contracts\ResourceRepositoryContract;
@@ -12,9 +14,11 @@ use App\Core\Contracts\CoreRepositoryContract;
 use App\Core\Contracts\CoreServiceContract;
 use App\Core\Repositories\CoreRepository;
 use App\Core\Services\CoreService;
+use App\Repositories\CategoryRepository;
 use App\Repositories\LoggerRepository;
 use App\Repositories\ResourceRepository;
 use App\Repositories\UserRepository;
+use App\Services\CategoryService;
 use App\Services\LoggerService;
 use App\Services\ResourceService;
 use App\Services\UserService;
@@ -41,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ResourceServiceContract::class, ResourceService::class);
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);
         $this->app->bind(ResourceRepositoryContract::class, ResourceRepository::class);
+        $this->app->bind(CategoryServiceContract::class, CategoryService::class);
+        $this->app->bind(CategoryRepositoryContract::class, CategoryRepository::class);
         $this->app->bind(LoggerServiceContract::class, LoggerService::class);
         $this->app->bind(LoggerRepositoryContract::class, LoggerRepository::class);
     }

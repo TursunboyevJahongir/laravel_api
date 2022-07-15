@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Models\Authenticatable;
+use App\Helpers\DateCasts;
 use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'last_name',
         'phone',
         'is_active',
+        'birthday',
         'phone_confirmed',
         'phone_confirmed_at',
         'author_id',
@@ -32,22 +34,13 @@ class User extends Authenticatable
         'password',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at'];
-
     protected array $searchable = ['first_name',
                                    'last_name',
                                    'phone'];
 
     protected $casts = [
-        'created_at' => 'datetime:d.m.Y H:i',
-        'updated_at' => 'datetime:d.m.Y H:i',
+        'birthday' => DateCasts::class . ':d-m-Y',
     ];
-
-    public const USER_AVATAR_RESOURCES = 'USER_AVATAR_RESOURCES';
-    public const PATH                  = 'avatars';
 
     public function avatar(): MorphOne
     {

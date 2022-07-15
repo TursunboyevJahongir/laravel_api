@@ -7,9 +7,20 @@ use Illuminate\Support\Str;
 
 abstract class CoreModel extends Model
 {
-    protected array $json = [];
+    protected array        $json       = [];
+    protected array        $searchable = [];
+    protected static array $modelCasts = ['id'         => 'int',
+                                          'is_active'  => 'bool',
+                                          'position'   => 'int',
+                                          'created_at' => DateCasts::class,
+                                          'updated_at' => DateCasts::class,
+                                          'deleted_at' => DateCasts::class];
 
-    protected array $searchable = [];
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->casts = self::$modelCasts + $this->casts;
+    }
 
     /**
      * Get the json attributes for the model.

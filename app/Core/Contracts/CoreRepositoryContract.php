@@ -2,10 +2,10 @@
 
 namespace App\Core\Contracts;
 
+use App\Core\Models\CoreModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use App\Core\Models\CoreModel;
 
 interface CoreRepositoryContract
 {
@@ -13,12 +13,13 @@ interface CoreRepositoryContract
      * @param array|string[] $columns
      * @param array $relations
      * @param int|null $status
-     * @param int $start
      * @param string|null $search
      * @param array|null $filters
      * @param array|null $notFilters
+     * @param array|null $orFilters
      * @param string $filterBy
      * @param string $order
+     * @param bool $trashed
      *
      * @return Builder
      */
@@ -26,12 +27,13 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         int|null $status = null,
-        int $start = 1,
         string $search = null,
         array|null $filters = null,
         array|null $notFilters = null,
+        array|null $orFilters = null,
         string $filterBy = 'id',
-        string $order = 'desc'
+        string $order = 'desc',
+        bool $trashed = false
     ): Builder;
 
     public function collection(
@@ -45,19 +47,6 @@ interface CoreRepositoryContract
         int $per_page = 30,
         array $appends = []
     ): LengthAwarePaginator;
-
-    /**
-     * фильтр доступности
-     * availability filter
-     * for example check system
-     *
-     * @param Builder|CoreModel $query
-     *
-     * @return Builder|CoreModel
-     */
-    public function availability(
-        Builder|CoreModel $query,
-    ): Builder|CoreModel;
 
     /**
      * Show entity
@@ -120,5 +109,4 @@ interface CoreRepositoryContract
      * @return bool
      */
     public function delete(CoreModel|int $model): bool;
-
 }

@@ -15,19 +15,18 @@ class Category extends CoreModel
 {
     use HasFactory, SoftDeletes, Author;
 
-    public const CATEGORY_RESOURCES = 'CATEGORY_RESOURCES';
-
     protected $fillable = [
         'name',
         'description',
         'author_id',
         'parent_id',
         'position',
-        'is_active'
-    ];
+        'is_active'];
 
     protected $casts = [
-        'name' => TranslatableJson::class,
+        'author_id'   => 'int',
+        'parent_id'   => 'int',
+        'name'        => TranslatableJson::class,
         'description' => TranslatableJson::class,
     ];
 
@@ -47,12 +46,12 @@ class Category extends CoreModel
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class,'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class,'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     public function scopeActive($query)

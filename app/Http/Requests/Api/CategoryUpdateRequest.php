@@ -3,11 +3,33 @@
 namespace App\Http\Requests\Api;
 
 use App\Rules\PhoneRule;
+use App\Rules\UniqueJsonRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryUpdateRequest extends FormRequest
 {
+    public function rules()
+    {
+        return ['name'                                     => 'filled|array',
+                'name.' . config('app.main_locale')        => ['required_with:name',
+                                                               'string',
+                                                               new UniqueJsonRule('categories',
+                                                                                  'name', $this->route()
+                                                                                      ->parameter('category'))],
+                'name.*'                                   => ['nullable',
+                                                               'string',
+                                                               new UniqueJsonRule('categories',
+                                                                                  'name', $this->route()
+                                                                                      ->parameter('category'))],
+                'description'                              => 'nullable|array',
+                'description.' . config('app.main_locale') => 'required_with:description|string',
+                'description.*'                            => 'nullable|string',
+                'position'                                 => 'nullable|numeric',
+                'ico'                                      => 'nullable|image',
+        ];
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -15,22 +37,6 @@ class CategoryUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::user()->can('update category');
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'id' => 'required|exists:categories,id',
-            'title' => 'nullable|string|unique:categories,title,' . $this->id . ',id',
-            'position' => 'nullable|numeric',
-            'ico' => 'nullable|image',
-            'is_active' => 'nullable|boolean',
-        ];
+        return true;
     }
 }

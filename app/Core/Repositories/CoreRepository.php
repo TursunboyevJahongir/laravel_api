@@ -2,15 +2,15 @@
 
 namespace App\Core\Repositories;
 
-use App\Enums\AvailableLocalesEnum;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use App\Core\Contracts\CoreRepositoryContract;
 use App\Core\Models\CoreModel;
+use App\Enums\AvailableLocalesEnum;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\Pivot};
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
@@ -24,6 +24,13 @@ abstract class CoreRepository implements CoreRepositoryContract
         $this->model = $model;
     }
 
+    /**
+     * for any checks
+     *
+     * @param Builder|CoreModel $query
+     *
+     * @return CoreModel|Builder
+     */
     public function availability(
         Builder|CoreModel $query
     ): CoreModel|Builder {
@@ -34,73 +41,112 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         int|null $status = null,
-        int $start = 1,
         string $search = null,
         array|null $filters = null,
         array|null $notFilters = null,
-        string $filterBy = 'id',
-        string $order = 'desc',
+        array|null $orFilters = null,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         bool $trashed = false
     ): Builder {
         return $this->model
-            //->where('id', '>=', $start)
-            ->when(!is_null($status), function ($query) use ($status) {
+            ->when($status, function ($query) use ($status) {
                 $query->where('is_active', $status);
             })
             ->select($columns)
             ->when($search, function ($query) use ($search) {
-                $search = rtrim($search, " \t.");
-                $query->where(function ($query) use ($search) {
-                    foreach ($this->model->getSearchable() as $field) {
-                        if (is_array($field)) {
-                            $relation = $field[0];
-                            foreach ($field[1] as $key => $item) {
-                                if ($key === "json") {
-                                    foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                        $query->orWhereRelation($relation, "$item->$lang", "like", "%$search%");
-                                    }
-                                } elseif ($key === "date") {
-                                    $time = Carbon::createFromTimestamp(strtotime($search));
-                                    $query->orWhereDate($key, $time);
-                                } else {
-                                    $query->orWhereRelation($relation, $item, 'like', "%$search%");
-                                }
-                            }
-                        } elseif ($this->isJson($field)) {
-                            foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                $query->orWhere("$field->$lang", "like", "%$search%");
-                            }
-                        } elseif (in_array($field, $this->model->getDates(), true)) {
-                            $time = Carbon::createFromTimestamp(strtotime($search));
-                            $query->orWhereDate($field, $time);
-                        } else {
-                            $query->orWhere($field, "like", "%$search%");
-                        }
-                    }
-                });
+                $this->search($query, $search);
             })
+            /**
+             * to filter filters[0][status]=activated&filters[0][name]="Jahongir"
+             */
             ->when($filters, function ($query, $filters) {
                 $this->filters($query, $filters);
             })
+            /**
+             * not equal
+             * not filter not_filters[0][status]=activated
+             */
             ->when($notFilters, function ($query, $filters) {
                 $query->whereNot(function ($query) use ($filters) {
                     $this->filters($query, $filters);
                 });
             })
+            /**
+             * or filter
+             * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
+             */
+            ->when($orFilters, function ($query, $filters) {
+                $this->filters($query, $filters, 'or');
+            })
+            ->when(true, function ($query) use ($orderBy, $sort) {
+                return $this->orderBy($query, $orderBy, $sort);
+            })
             ->when($trashed, fn($query) => $query->onlyTrashed())
-            ->filterBy($filterBy, $order, $columns)
             ->with($relations);
     }
 
-    private function filters($query, $filters): void
+    protected function search(Builder $query, $search): void
     {
-        $query->where(function ($query) use ($filters) {
+        $search = rtrim($search, " \t.");
+        $query->where(function (Builder $query) use ($search) {
+            foreach ($this->model->getSearchable() as $field) {
+                if (is_array($field)) {
+                    $relation = $field[0];
+                    foreach ($field[1] as $key => $item) {
+                        if ($key === "json") {
+                            foreach (AvailableLocalesEnum::toArray() as $lang) {
+                                $query->orWhereRelation($relation, "$item->$lang", "like", "%$search%");
+                            }
+                        } elseif ($key === "date") {
+                            $time = Carbon::createFromTimestamp(strtotime($search));
+                            $query->orWhereDate($key, $time);
+                        } else {
+                            $query->orWhereRelation($relation, $item, 'like', "%$search%");
+                        }
+                    }
+                } elseif ($this->isJson($field)) {
+                    foreach (AvailableLocalesEnum::toArray() as $lang) {
+                        $query->orWhere("$field->$lang", "like", "%$search%");
+                    }
+                } elseif ($this->inDates($field)) {
+                    $time = Carbon::createFromTimestamp(strtotime($search));
+                    $query->orWhereDate($field, $time);
+                } else {
+                    $query->orWhere($field, "like", "%$search%");
+                }
+            }
+        });
+    }
+
+    private function orderBy(
+        Builder $query,
+        string $orderBy = "id",
+        string $sort = 'DESC'
+    ) {
+        if (str_contains($orderBy, ',')) {
+            $fields = explode(',', $orderBy);
+            foreach ($fields as $field) {
+                $field = $this->isJson($field) ?
+                    $field . "->" . app()->getLocale() : $field;
+                $query->orderBy($field, $sort);
+            }
+        } else {
+            $orderBy = $this->isJson($orderBy) ?
+                $orderBy . "->" . app()->getLocale() : $orderBy;
+            $query->orderBy($orderBy, $sort);
+        }
+    }
+
+    private function filters($query, $filters, string $boolean = 'and'): void
+    {
+        $query->where(function ($query) use ($filters, $boolean) {
             $filters = $filters[array_key_first($filters)];
             foreach ($filters as $key => $filter) {
                 $query->when(in_array($key, $this->model->getFillable(), true)
                              || in_array($key, $this->model->getDates(), true)
                              || $key === "id",
-                    function ($query) use ($key, $filter) {
+                    function (Builder $query) use ($key, $filter, $boolean) {
                         if ($this->isSearchable($key)) {
                             if ($this->isJson($key)) {
                                 $query->where(function ($query) use ($key, $filter) {
@@ -108,23 +154,54 @@ abstract class CoreRepository implements CoreRepositoryContract
                                         $query->orWhere("$key->$lang", "like", "%$filter%");
                                     }
                                 });
-                            } elseif (in_array($key, $this->model->getDates(), true)) {
+                            } elseif ($this->inDates($key)) {
                                 $time = Carbon::createFromTimestamp(strtotime($filter));
                                 $query->orWhereDate($key, $time);
                             } else {
-                                $query->where($key, 'like', "%$filter%");
+                                $query->where($key, 'like', "%$filter%", boolean: $boolean);
                             }
                         } elseif (in_array($key, $this->model->getDates(), true)) {
                             $time = Carbon::createFromTimestamp(strtotime($filter));
                             $query->orWhereDate($key, $time);
-                        } elseif ($key === "id") {
-                            $query->whereIn($key, explode(',', $filter));
+                        } elseif ($key === "id" || is_array($filter)) {
+                            $filter = is_array($filter) ? $filter : explode(',', $filter);
+                            $query->whereIn($key, $filter, boolean: $boolean);
                         } else {
-                            $query->where($key, '=', $filter);
+                            $query->where($key, '=', $filter, boolean: $boolean);
                         }
+                    })
+                    ->when(str_contains($key, '.'), function (Builder $query) use ($key, $filter, $boolean) {
+                        $relation = explode('.', $key);
+                        $column   = array_pop($relation);
+                        $this->whereInRelation($query, implode('.', $relation), $column, Arr::wrap($filter), $boolean);
                     });
             }
         });
+    }
+
+    public function whereInRelation(Builder $query, $relation, $column, array $value, $boolean = 'and')
+    {
+        return $query->whereHas($relation, function (Builder $query) use ($column, $value, $boolean) {
+            $query->whereIn($column, $value, boolean: $boolean);
+        });
+    }
+
+    protected function inDates(string $field)
+    {
+        $dates = Cache::remember($this->model->getTable(), 60 * 60 * 24, function () {
+            $keys = collect($this->model->getCasts())
+                ->filter(function ($value, $key) {
+                    if (str_contains($value, 'DateCasts')
+                        || str_contains($value, 'datetime')
+                        || str_contains($value, 'date')) {
+                        return $key;
+                    }
+                });
+
+            return $keys->keys();
+        })->toArray();
+
+        return in_array($field, $dates);
     }
 
     public function collection(
