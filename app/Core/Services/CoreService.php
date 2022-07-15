@@ -2,13 +2,12 @@
 
 namespace App\Core\Services;
 
-use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
 use App\Core\Models\CoreModel;
-use Throwable;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -24,24 +23,30 @@ abstract class CoreService implements CoreServiceContract
      */
     public function get(FormRequest $request, ...$appends): Collection|LengthAwarePaginator
     {
-        $query = $this->repository->mainQuery($request->get('columns', ['*']),
-                                              $request->get('relations', []),
-                                              $request->get('status'),
-                                              $request->get('start', 1),
-                                              $request->get('search'),
-                                              $request->get('filters'),
-                                              $request->get('not_filters'),
-                                              $request->get('filterBy', 'id'),
-                                              $request->get('order', 'desc'));
+        return $this->repository->mainQuery($request->get('columns', ['*']),
+                                            $request->get('relations', []),
+                                            $request->get('status'),
+                                            $request->get('search'),
+                                            $request->get('filters'),
+                                            $request->get('not_filters'),
+                                            $request->get('or_filters'),
+                                            $request->get('filterBy', 'id'),
+                                            $request->get('order', 'desc'),
+                                            $request->get('only_deleted', false))
+            ->where(function ($query) use ($appends) {
+                $this->appends($query, $appends);
+            })
+            ->when($request->get('list_type') == 'collection',
+                fn($query) => $this->repository->collection($query,
+                                                            $request->get('limit', config('app.page_size')),
+                                                            $request->get('appends', [])),
+                fn($query) => $this->repository->pagination($query,
+                                                            $request->get('per_page', config('app.pagination_size'))));
+    }
 
-        return match ($request->get('list_type')) {
-            'collection' => $this->repository->collection($query,
-                                                          $request->get('limit', config('app.page_size')),
-                                                          $request->get('appends', [])),
-            default => $this->repository->pagination($query,
-                                                     $request->get('per_page', config('app.pagination_size')),
-                                                     $request->get('appends', [])),
-        };
+    public function appends(Builder $query, ...$appends)
+    {
+        $query;
     }
 
     /**
