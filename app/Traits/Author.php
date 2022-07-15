@@ -7,10 +7,6 @@ use App\Models\User;
 
 trait Author
 {
-    /**
-     * adding author_id
-     * @return void
-     */
     protected static function bootAuthor(): void
     {
         static::creating(function ($query) {
@@ -18,7 +14,18 @@ trait Author
         });
     }
 
-    public function creator(): BelongsTo
+    public function initializeAuthor(): void
+    {
+        $this->fillable[]         = 'author_id';
+        $this->casts['author_id'] = 'int';
+    }
+
+    public function isMine($id): bool
+    {
+        return $id === auth()->id();
+    }
+
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
     }

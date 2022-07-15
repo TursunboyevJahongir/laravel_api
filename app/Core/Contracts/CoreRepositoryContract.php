@@ -51,7 +51,7 @@ interface CoreRepositoryContract
     /**
      * Show entity
      *
-     * @param CoreModel $model
+     * @param CoreModel|int $model
      * @param string[] $columns
      * @param array $relations
      * @param array $appends
@@ -59,7 +59,7 @@ interface CoreRepositoryContract
      * @return CoreModel|null
      */
     public function show(
-        CoreModel $model,
+        CoreModel|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
@@ -94,19 +94,19 @@ interface CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel $model
+     * @param CoreModel|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel $model, array $payload): bool;
+    public function update(CoreModel|int $model, array $payload): bool;
 
     /**
      * Delete element
      *
-     * @param CoreModel $model
+     * @param CoreModel|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel $model): bool;
+    public function delete(CoreModel|int $model): bool;
 }

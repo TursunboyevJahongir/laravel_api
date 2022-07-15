@@ -30,8 +30,8 @@ abstract class CoreService implements CoreServiceContract
                                             $request->get('filters'),
                                             $request->get('not_filters'),
                                             $request->get('or_filters'),
-                                            $request->get('filterBy', 'id'),
-                                            $request->get('order', 'desc'),
+                                            $request->get('order', 'id'),
+                                            $request->get('sort', 'desc'),
                                             $request->get('only_deleted', false))
             ->where(function ($query) use ($appends) {
                 $this->appends($query, $appends);
@@ -46,7 +46,6 @@ abstract class CoreService implements CoreServiceContract
 
     public function appends(Builder $query, ...$appends)
     {
-        $query;
     }
 
     /**
@@ -81,12 +80,12 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Update entity
      *
-     * @param CoreModel $model
+     * @param CoreModel|int $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel $model, FormRequest $request): bool
+    public function update(CoreModel|int $model, FormRequest $request): bool
     {
         return $this->repository->update($model, $request->validated());
     }
@@ -94,11 +93,11 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Delete entity
      *
-     * @param CoreModel $model
+     * @param CoreModel|int $model
      *
      * @return mixed
      */
-    public function delete(CoreModel $model): mixed
+    public function delete(CoreModel|int $model): mixed
     {
         return $this->repository->delete($model);
     }

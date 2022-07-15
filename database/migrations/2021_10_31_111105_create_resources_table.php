@@ -4,8 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResourcesTable extends Migration
-{
+return new class extends Migration {
+    private string $tableName = 'resources';
+
     /**
      * Run the migrations.
      *
@@ -13,10 +14,10 @@ class CreateResourcesTable extends Migration
      */
     public function up()
     {
-        Schema::create('resources', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('additional_identifier');
-            $table->string('type');
+            $table->string('additional_identifier')->nullable();
+            $table->string('type')->nullable();
             $table->string('path_original');
             $table->string('path_1024')->nullable();
             $table->string('path_512')->nullable();
@@ -32,6 +33,6 @@ class CreateResourcesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('resources');
+        Schema::dropIfExists($this->tableName);
     }
-}
+};

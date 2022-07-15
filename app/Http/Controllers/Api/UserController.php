@@ -22,6 +22,7 @@ class UserController extends Controller
     public function me(GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $user = $this->service->show(auth()->user(), $request);
+
         return $this->responseWith(compact('user'));
     }
 
@@ -29,6 +30,7 @@ class UserController extends Controller
     {
         try {
             $this->service->update(auth()->user(), $request);
+
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
@@ -42,7 +44,7 @@ class UserController extends Controller
         return $this->responseWith(['users' => $users]);
     }
 
-    public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show($user, GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $user = $this->service->show($user, $request);
 
@@ -65,6 +67,7 @@ class UserController extends Controller
     {
         try {
             $this->service->update($user, $request);
+
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
@@ -74,6 +77,7 @@ class UserController extends Controller
     public function delete(User $user): JsonResponse
     {
         $this->service->delete($user);
+
         return $this->responseWith(code: 204);
     }
 }

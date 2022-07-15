@@ -45,8 +45,8 @@ abstract class CoreRepository implements CoreRepositoryContract
         array|null $filters = null,
         array|null $notFilters = null,
         array|null $orFilters = null,
-        string $filterBy = 'id',
-        string $order = 'desc',
+        string $orderBy = 'id',
+        string $sort = 'desc',
         bool $trashed = false
     ): Builder {
         return $this->model
@@ -79,8 +79,8 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->when($orFilters, function ($query, $filters) {
                 $this->filters($query, $filters, 'or');
             })
-            ->when(true, function ($query) use ($filterBy, $order) {
-                $this->orderBy($query, $filterBy, $order);
+            ->when(true, function ($query) use ($orderBy, $sort) {
+                return $this->orderBy($query, $orderBy, $sort);
             })
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->with($relations);
@@ -121,20 +121,20 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     private function orderBy(
         Builder $query,
-        string $filterBy = "id",
-        string $order = 'DESC'
-    ): void {
-        if (str_contains($filterBy, ',')) {
-            $fields = explode(',', $filterBy);
+        string $orderBy = "id",
+        string $sort = 'DESC'
+    ) {
+        if (str_contains($orderBy, ',')) {
+            $fields = explode(',', $orderBy);
             foreach ($fields as $field) {
                 $field = $this->isJson($field) ?
                     $field . "->" . app()->getLocale() : $field;
-                $query->orderBy($field, $order);
+                $query->orderBy($field, $sort);
             }
         } else {
-            $filterBy = $this->isJson($filterBy) ?
-                $filterBy . "->" . app()->getLocale() : $filterBy;
-            $query->orderBy($filterBy, $order);
+            $orderBy = $this->isJson($orderBy) ?
+                $orderBy . "->" . app()->getLocale() : $orderBy;
+            $query->orderBy($orderBy, $sort);
         }
     }
 
@@ -186,11 +186,22 @@ abstract class CoreRepository implements CoreRepositoryContract
         });
     }
 
-    public function orWhereInRelation($query, $relation, $column, array $value)
+    protected function inDates(string $field)
     {
-        return $query->orWhereHas($relation, function ($query) use ($column, $value) {
-            $query->whereIn($column, $value);
-        });
+        $dates = Cache::remember($this->model->getTable(), 60 * 60 * 24, function () {
+            $keys = collect($this->model->getCasts())
+                ->filter(function ($value, $key) {
+                    if (str_contains($value, 'DateCasts')
+                        || str_contains($value, 'datetime')
+                        || str_contains($value, 'date')) {
+                        return $key;
+                    }
+                });
+
+            return $keys->keys();
+        })->toArray();
+
+        return in_array($field, $dates);
     }
 
     public function collection(

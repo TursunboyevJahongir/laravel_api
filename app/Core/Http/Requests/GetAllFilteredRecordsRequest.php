@@ -32,8 +32,8 @@ class GetAllFilteredRecordsRequest extends FormRequest
                                        }
                                    }],
                 'start'        => 'integer',
-                'filterBy'     => 'string',
-                'order'        => 'in:desc,asc',
+                'order'     => 'string',
+                'sort'        => 'in:desc,asc',
         ];
     }
 

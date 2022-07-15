@@ -8,11 +8,8 @@ use App\Contracts\UserServiceContract;
 use App\Core\Models\CoreModel;
 use App\Core\Services\CoreService;
 use App\Events\UpdateImage;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserService extends CoreService implements UserServiceContract
@@ -24,11 +21,10 @@ class UserService extends CoreService implements UserServiceContract
 
     public function appends(Builder $query, ...$appends)
     {
-        $this->repository->selfExclude($query, request()->get('role'));
+        $this->repository->selfExclude($query, request()->get('self_exclude', false));
 
         $this->repository->filterByRole($query, request()->get('role'));
     }
-
 
     public function create(FormRequest $request): mixed
     {
@@ -42,7 +38,7 @@ class UserService extends CoreService implements UserServiceContract
         });
 
         if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $user->avatar(), User::USER_AVATAR_RESOURCES, User::PATH);
+            UpdateImage::dispatch($request['avatar'], $user->avatar());
         }
 
         return $user->load('roles', 'avatar');
@@ -59,7 +55,7 @@ class UserService extends CoreService implements UserServiceContract
         });
 
         if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $user->avatar(), User::USER_AVATAR_RESOURCES, User::PATH);
+            UpdateImage::dispatch($request['avatar'], $user->avatar());
         }
 
         return true;

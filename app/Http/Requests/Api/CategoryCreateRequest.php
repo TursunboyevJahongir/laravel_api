@@ -2,23 +2,11 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Rules\PhoneRule;
+use App\Rules\UniqueJsonRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class CategoryCreateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return Auth::user()->can('create category');
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,10 +14,31 @@ class CategoryCreateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'title' => 'required|string|unique:categories,title',
-            'position' => 'nullable|numeric',
-            'ico' => 'nullable|image',
+        return ['name'                                     => 'required|array',
+                'name.' . config('app.main_locale')        => ['required',
+                                                               'string',
+                                                               new UniqueJsonRule('categories',
+                                                                                  'name')],
+                'name.*'                                   => ['nullable',
+                                                               'string',
+                                                               new UniqueJsonRule('categories',
+                                                                                  'name')],
+                'description'                              => 'nullable|array',
+                'description.' . config('app.main_locale') => 'required_with:description|string',
+                'description.*'                            => 'nullable|string',
+                'position'                                 => 'nullable|numeric',
+                'ico'                                      => 'nullable|image',
         ];
     }
+
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\ApiController;
-
+//use App\Core\Http\Controllers\CoreController as Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ProductCreateRequest;
 use App\Http\Requests\Api\ProductUpdateRequest;
 use App\Http\Resources\Api\AdminAllProductsResource;
@@ -19,11 +19,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
-class ProductController extends ApiController
+class ProductController extends Controller
 {
-    public function __construct(private ProductService $service)
-    {
-    }
 
     /**
      * @param Request $request

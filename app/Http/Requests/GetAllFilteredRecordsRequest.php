@@ -14,19 +14,21 @@ class GetAllFilteredRecordsRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'list_type' => 'in:pagination,collection',
-                'columns'   => 'array',
-                'relations' => 'array',
-                'appends'   => 'array',
-                'limit'     => [function ($attribute, $value, $fail) {
-                    is_numeric($value) || $value === 'all' ? : $fail("$attribute must be numeric or 'all'");
-                }],
-                'per_page'  => 'integer',
-                'status'    => 'boolean',
-                'search'    => 'nullable|string',
-                'filters'   => 'array',
-                'filterBy'  => 'string',
-                'order'     => 'in:desc,asc'
+            'list_type'   => 'in:pagination,collection',
+            'columns'     => 'array',
+            'relations'   => 'array',
+            'appends'     => 'array',
+            'limit'       => [function ($attribute, $value, $fail) {
+                is_numeric($value) || $value === 'all' ? : $fail("$attribute must be numeric or 'all'");
+            }],
+            'per_page'    => 'integer',
+            'status'      => 'boolean',
+            'search'      => 'nullable|string',
+            'filters'     => 'array',
+            'or_filters'  => 'array',
+            'not_filters' => 'array',
+            'order'    => 'string',
+            'sort'       => 'in:desc,asc,DESC,ASC',
         ];
     }
 
