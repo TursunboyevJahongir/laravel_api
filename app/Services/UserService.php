@@ -7,12 +7,10 @@ use App\Contracts\UserRepositoryContract;
 use App\Contracts\UserServiceContract;
 use App\Core\Models\CoreModel;
 use App\Core\Services\CoreService;
-use App\Events\DestroyImages;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 
 class UserService extends CoreService implements UserServiceContract
 {
