@@ -17,7 +17,7 @@ Route::prefix('auth')
         Route::post('logout', 'logout');
     });
 
-Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
+Route::group(['prefix' => 'admin'], function () {
     Route::prefix('users')
         ->controller(UserController::class)
         ->group(function () {
