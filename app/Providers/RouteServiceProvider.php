@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\IsActive;
 use App\Http\Middleware\SetAppLocale;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -11,36 +12,15 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    /**
-     * The path to the "home" route for your application.
-     *
-     * This is used by Laravel authentication to redirect users after login.
-     *
-     * @var string
-     */
-    public const HOME = '/home';
-
-    /**
-     * The controller namespace for the application.
-     *
-     * When present, controller route declarations will automatically be prefixed with this namespace.
-     *
-     * @var string|null
-     */
-
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
     public function boot()
     {
         $this->configureRateLimiting();
         $this->aliasMiddleware('setAppLocale', SetAppLocale::class);
+        $this->aliasMiddleware('isActive', IsActive::class);
 
         $this->routes(function () {
             Route::prefix('api/v1')
-                ->middleware(['api', 'auth:api', 'setAppLocale', 'bindings'])
+                ->middleware(['api', 'auth:api', 'setAppLocale', 'bindings', 'isActive'])
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')

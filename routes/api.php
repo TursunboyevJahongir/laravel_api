@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
     ->controller(AuthController::class)
-    ->withoutMiddleware(['auth:api', 'api'])
+    ->withoutMiddleware(['auth:api', 'api', 'isActive'])
     ->group(function () {
         Route::post('register', 'register');
         Route::post('login', 'login');
@@ -29,13 +29,6 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::apiResource('users', UserController::class);
     Route::apiResource('categories', CategoryController::class);
-
-    Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
-    Route::get('permissions', [RoleController::class, 'permissions'])->middleware('can:read role');
-    Route::get('role/{name}', [RoleController::class, 'show'])->middleware('can:read role');
-    Route::post('role', [RoleController::class, 'create'])->middleware('can:create role');
-    Route::patch('role/{name}', [RoleController::class, 'update'])->middleware('can:update role');
-    Route::delete('role/{name}', [RoleController::class, 'delete'])->middleware('can:delete role');
 
     #new Resource to here
 
