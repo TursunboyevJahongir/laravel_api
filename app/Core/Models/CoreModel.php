@@ -2,6 +2,7 @@
 
 namespace App\Core\Models;
 
+use App\Helpers\DateCasts;
 use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Str;
 
@@ -9,7 +10,7 @@ abstract class CoreModel extends Model
 {
     protected array        $json       = [];
     protected array        $searchable = [];
-    protected static array $modelCasts = ['id'         => 'int',
+    protected static array $modelCasts = [
                                           'is_active'  => 'bool',
                                           'position'   => 'int',
                                           'created_at' => DateCasts::class,

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\SetAppLocale;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -35,9 +36,11 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configureRateLimiting();
+        $this->aliasMiddleware('setAppLocale', SetAppLocale::class);
 
         $this->routes(function () {
             Route::prefix('api/v1')
+                ->middleware(['api', 'auth:api', 'setAppLocale', 'bindings'])
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
@@ -53,7 +56,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            return Limit::perMinute(60)->by(optional($request->user())->id ? : $request->ip());
         });
     }
 }

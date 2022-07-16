@@ -16,12 +16,12 @@ class CategoryUpdateRequest extends FormRequest
                                                                'string',
                                                                new UniqueJsonRule('categories',
                                                                                   'name', $this->route()
-                                                                                      ->parameter('category'))],
+                                                                                      ->originalParameter('category'))],
                 'name.*'                                   => ['nullable',
                                                                'string',
                                                                new UniqueJsonRule('categories',
                                                                                   'name', $this->route()
-                                                                                      ->parameter('category'))],
+                                                                                      ->originalParameter('category'))],
                 'description'                              => 'nullable|array',
                 'description.' . config('app.main_locale') => 'required_with:description|string',
                 'description.*'                            => 'nullable|string',

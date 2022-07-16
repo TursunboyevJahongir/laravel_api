@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
     ->controller(AuthController::class)
+    ->withoutMiddleware(['auth:api', 'api'])
     ->group(function () {
         Route::post('register', 'register');
         Route::post('login', 'login');
@@ -22,22 +23,12 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'admin'], function () {
         ->group(function () {
             Route::get('me', 'me');
             Route::patch('me', 'updateProfile');
-            Route::get('/', 'index')->permission('read-user');
-            Route::get('/{user}', 'show')->permission('read-user');
-            Route::post('/', 'create')->permission('create-user');
-            Route::patch('/{user}', 'update')->permission('update-user')->can('update,user');
-            Route::delete('/{user}', 'delete')->permission('delete-user')->can('delete,user');
         });
+    //Route::get('me', [UserController::class, 'me']);
+    //Route::patch('me', [UserController::class, 'updateProfile']);
 
-    Route::prefix('categories')
-        ->controller(CategoryController::class)
-        ->group(function () {
-            Route::get('/', 'index')->permission('read-category');
-            Route::get('/{category}', 'show')->permission('read-category');
-            Route::post('/', 'create')->permission('create-category');
-            Route::patch('/{category}', 'update')->permission('update-category');
-            Route::delete('/{category}', 'delete')->permission('delete-category');
-        });
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('categories', CategoryController::class);
 
     Route::get('roles', [RoleController::class, 'index'])->middleware('can:read role');
     Route::get('permissions', [RoleController::class, 'permissions'])->middleware('can:read role');

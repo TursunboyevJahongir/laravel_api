@@ -44,7 +44,7 @@ class UserService extends CoreService implements UserServiceContract
         return $user->load('roles', 'avatar');
     }
 
-    public function update(CoreModel $user, FormRequest $request): bool
+    public function update(CoreModel|int $user, FormRequest $request): bool
     {
         DB::transaction(function () use ($request, $user) {
             if ($request->exists('roles')) {

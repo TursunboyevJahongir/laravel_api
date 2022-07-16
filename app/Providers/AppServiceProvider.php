@@ -14,6 +14,8 @@ use App\Core\Contracts\CoreRepositoryContract;
 use App\Core\Contracts\CoreServiceContract;
 use App\Core\Repositories\CoreRepository;
 use App\Core\Services\CoreService;
+use App\Http\Controllers\Api\CategoryController;
+use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\LoggerRepository;
 use App\Repositories\ResourceRepository;
@@ -22,6 +24,7 @@ use App\Services\CategoryService;
 use App\Services\LoggerService;
 use App\Services\ResourceService;
 use App\Services\UserService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -58,6 +61,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Model::preventLazyLoading(!app()->isProduction());
+
+        $this->app->when(CategoryController::class)
+            ->needs(Category::class)
+            ->give(Category::class);
     }
 }

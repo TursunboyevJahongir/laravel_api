@@ -3,11 +3,13 @@
 namespace App\Core\Services;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
 use App\Core\Models\CoreModel;
+use Illuminate\Support\Facades\DB;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -74,7 +76,24 @@ abstract class CoreService implements CoreServiceContract
      */
     public function create(FormRequest $request): mixed
     {
-        return $this->repository->create($request->validated());
+        $model = Db::transaction(function () use ($request) {
+            $request = $this->creating($request);
+
+            return $this->repository->create($request->validated());
+        });
+
+        $this->created($model, $request);
+
+        return $model;
+    }
+
+    public function creating(FormRequest $request)
+    {
+        return $request;
+    }
+
+    public function created(Model|CoreModel $model, FormRequest $request): void
+    {
     }
 
     /**
@@ -87,7 +106,23 @@ abstract class CoreService implements CoreServiceContract
      */
     public function update(CoreModel|int $model, FormRequest $request): bool
     {
-        return $this->repository->update($model, $request->validated());
+        $model = $this->repository->show($model);
+        Db::transaction(function () use ($request, $model) {
+            $request = $this->updating($model, $request);
+            $this->repository->update($model, $request->validated());
+            $this->updated($model, $request);
+        });
+
+        return true;
+    }
+
+    public function updating(Model|CoreModel $model, FormRequest $request): FormRequest
+    {
+        return $request;
+    }
+
+    public function updated(Model|CoreModel $model, FormRequest $request): void
+    {
     }
 
     /**

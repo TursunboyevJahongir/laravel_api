@@ -17,6 +17,7 @@ class UserController extends Controller
     public function __construct(UserServiceContract $service)
     {
         parent::__construct($service);
+        $this->authorizeResource(User::class, 'user');
     }
 
     public function me(GetAllFilteredRecordsRequest $request): JsonResponse
@@ -44,7 +45,7 @@ class UserController extends Controller
         return $this->responseWith(['users' => $users]);
     }
 
-    public function show($user, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $user = $this->service->show($user, $request);
 
@@ -52,7 +53,7 @@ class UserController extends Controller
     }
 
 
-    public function create(UserCreateRequest $request): JsonResponse
+    public function store(UserCreateRequest $request): JsonResponse
     {
         try {
             $user = $this->service->create($request);
@@ -74,7 +75,7 @@ class UserController extends Controller
         }
     }
 
-    public function delete(User $user): JsonResponse
+    public function destroy(User $user): JsonResponse
     {
         $this->service->delete($user);
 
