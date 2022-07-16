@@ -36,7 +36,7 @@ class CategoryController extends Controller
     public function store(CategoryCreateRequest $request): JsonResponse
     {
         try {
-            $category = $this->service->create($request);
+            $category = $this->service->create($request)->loadMissing('ico');
 
             return $this->responseWith(compact('category'), 201);
         } catch (\Exception $e) {

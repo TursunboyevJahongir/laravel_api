@@ -51,7 +51,6 @@ class UserService extends CoreService implements UserServiceContract
     public function updated(Model|CoreModel $model, FormRequest $request): void
     {
         if ($request->hasFile('avatar')) {
-            //DestroyImages::dispatch($model->avatar->id);
             UpdateImage::dispatch($request['avatar'], $model->avatar());
         }
     }

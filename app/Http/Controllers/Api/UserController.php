@@ -54,7 +54,7 @@ class UserController extends Controller
     public function store(UserCreateRequest $request): JsonResponse
     {
         try {
-            $user = $this->service->create($request)->load('roles', 'avatar');
+            $user = $this->service->create($request)->loadMissing('roles', 'avatar');
 
             return $this->responseWith(compact('user'), 201);
         } catch (\Exception $e) {
