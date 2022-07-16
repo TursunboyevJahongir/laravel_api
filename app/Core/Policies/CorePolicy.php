@@ -11,6 +11,8 @@ class CorePolicy
 {
     use HandlesAuthorization;
 
+    protected string $name;
+
     public function viewAny(User $user): Response
     {
         return hasPermission("read-{$this->name}", $user)
