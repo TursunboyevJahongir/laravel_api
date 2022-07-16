@@ -7,8 +7,10 @@ use App\Contracts\UserRepositoryContract;
 use App\Contracts\UserServiceContract;
 use App\Core\Models\CoreModel;
 use App\Core\Services\CoreService;
+use App\Events\DestroyImages;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 
@@ -26,38 +28,35 @@ class UserService extends CoreService implements UserServiceContract
         $this->repository->filterByRole($query, request()->get('role'));
     }
 
-    public function create(FormRequest $request): mixed
+    public function created(Model|CoreModel $model, FormRequest $request): void
     {
-        $user = DB::transaction(function () use ($request) {
-            $user = $this->repository->create($request->validated());
-            ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
-                $this->repository->syncRoleToUser($user, $request['roles']) :
-                $this->repository->syncRoleToUser($user, ['customer']);
-
-            return $user;
-        });
+        ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
+            $this->repository->syncRoleToUser($model, $request['roles']) :
+            $this->repository->syncRoleToUser($model, ['customer']);
 
         if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $user->avatar());
+            UpdateImage::dispatch($request['avatar'], $model->avatar());
         }
-
-        return $user->load('roles', 'avatar');
     }
 
-    public function update(CoreModel $user, FormRequest $request): bool
+    public function updating(Model|CoreModel $model, FormRequest $request): FormRequest
     {
-        DB::transaction(function () use ($request, $user) {
-            if ($request->exists('roles')) {
-                $this->repository->syncRoleToUser($user, $request['roles']);
-            }
-
-            return $this->repository->update($user, $request->validated());
-        });
-
-        if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $user->avatar());
+        if ($request->exists('roles')) {
+            $this->repository->syncRoleToUser($model, $request['roles']);
         }
 
-        return true;
+        return $request;
     }
+
+    public function updated(Model|CoreModel $model, FormRequest $request): void
+    {
+        if ($request->hasFile('avatar')) {
+            UpdateImage::dispatch($request['avatar'], $model->avatar());
+        }
+    }
+
+    //public function deleting(Model|CoreModel $model)//you can use Observer or this
+    //{
+    //    DestroyImages::dispatch($model->avatar->id);
+    //}
 }

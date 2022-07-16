@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\CategoryServiceContract;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
 use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\Category;
-use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Controllers\CoreController as Controller;
 
 class CategoryController extends Controller
 {
-    public function __construct(CategoryService $service)
+    public function __construct(CategoryServiceContract $service)
     {
         parent::__construct($service);
+        $this->authorizeResource(Category::class, 'category');
     }
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
@@ -24,7 +25,7 @@ class CategoryController extends Controller
         return $this->responseWith(['categories' => $categories]);
     }
 
-    public function show($category, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Category $category, GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $category = $this->service->show($category, $request);
 
@@ -32,10 +33,10 @@ class CategoryController extends Controller
     }
 
 
-    public function create(CategoryCreateRequest $request): JsonResponse
+    public function store(CategoryCreateRequest $request): JsonResponse
     {
         try {
-            $category = $this->service->create($request);
+            $category = $this->service->create($request)->loadMissing('ico');
 
             return $this->responseWith(compact('category'), 201);
         } catch (\Exception $e) {
@@ -54,7 +55,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function delete($category): JsonResponse
+    public function destroy(Category $category): JsonResponse
     {
         $this->service->delete($category);
 

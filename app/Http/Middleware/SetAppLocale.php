@@ -19,9 +19,9 @@ class SetAppLocale
     public function handle(Request $request, Closure $next): mixed
     {
         $locale = config('app.main_locale');
-        $sentLocale = $request->header('accept-language');
-        if ($request->hasHeader('accept-language') && in_array($sentLocale, AvailableLocalesEnum::toArray(), true)) {
-            $locale = $sentLocale;
+        if ($request->hasHeader('accept-language') &&
+            in_array($request->header('accept-language'), AvailableLocalesEnum::toArray(), true)) {
+            $locale = $request->header('accept-language');
         }
         app()->setLocale($locale);
 

@@ -2,55 +2,31 @@
 
 namespace App\Policies;
 
+use App\Core\Models\CoreModel;
+use App\Core\Policies\CorePolicy;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
-class UserPolicy
+class UserPolicy extends CorePolicy
 {
     use HandlesAuthorization;
 
-    public function __construct()
+    protected string $name = 'user';
+
+    public function update(User $user, CoreModel $model)
     {
-        //
+        return hasPermission('update-user', $user) || $user->id !== $model->id
+            ? Response::allow()
+            : Response::deny(__('messages.not_access'));
     }
 
-    public function viewAny(User $user): bool
+    public function delete(User $user, CoreModel $model)
     {
-        //
-    }
-
-    public function view(User $user, User $model): bool
-    {
-        //
-    }
-
-    public function create(User $user): bool
-    {
-        //
-    }
-
-    public function update(User $user, User $model)
-    {
-        return $user->hasRole('superadmin') || $user->id === $model->id
-            ? Response::deny(__('messages.cannot_change_admin'))
-            : Response::allow();
-    }
-
-    public function delete(User $user, User $model)
-    {
-        return $user->hasRole('superadmin') || $user->id === $model->id
-            ? Response::deny(__('messages.cannot_change_admin'))
-            : Response::allow();
-    }
-
-    public function restore(User $user, User $model): bool
-    {
-        //
-    }
-
-    public function forceDelete(User $user, User $model): bool
-    {
-        //
+        return (hasPermission('update-user', $user) ||
+            !hasRole(user: $model) ||
+            $user->id !== $model->id)
+            ? Response::allow()
+            : Response::deny(__('messages.not_access'));
     }
 }

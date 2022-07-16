@@ -4,6 +4,7 @@ namespace App\Core\Contracts;
 
 use App\Core\Models\CoreModel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -51,7 +52,7 @@ interface CoreRepositoryContract
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param string[] $columns
      * @param array $relations
      * @param array $appends
@@ -59,7 +60,7 @@ interface CoreRepositoryContract
      * @return CoreModel|null
      */
     public function show(
-        CoreModel|int $model,
+        CoreModel|Model|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
@@ -94,19 +95,19 @@ interface CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel|int $model, array $payload): bool;
+    public function update(CoreModel|Model|int $model, array $payload): bool;
 
     /**
      * Delete element
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel|int $model): bool;
+    public function delete(CoreModel|Model|int $model): bool;
 }

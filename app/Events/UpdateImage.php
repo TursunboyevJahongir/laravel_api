@@ -15,7 +15,11 @@ class UpdateImage
      *
      * @return void
      */
-    public function __construct(public UploadedFile $file,public  $relation,public  string $identifier,public  string $path)
-    {
+    public function __construct(
+        public UploadedFile $file,
+        public $relation,
+        public string $path = 'files',
+        public string|null $identifier = null
+    ) {
     }
 }

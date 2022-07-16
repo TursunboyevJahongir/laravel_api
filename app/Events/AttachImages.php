@@ -14,7 +14,11 @@ class AttachImages
      *
      * @return void
      */
-    public function __construct(public array $images,public  $relation,public  string $identifier,public  string $path)
-    {
+    public function __construct(
+        public array $images,
+        public $relation,
+        public string $path,
+        public string|null $identifier = null
+    ) {
     }
 }

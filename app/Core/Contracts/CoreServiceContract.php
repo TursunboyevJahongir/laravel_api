@@ -2,6 +2,7 @@
 
 namespace App\Core\Contracts;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -14,12 +15,12 @@ interface CoreServiceContract
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param FormRequest $request
      *
      * @return mixed
      */
-    public function show(CoreModel|int $model, FormRequest $request): mixed;
+    public function show(CoreModel|Model|int $model, FormRequest $request): mixed;
 
     /**
      * Create entity

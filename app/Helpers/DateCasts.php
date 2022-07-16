@@ -5,6 +5,7 @@ namespace App\Helpers;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 class DateCasts implements CastsAttributes
 {
@@ -12,9 +13,9 @@ class DateCasts implements CastsAttributes
     {
     }
 
-    public function get($model, $key, $value, $attributes)
+    public function get($model, $key, $value, $attributes): Carbon|null
     {
-        return $value ? Carbon::create($value)->format($this->format) : null;
+        return $value ? Date::parse(Carbon::create($value)->format($this->format)) : null;
     }
 
     public function set($model, string $key, $value, array $attributes)

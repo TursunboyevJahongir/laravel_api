@@ -3,11 +3,13 @@
 namespace App\Core\Services;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
 use App\Core\Models\CoreModel;
+use Illuminate\Support\Facades\DB;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -51,12 +53,12 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param FormRequest $request
      *
      * @return CoreModel|null
      */
-    public function show(CoreModel|int $model, FormRequest $request): ?CoreModel
+    public function show(CoreModel|Model|int $model, FormRequest $request): ?CoreModel
     {
         return $this->repository->show($model,
                                        $request->get('columns') ?? ['*'],
@@ -74,32 +76,81 @@ abstract class CoreService implements CoreServiceContract
      */
     public function create(FormRequest $request): mixed
     {
-        return $this->repository->create($request->validated());
+        $model = Db::transaction(function () use ($request) {
+            $request = $this->creating($request);
+
+            return $this->repository->create($request->validated());
+        });
+
+        $this->created($model, $request);
+
+        return $model;
+    }
+
+    public function creating(FormRequest $request)
+    {
+        return $request;
+    }
+
+    public function created(Model|CoreModel $model, FormRequest $request): void
+    {
     }
 
     /**
      * Update entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel|int $model, FormRequest $request): bool
+    public function update(CoreModel|Model|int $model, FormRequest $request): bool
     {
-        return $this->repository->update($model, $request->validated());
+        $model = $this->repository->show($model);
+        Db::transaction(function () use ($request, $model) {
+            $request = $this->updating($model, $request);
+            $this->repository->update($model, $request->validated());
+            $this->updated($model, $request);
+        });
+
+        return true;
+    }
+
+    public function updating(Model|CoreModel $model, FormRequest $request): FormRequest
+    {
+        return $request;
+    }
+
+    public function updated(Model|CoreModel $model, FormRequest $request): void
+    {
     }
 
     /**
      * Delete entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      *
      * @return mixed
      */
-    public function delete(CoreModel|int $model): mixed
+    public function delete(CoreModel|Model|int $model): mixed
     {
-        return $this->repository->delete($model);
+        $model = $this->repository->show($model);
+
+        return Db::transaction(function () use ($model) {
+            $this->deleting($model);
+
+            return $this->repository->delete($model);
+        });
+    }
+
+    /**
+     * you can use Observer or this
+     * @param Model|CoreModel $model
+     *
+     * @return void
+     */
+    public function deleting(Model|CoreModel $model)
+    {
     }
 
     /**
