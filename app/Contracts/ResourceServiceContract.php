@@ -3,15 +3,33 @@
 namespace App\Contracts;
 
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Http\UploadedFile;
 
 interface ResourceServiceContract
 {
-    public function attachImages(array $images, $relation, string $identifier, string $path);
+    public function attachImages(
+        array $images,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    );
 
-    public function saveImage(UploadedFile $file, $relation, string $identifier, string $path);
+    public function saveImage(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    );
 
-    public function updateImage(UploadedFile $file, $relation, string $identifier, string $path);
+    public function updateImage(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    );
 
     public function destroyImages(array $images);
 

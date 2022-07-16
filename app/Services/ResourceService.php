@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use App\Contracts\ResourceRepositoryContract;
@@ -19,26 +23,34 @@ class ResourceService implements ResourceServiceContract
 
     /**
      * @param array $images
-     * @param $relation
-     * @param string $identifier
+     * @param MorphOne|MorphMany|MorphToMany $relation
      * @param string $path
+     * @param string|null $identifier
      */
-    public function attachImages(array $images, $relation, string $identifier, string $path)
-    {
+    public function attachImages(
+        array $images,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    ) {
         foreach ($images as $image) {
-            $this->saveImage($image, $relation, $identifier, $path);
+            $this->saveImage($image, $relation, $path, $identifier);
         }
     }
 
     /**
      * @param UploadedFile $file
-     * @param $relation
-     * @param string $identifier
+     * @param MorphOne|MorphMany|MorphToMany $relation
      * @param string $path
+     * @param string|null $identifier
      */
-    public function saveImage(UploadedFile $file, $relation, string $identifier, string $path)
-    {
-        $type = $file->getClientOriginalExtension();
+    public function saveImage(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    ) {
+        $type     = $file->getClientOriginalExtension();
         $fileName = md5(time() . $file->getFilename()) . '.' . $type;
         $file->storeAs("$path/original", $fileName);
         $this->imageCrop($file, $fileName, "$path/1024/", 1024, 1024);
@@ -48,22 +60,26 @@ class ResourceService implements ResourceServiceContract
 
     /**
      * @param UploadedFile $file
-     * @param $relation
-     * @param string $identifier
+     * @param MorphOne|MorphMany|MorphToMany $relation
      * @param string $path
+     * @param string|null $identifier
      */
-    public function updateImage(UploadedFile $file, $relation, string $identifier, string $path)
-    {
+    public function updateImage(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    ) {
         $this->deleteImage($relation);
-        $this->saveImage($file, $relation, $identifier, $path);
+        $this->saveImage($file, $relation, $path, $identifier);
     }
 
     /**
-     * @param array $images
+     * @param $images
      */
-    public function destroyImages(array $images)
+    public function destroyImages($images)
     {
-        $this->repository->destroy($images);
+        $this->repository->destroy(Arr::wrap($images));
     }
 
     /**
@@ -79,8 +95,8 @@ class ResourceService implements ResourceServiceContract
 
     public function imageCrop(UploadedFile $file, $fileName, $path, int $width, int $height)
     {
-        $image = Image::make($file);
-        $width = $image->width() > $width ? $width : $image->width();
+        $image  = Image::make($file);
+        $width  = $image->width() > $width ? $width : $image->width();
         $height = $image->height() > $height ? $height : $image->height();
         $image->resize($width, $height, function ($constraint) {
             $constraint->aspectRatio();

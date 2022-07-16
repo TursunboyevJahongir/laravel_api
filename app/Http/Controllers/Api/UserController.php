@@ -13,7 +13,6 @@ use App\Core\Http\Controllers\CoreController as Controller;
 
 class UserController extends Controller
 {
-
     public function __construct(UserServiceContract $service)
     {
         parent::__construct($service);
@@ -52,11 +51,10 @@ class UserController extends Controller
         return $this->responseWith(compact('user'));
     }
 
-
     public function store(UserCreateRequest $request): JsonResponse
     {
         try {
-            $user = $this->service->create($request);
+            $user = $this->service->create($request)->load('roles', 'avatar');
 
             return $this->responseWith(compact('user'), 201);
         } catch (\Exception $e) {

@@ -22,10 +22,11 @@ class UpdateImagesListener
      * Handle the event.
      *
      * @param UpdateImage $event
+     *
      * @return void
      */
     public function handle(UpdateImage $event)
     {
-        $this->resource->updateImage($event->file, $event->relation, $event->identifier, $event->path);
+        $this->resource->updateImage($event->file, $event->relation, $event->path, $event->identifier);
     }
 }

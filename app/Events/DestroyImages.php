@@ -14,7 +14,7 @@ class DestroyImages
      *
      * @return void
      */
-    public function __construct(public array $imageIds)
+    public function __construct(public $imageIds)
     {
     }
 }

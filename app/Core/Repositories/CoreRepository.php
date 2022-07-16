@@ -244,7 +244,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param array|string[] $columns
      * @param array $relations
      * @param array $appends
@@ -252,7 +252,7 @@ abstract class CoreRepository implements CoreRepositoryContract
      * @return CoreModel|null
      */
     public function show(
-        CoreModel|int $model,
+        CoreModel|Model|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
@@ -277,12 +277,12 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel|int $model, array $payload): bool
+    public function update(CoreModel|Model|int $model, array $payload): bool
     {
         return ($model instanceof CoreModel)
             ? $model->update($payload)
@@ -292,11 +292,11 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Delete element
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel|int $model): bool
+    public function delete(CoreModel|Model|int $model): bool
     {
         return ($model instanceof CoreModel)
             ? $model->delete()

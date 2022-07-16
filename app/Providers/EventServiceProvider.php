@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Events\LoggerEvent;
 use App\Listeners\LoggerListener;
+use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\AttachImages;
 use App\Events\DestroyImages;
@@ -27,6 +29,10 @@ class EventServiceProvider extends ServiceProvider
         DestroyImages::class => [
             DestroyImagesListener::class,
         ],
+    ];
+
+    protected $observers = [
+        User::class => [UserObserver::class],
     ];
 
     /**

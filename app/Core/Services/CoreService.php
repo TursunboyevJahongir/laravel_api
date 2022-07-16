@@ -53,12 +53,12 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param FormRequest $request
      *
      * @return CoreModel|null
      */
-    public function show(CoreModel|int $model, FormRequest $request): ?CoreModel
+    public function show(CoreModel|Model|int $model, FormRequest $request): ?CoreModel
     {
         return $this->repository->show($model,
                                        $request->get('columns') ?? ['*'],
@@ -99,12 +99,12 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Update entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel|int $model, FormRequest $request): bool
+    public function update(CoreModel|Model|int $model, FormRequest $request): bool
     {
         $model = $this->repository->show($model);
         Db::transaction(function () use ($request, $model) {
@@ -128,13 +128,29 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Delete entity
      *
-     * @param CoreModel|int $model
+     * @param CoreModel|Model|int $model
      *
      * @return mixed
      */
-    public function delete(CoreModel|int $model): mixed
+    public function delete(CoreModel|Model|int $model): mixed
     {
-        return $this->repository->delete($model);
+        $model = $this->repository->show($model);
+
+        return Db::transaction(function () use ($model) {
+            $this->deleting($model);
+
+            return $this->repository->delete($model);
+        });
+    }
+
+    /**
+     * you can use Observer or this
+     * @param Model|CoreModel $model
+     *
+     * @return void
+     */
+    public function deleting(Model|CoreModel $model)
+    {
     }
 
     /**
