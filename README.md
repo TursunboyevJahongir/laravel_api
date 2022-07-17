@@ -12,8 +12,6 @@
 
 ### Global postman documentation [](https://documenter.getpostman.com/view/9990014/UVCCdiSN)
 
-> <a href="public/kesh_app.pdf" download>documentation Pdf</a><br>
-
 [//]: # (> <a href="public/kesh_app.postman_collection.json" download>Postman Collection</a>)
 ## Possible params for `get` method
 
