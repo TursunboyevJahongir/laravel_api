@@ -3,7 +3,6 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use App\Core\Models\CoreModel;
 use App\Enums\AvailableLocalesEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Pivot};
@@ -14,12 +13,12 @@ use Illuminate\Support\Facades\Cache;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
-    public CoreModel|Model|Pivot $model;
+    public Model|Pivot $model;
 
     /**
-     * @param CoreModel|Model|Pivot $model
+     * @param Model|Pivot $model
      */
-    public function __construct(CoreModel|Model|Pivot $model)
+    public function __construct(Model|Pivot $model)
     {
         $this->model = $model;
     }
@@ -27,13 +26,13 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * for any checks
      *
-     * @param Builder|CoreModel $query
+     * @param Builder|Model $query
      *
-     * @return CoreModel|Builder
+     * @return Builder|Model
      */
     public function availability(
-        Builder|CoreModel $query
-    ): CoreModel|Builder {
+        Builder|Model $query
+    ): Builder|Model {
         return $query;
     }
 
@@ -90,21 +89,26 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         $search = rtrim($search, " \t.");
         $query->where(function (Builder $query) use ($search) {
-            foreach ($this->model->getSearchable() as $field) {
+            foreach ($this->model->getSearchable() as $key => $field) {
                 if (is_array($field)) {
                     $relation = $field[0];
-                    foreach ($field[1] as $key => $item) {
-                        if ($key === "json") {
+                    foreach ($field[1] as $index => $value) {
+                        if ($index === "json") {
                             foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                $query->orWhereRelation($relation, "$item->$lang", "like", "%$search%");
+                                $query->orWhereRelation($relation, "$value->$lang", "like", "%$search%");
                             }
-                        } elseif ($key === "date") {
+                        } elseif ($index === "date") {
                             $time = Carbon::createFromTimestamp(strtotime($search));
-                            $query->orWhereDate($key, $time);
+                            $query->orWhereDate($index, $time);
                         } else {
-                            $query->orWhereRelation($relation, $item, 'like', "%$search%");
+                            $query->orWhereRelation($relation, $value, 'like', "%$search%");
                         }
                     }
+                } elseif (str_contains($field, '.')) {
+                    //dump($field,$key);
+                    $relation = explode('.', $field);
+                    $column   = array_pop($relation);
+                    $query->orWhereRelation(implode('.', $relation), $column, "like", "%$search%");
                 } elseif ($this->isJson($field)) {
                     foreach (AvailableLocalesEnum::toArray() as $lang) {
                         $query->orWhere("$field->$lang", "like", "%$search%");
@@ -233,31 +237,31 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     public function isJson(string $field): bool
     {
-        return in_array($field, $this->model->getJsonColumns(), true);
+        return in_array($field, $this->model->getJsonColumns() ?? [], true);
     }
 
     public function isSearchable(string $field): bool
     {
-        return in_array($field, $this->model->getSearchable(), true);
+        return in_array($field, $this->model->getSearchable() ?? [], true);
     }
 
     /**
      * Show entity
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param array|string[] $columns
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function show(
-        CoreModel|Model|int $model,
+        Model|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
-    ): ?CoreModel {
-        $id = ($model instanceof CoreModel) ? $model->id : $model;
+    ): ?Model {
+        $id = ($model instanceof Model) ? $model->id : $model;
 
         return $this->findById($id, $columns, $relations, $appends);
     }
@@ -277,14 +281,14 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel|Model|int $model, array $payload): bool
+    public function update(Model|int $model, array $payload): bool
     {
-        return ($model instanceof CoreModel)
+        return ($model instanceof Model)
             ? $model->update($payload)
             : $this->findById($model)->update($payload);
     }
@@ -292,13 +296,13 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Delete element
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel|Model|int $model): bool
+    public function delete(Model|int $model): bool
     {
-        return ($model instanceof CoreModel)
+        return ($model instanceof Model)
             ? $model->delete()
             : $this->findById($model)->delete();
     }
@@ -311,14 +315,14 @@ abstract class CoreRepository implements CoreRepositoryContract
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function findById(
         int $modelId,
         array $columns = ['*'],
         array $relations = [],
         array $appends = [],
-    ): ?CoreModel {
+    ): ?Model {
         return $this->availability($this->model)->select($columns)
             ->with($relations)
             ->findOrFail($modelId)

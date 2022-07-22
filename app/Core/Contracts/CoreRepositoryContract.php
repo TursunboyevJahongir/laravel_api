@@ -2,7 +2,6 @@
 
 namespace App\Core\Contracts;
 
-use App\Core\Models\CoreModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -52,19 +51,19 @@ interface CoreRepositoryContract
     /**
      * Show entity
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param string[] $columns
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function show(
-        CoreModel|Model|int $model,
+        Model|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
-    ): ?CoreModel;
+    ): ?Model;
 
     /**
      * Find element by id
@@ -74,14 +73,14 @@ interface CoreRepositoryContract
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function findById(
         int $modelId,
         array $columns = ['*'],
         array $relations = [],
         array $appends = [],
-    ): ?CoreModel;
+    ): ?Model;
 
     /**
      * Create element
@@ -95,19 +94,19 @@ interface CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel|Model|int $model, array $payload): bool;
+    public function update(Model|int $model, array $payload): bool;
 
     /**
      * Delete element
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel|Model|int $model): bool;
+    public function delete(Model|int $model): bool;
 }

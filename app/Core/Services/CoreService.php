@@ -8,7 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
-use App\Core\Models\CoreModel;
 use Illuminate\Support\Facades\DB;
 
 abstract class CoreService implements CoreServiceContract
@@ -53,12 +52,12 @@ abstract class CoreService implements CoreServiceContract
     /**
      * Show entity
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param FormRequest $request
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
-    public function show(CoreModel|Model|int $model, FormRequest $request): ?CoreModel
+    public function show(Model|int $model, FormRequest $request): ?Model
     {
         return $this->repository->show($model,
                                        $request->get('columns') ?? ['*'],
@@ -92,19 +91,19 @@ abstract class CoreService implements CoreServiceContract
         return $request;
     }
 
-    public function created(Model|CoreModel $model, FormRequest $request): void
+    public function created(Model $model, FormRequest $request): void
     {
     }
 
     /**
      * Update entity
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel|Model|int $model, FormRequest $request): bool
+    public function update(Model|int $model, FormRequest $request): bool
     {
         $model = $this->repository->show($model);
         Db::transaction(function () use ($request, $model) {
@@ -116,23 +115,23 @@ abstract class CoreService implements CoreServiceContract
         return true;
     }
 
-    public function updating(Model|CoreModel $model, FormRequest $request): FormRequest
+    public function updating(Model $model, FormRequest $request): FormRequest
     {
         return $request;
     }
 
-    public function updated(Model|CoreModel $model, FormRequest $request): void
+    public function updated(Model $model, FormRequest $request): void
     {
     }
 
     /**
      * Delete entity
      *
-     * @param CoreModel|Model|int $model
+     * @param Model|int $model
      *
      * @return mixed
      */
-    public function delete(CoreModel|Model|int $model): mixed
+    public function delete(Model|int $model): mixed
     {
         $model = $this->repository->show($model);
 
@@ -145,11 +144,12 @@ abstract class CoreService implements CoreServiceContract
 
     /**
      * you can use Observer or this
-     * @param Model|CoreModel $model
+     *
+     * @param Model $model
      *
      * @return void
      */
-    public function deleting(Model|CoreModel $model)
+    public function deleting(Model $model)
     {
     }
 

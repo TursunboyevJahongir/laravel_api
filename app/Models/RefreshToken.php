@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Core\Models\CoreModel;
 use App\Helpers\DateCasts;
 use App\Helpers\RefreshTokenGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class RefreshToken extends CoreModel
+class RefreshToken extends Model
 {
     use HasFactory;
 

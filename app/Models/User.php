@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use App\Core\Models\Authenticatable;
+use App\Core\Traits\CoreModel;
+use App\Traits\IsActive;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Helpers\DateCasts;
 use App\Traits\Author;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,17 +18,15 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Author, SoftDeletes, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Author, SoftDeletes, Notifiable, CoreModel, IsActive;
 
     protected $fillable = [
         'first_name',
         'last_name',
         'phone',
-        'is_active',
         'birthday',
         'phone_confirmed',
         'phone_confirmed_at',
-        'author_id',
         'password',
     ];
 
@@ -34,12 +34,14 @@ class User extends Authenticatable
         'password',
     ];
 
-    protected array $searchable = ['first_name',
-                                   'last_name',
-                                   'phone'];
+    public array $searchable = ['first_name',
+                                'last_name',
+                                'phone'];
 
     protected $casts = [
-        'birthday' => DateCasts::class . ':d-m-Y',
+        'birthday'           => DateCasts::class . ':d-m-Y',
+        'phone_confirmed_at' => DateCasts::class . ':d-m-Y',
+        'phone_confirmed'    => 'bool',
     ];
 
     public function avatar(): MorphOne

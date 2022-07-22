@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use App\Core\Models\CoreModel;
+use App\Core\Traits\CoreModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Logger extends CoreModel
+class Logger extends Model
 {
+    use CoreModel;
+
     protected $table = 'logger';
 
     protected $fillable = ['ip',

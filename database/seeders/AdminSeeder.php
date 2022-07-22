@@ -21,6 +21,7 @@ class AdminSeeder extends Seeder
             'phone' => '998999999999',
             'password' => Hash::make('111111'),
             'phone_confirmed' => 1,
+            'is_active' => 1,
         ])->assignRole('superadmin');
     }
 }

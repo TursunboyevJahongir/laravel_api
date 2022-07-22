@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Contracts\UserRepositoryContract;
 use App\Contracts\UserServiceContract;
-use App\Core\Models\CoreModel;
 use App\Core\Services\CoreService;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,7 +25,7 @@ class UserService extends CoreService implements UserServiceContract
         $this->repository->filterByRole($query, request()->get('role'));
     }
 
-    public function created(Model|CoreModel $model, FormRequest $request): void
+    public function created(Model $model, FormRequest $request): void
     {
         ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
             $this->repository->syncRoleToUser($model, $request['roles']) :
@@ -37,7 +36,7 @@ class UserService extends CoreService implements UserServiceContract
         }
     }
 
-    public function updating(Model|CoreModel $model, FormRequest $request): FormRequest
+    public function updating(Model $model, FormRequest $request): FormRequest
     {
         if ($request->exists('roles')) {
             $this->repository->syncRoleToUser($model, $request['roles']);
@@ -46,14 +45,14 @@ class UserService extends CoreService implements UserServiceContract
         return $request;
     }
 
-    public function updated(Model|CoreModel $model, FormRequest $request): void
+    public function updated(Model $model, FormRequest $request): void
     {
         if ($request->hasFile('avatar')) {
             UpdateImage::dispatch($request['avatar'], $model->avatar());
         }
     }
 
-    //public function deleting(Model|CoreModel $model)//you can use Observer or this
+    //public function deleting(Model $model)//you can use Observer or this
     //{
     //    DestroyImages::dispatch($model->avatar->id);
     //}

@@ -19,6 +19,7 @@ Route::prefix('auth')
 
 Route::group(['prefix' => 'admin'], function () {
     Route::prefix('users')
+        ->withoutMiddleware('isActive')
         ->controller(UserController::class)
         ->group(function () {
             Route::get('me', 'me');

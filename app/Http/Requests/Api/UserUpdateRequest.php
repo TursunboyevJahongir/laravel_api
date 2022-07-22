@@ -36,6 +36,7 @@ class UserUpdateRequest extends FormRequest
             ],
             'password'   => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
             'birthday'   => 'nullable|date|before_or_equal:' . now(),
+            'is_active'  => 'bool',
             'avatar'     => 'image',
             'roles'      => 'array',
             'roles.*'    => 'nullable|exists:roles,name|not_in:superadmin',

@@ -16,8 +16,15 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $superadmin = Role::findByName('superadmin');
-
-        $superadmin->syncPermissions(Permission::all());
+        Role::findByName('superadmin')->syncPermissions(Permission::all());
+        $manager = Role::findByName('manager');
+        $manager->syncPermissions(
+            ['read-user',
+             'create-user',
+             'update-user',
+             'read-category',
+             'create-category',
+             'update-category',]
+        );
     }
 }
