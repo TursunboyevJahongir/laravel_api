@@ -54,6 +54,6 @@ class UserService extends CoreService implements UserServiceContract
 
     //public function deleting(Model $model)//you can use Observer or this
     //{
-    //    DestroyImages::dispatch($model->avatar->id);
+    //    DestroyFiles::dispatch($model->avatar->id);
     //}
 }

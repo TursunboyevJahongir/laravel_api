@@ -39,4 +39,9 @@ trait CoreModel
     {
         return in_array($field, $this->getJsonColumns(), true);
     }
+
+    public function getFilePath(): string
+    {
+        return $this->filePath ?? 'files';
+    }
 }

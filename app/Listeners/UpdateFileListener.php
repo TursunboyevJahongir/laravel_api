@@ -4,9 +4,9 @@ namespace App\Listeners;
 
 
 use App\Contracts\ResourceServiceContract;
-use App\Events\DestroyImages;
+use App\Events\UpdateImage;
 
-class DestroyImagesListener
+class UpdateFileListener
 {
     /**
      * Create the event listener.
@@ -21,12 +21,12 @@ class DestroyImagesListener
     /**
      * Handle the event.
      *
-     * @param DestroyImages $event
+     * @param UpdateImage $event
      *
      * @return void
      */
-    public function handle(DestroyImages $event)
+    public function handle(UpdateImage $event)
     {
-        $this->resource->destroyImages($event->imageIds);
+        $this->resource->updateImage($event->file, $event->relation, $event->path, $event->identifier);
     }
 }

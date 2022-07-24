@@ -41,7 +41,7 @@ class UserController extends Controller
     {
         $users = $this->service->get($request);
 
-        return $this->responseWith(['users' => $users]);
+        return $this->responseWith(compact('users'));
     }
 
     public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse

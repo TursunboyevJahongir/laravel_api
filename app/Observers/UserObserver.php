@@ -2,13 +2,13 @@
 
 namespace App\Observers;
 
-use App\Events\DestroyImages;
+use App\Events\DestroyFiles;
 use App\Models\User;
 
 class UserObserver
 {
     public function deleting(User $user)
     {
-        DestroyImages::dispatch($user->avatar->id);
+        DestroyFiles::dispatch($user->avatar->id);
     }
 }

@@ -20,7 +20,6 @@ return new class extends Migration {
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->jsonb('name');
             $table->jsonb('description')->nullable();
-            $table->unsignedDouble('price');
             $table->unsignedBigInteger('position')->default(0);
             $table->boolean('is_active')->default(true);
             $table->string('barcode_path');

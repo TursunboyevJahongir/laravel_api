@@ -24,7 +24,21 @@ interface ResourceServiceContract
         string $identifier = null
     );
 
+    public function saveFile(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    );
+
     public function updateImage(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    );
+
+    public function updateFile(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
         string $path = 'files',
@@ -33,7 +47,7 @@ interface ResourceServiceContract
 
     public function destroyImages(array $images);
 
-    public function deleteImage($relation);
+    public function deleteFile($relation);
 
     public function imageCrop(UploadedFile $file, $fileName, $path, int $width, int $height);
 }

@@ -6,7 +6,7 @@ namespace App\Services;
 use App\Contracts\CategoryServiceContract;
 use App\Contracts\CategoryRepositoryContract;
 use App\Core\Services\CoreService;
-use App\Events\DestroyImages;
+use App\Events\DestroyFiles;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
@@ -34,6 +34,6 @@ class CategoryService extends CoreService implements CategoryServiceContract
 
     public function deleting(Model $model)//you can use Observer or this
     {
-        DestroyImages::dispatch($model->ico->id);
+        DestroyFiles::dispatch($model->ico->id);
     }
 }
