@@ -19,6 +19,10 @@ class TranslatableJson implements CastsAttributes
     public static function translatable($attribute, $key = null)
     {
         $arr = json_decode($attribute, true);
+        if (request()->has('edit_json')) {
+            return $arr;
+        }
+
         return $arr[$key] ?? $arr[config('app.main_locale')];
     }
 }

@@ -46,7 +46,8 @@ abstract class CoreRepository implements CoreRepositoryContract
         array|null $orFilters = null,
         string $orderBy = 'id',
         string $sort = 'desc',
-        bool $trashed = false
+        bool $trashed = false,
+        Builder|null $query = null
     ): Builder {
         return $this->model
             ->when($status, function ($query) use ($status) {
@@ -105,7 +106,6 @@ abstract class CoreRepository implements CoreRepositoryContract
                         }
                     }
                 } elseif (str_contains($field, '.')) {
-                    //dump($field,$key);
                     $relation = explode('.', $field);
                     $column   = array_pop($relation);
                     $query->orWhereRelation(implode('.', $relation), $column, "like", "%$search%");
@@ -212,13 +212,27 @@ abstract class CoreRepository implements CoreRepositoryContract
         Builder $query,
         int|string $limit = 30,
         array $appends = [],
+        string|array|null $pluck = null
     ): Collection {
-        return $this->availability($query)
+        $query = $this->availability($query)
             ->when($limit !== 'all', function ($query) use ($limit) {
                 $query->limit($limit);
-            })
-            ->get()
-            ->append($appends);
+            });
+
+        if ($pluck) {
+            if (is_array($pluck)) {
+                $column = $pluck['column'];
+                $key    = $pluck['key'] ?? null;
+            } else {
+                $column = $pluck;
+                $key    = null;
+            }
+
+            return $query->pluck($column, $key);
+        } else {
+            return $query->get()
+                ->append($appends);
+        }
     }
 
     public function pagination(
@@ -237,12 +251,14 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     public function isJson(string $field): bool
     {
-        return in_array($field, $this->model->getJsonColumns() ?? [], true);
+        return method_exists($this->model, 'getJsonColumns') &&
+            in_array($field, $this->model->getJsonColumns() ?? [], true);
     }
 
     public function isSearchable(string $field): bool
     {
-        return in_array($field, $this->model->getSearchable() ?? [], true);
+        return method_exists($this->model, 'getSearchable') &&
+            in_array($field, $this->model->getSearchable() ?? [], true);
     }
 
     /**

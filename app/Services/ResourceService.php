@@ -105,7 +105,7 @@ class ResourceService implements ResourceServiceContract
         string $identifier = null
     ) {
         $this->deleteFile($relation);
-        $this->saveImage($file, $relation, $path, $identifier);
+        $this->saveFile($file, $relation, $path, $identifier);
     }
 
     /**

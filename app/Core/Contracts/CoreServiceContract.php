@@ -2,6 +2,7 @@
 
 namespace App\Core\Contracts;
 
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -9,7 +10,7 @@ use Illuminate\Support\Collection;
 
 interface CoreServiceContract
 {
-    public function get(FormRequest $request): Collection|LengthAwarePaginator;
+    public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator;
 
     /**
      * Show entity
@@ -21,6 +22,8 @@ interface CoreServiceContract
      */
     public function show(Model|int $model, FormRequest $request): mixed;
 
+    public function creating(FormRequest $request);
+
     /**
      * Create entity
      *
@@ -29,6 +32,10 @@ interface CoreServiceContract
      * @return mixed
      */
     public function create(FormRequest $request): mixed;
+
+    public function created(Model $model, FormRequest $request): void;
+
+    public function updating(Model $model, FormRequest $request): FormRequest;
 
     /**
      * Update entity
@@ -39,6 +46,17 @@ interface CoreServiceContract
      * @return bool
      */
     public function update(Model $model, FormRequest $request): bool;
+
+    public function updated(Model $model, FormRequest $request): void;
+
+    /**
+     * you can use Observer or this
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    public function deleting(Model $model);
 
     /**
      * Delete entity

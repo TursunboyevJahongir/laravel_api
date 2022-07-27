@@ -17,9 +17,10 @@ interface CoreRepositoryContract
      * @param array|null $filters
      * @param array|null $notFilters
      * @param array|null $orFilters
-     * @param string $filterBy
-     * @param string $order
+     * @param string $orderBy
+     * @param string $sort
      * @param bool $trashed
+     * @param Builder|null $query
      *
      * @return Builder
      */
@@ -31,15 +32,17 @@ interface CoreRepositoryContract
         array|null $filters = null,
         array|null $notFilters = null,
         array|null $orFilters = null,
-        string $filterBy = 'id',
-        string $order = 'desc',
-        bool $trashed = false
+        string $orderBy = 'id',
+        string $sort = 'desc',
+        bool $trashed = false,
+        Builder|null $query = null
     ): Builder;
 
     public function collection(
         Builder $query,
         int|string $limit = 30,
-        array $appends = []
+        array $appends = [],
+        string|null $pluck = null
     ): Collection;
 
     public function pagination(

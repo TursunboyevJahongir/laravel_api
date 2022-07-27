@@ -19,4 +19,5 @@ return [
     'isnt_your_worker'            => "This is not your worker",
     'product_not_found'           => "Product not found",
     'logout'                      => 'Logged out',
+    'error_type'                  => "Error type",
 ];

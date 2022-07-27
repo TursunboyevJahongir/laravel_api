@@ -8,15 +8,15 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 
-class UserPolicy extends CorePolicy
+class PermissionPolicy extends CorePolicy
 {
     use HandlesAuthorization;
 
-    protected string $name = 'user';
+    protected string $name = 'permission';
 
     public function updateDelete(User $user, Model $model)
     {
-        if (hasRole('superadmin', $model) || $user === $model) {
+        if(!hasRole('superadmin') && !hasPermission($model, $user)){
             return Response::deny(__('messages.not_access'));
         }
     }

@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\LoggerController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\{AuthController,
+    CategoryController,
+    LoggerController,
+    PermissionController,
+    ProductController,
+    RoleController,
+    UserController
+};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -26,12 +28,22 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('me', 'me');
             Route::patch('me', 'updateProfile');
         });
-    //Route::get('me', [UserController::class, 'me']);
-    //Route::patch('me', [UserController::class, 'updateProfile']);
 
     Route::apiResource('users', UserController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('products', ProductController::class);
+
+    Route::apiResource('roles', RoleController::class);
+    Route::prefix('roles')
+        ->controller(RoleController::class)
+        ->group(function () {
+            Route::post('/{role}/permissions/add', 'assignPermission');
+            Route::post('/{role}/permissions/sub', 'revokePermission');
+            Route::post('/{role}/permissions/sync', 'syncPermissions');
+        });
+
+    Route::apiResource('permissions', PermissionController::class);
+    Route::get('permissions/check-permission', [PermissionController::class, 'hasAllPermissions']);//todo
 
     #new Resource to here
 

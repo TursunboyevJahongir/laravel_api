@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\UserServiceContract;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\ProfileUpdateRequest;
 use App\Http\Requests\Api\UserCreateRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
-use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Controllers\CoreController as Controller;
