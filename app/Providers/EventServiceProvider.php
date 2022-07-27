@@ -6,7 +6,9 @@ use App\Events\LoggerEvent;
 use App\Events\UpdateFile;
 use App\Listeners\LoggerListener;
 use App\Listeners\UpdateFileListener;
+use App\Models\Product;
 use App\Models\User;
+use App\Observers\ProductObserver;
 use App\Observers\UserObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\AttachImages;
@@ -37,7 +39,8 @@ class EventServiceProvider extends ServiceProvider
     ];
 
     protected $observers = [
-        User::class => [UserObserver::class],
+        User::class    => [UserObserver::class],
+        Product::class => [ProductObserver::class],
     ];
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Core\Services;
 
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,12 +18,12 @@ abstract class CoreService implements CoreServiceContract
     }
 
     /**
-     * @param FormRequest $request
+     * @param GetAllFilteredRecordsRequest $request
      * @param mixed ...$appends
      *
      * @return Collection|LengthAwarePaginator
      */
-    public function get(FormRequest $request, ...$appends): Collection|LengthAwarePaginator
+    public function get(GetAllFilteredRecordsRequest $request, ...$appends): Collection|LengthAwarePaginator
     {
         return $this->repository->mainQuery($request->get('columns', ['*']),
                                             $request->get('relations', []),
@@ -40,7 +41,8 @@ abstract class CoreService implements CoreServiceContract
             ->when($request->get('list_type') == 'collection',
                 fn($query) => $this->repository->collection($query,
                                                             $request->get('limit', config('app.page_size')),
-                                                            $request->get('appends', [])),
+                                                            $request->get('appends', []),
+                                                            $request->get('pluck')),
                 fn($query) => $this->repository->pagination($query,
                                                             $request->get('per_page', config('app.pagination_size'))));
     }
@@ -66,6 +68,11 @@ abstract class CoreService implements CoreServiceContract
         );
     }
 
+    public function creating(FormRequest $request)
+    {
+        return $request;
+    }
+
     /**
      * Create entity
      *
@@ -75,24 +82,23 @@ abstract class CoreService implements CoreServiceContract
      */
     public function create(FormRequest $request): mixed
     {
-        $model = Db::transaction(function () use ($request) {
+        return Db::transaction(function () use ($request) {
             $request = $this->creating($request);
 
-            return $this->repository->create($request->validated());
+            $model = $this->repository->create($request->validated());
+            $this->created($model, $request);
+
+            return $model;
         });
-
-        $this->created($model, $request);
-
-        return $model;
-    }
-
-    public function creating(FormRequest $request)
-    {
-        return $request;
     }
 
     public function created(Model $model, FormRequest $request): void
     {
+    }
+
+    public function updating(Model $model, FormRequest $request): FormRequest
+    {
+        return $request;
     }
 
     /**
@@ -115,12 +121,18 @@ abstract class CoreService implements CoreServiceContract
         return true;
     }
 
-    public function updating(Model $model, FormRequest $request): FormRequest
+    public function updated(Model $model, FormRequest $request): void
     {
-        return $request;
     }
 
-    public function updated(Model $model, FormRequest $request): void
+    /**
+     * you can use Observer or this
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    public function deleting(Model $model)
     {
     }
 
@@ -140,17 +152,6 @@ abstract class CoreService implements CoreServiceContract
 
             return $this->repository->delete($model);
         });
-    }
-
-    /**
-     * you can use Observer or this
-     *
-     * @param Model $model
-     *
-     * @return void
-     */
-    public function deleting(Model $model)
-    {
     }
 
     /**

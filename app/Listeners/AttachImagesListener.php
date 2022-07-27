@@ -26,6 +26,6 @@ class AttachImagesListener
      */
     public function handle(AttachImages $event)
     {
-        $this->resource->attachImages($event->images, $event->relation, $event->identifier, $event->path);
+        $this->resource->attachImages($event->images, $event->relation, $event->path, $event->identifier);
     }
 }

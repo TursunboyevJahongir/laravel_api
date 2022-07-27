@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\ProductServiceContract;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\ProductCreateRequest;
 use App\Http\Requests\Api\ProductUpdateRequest;
-use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Controllers\CoreController as Controller;
@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function __construct(ProductServiceContract $service)
     {
         parent::__construct($service);
-        $this->authorizeResource(Product::class, 'Product');
+        $this->authorizeResource(Product::class, 'product');
     }
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
@@ -36,7 +36,7 @@ class ProductController extends Controller
     public function store(ProductCreateRequest $request): JsonResponse
     {
         try {
-            $product = $this->service->create($request)->loadMissing('ico');
+            $product = $this->service->create($request)->loadMissing('mainImage');
 
             return $this->responseWith(compact('product'), 201);
         } catch (\Exception $e) {

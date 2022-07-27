@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\CategoryServiceContract;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
-use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Controllers\CoreController as Controller;

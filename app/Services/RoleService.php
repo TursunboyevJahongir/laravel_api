@@ -1,59 +1,58 @@
 <?php
 
-
 namespace App\Services;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use App\Contracts\RoleRepositoryContract;
+use App\Contracts\RoleServiceContract;
+use App\Core\Services\CoreService;
+use App\Http\Requests\Api\Role\PermissionRequest;
+use App\Http\Requests\Api\Role\SyncPermissionsRequest;
+use App\Models\Role;
+use Illuminate\Foundation\Http\FormRequest;
 
-class RoleService
+class RoleService extends CoreService implements RoleServiceContract
 {
-    public function index()
+    public function __construct(RoleRepositoryContract $repository)
     {
-        return Role::get();
+        parent::__construct($repository);
     }
 
-    public function permissions(): array
+    /**
+     * Give permission to Role
+     *
+     * @param Role $role
+     * @param PermissionRequest $request
+     *
+     * @return Role
+     */
+    public function givePermissionTo(Role $role, PermissionRequest $request): Role
     {
-        return Permission::query()->where('guard_name', 'web')->get()->pluck('name')->toArray();
+        return $this->repository->givePermissionTo($role, $request->get('permission'));
     }
 
-    public function show(string $name): Model|Builder
+    /**
+     * Revoke permission to
+     *
+     * @param Role $role
+     * @param PermissionRequest $request
+     *
+     * @return mixed
+     */
+    public function revokePermissionTo(Role $role, PermissionRequest $request): mixed
     {
-        return Role::query()->where('name', $name)->firstOrFail();
+        return $this->repository->revokePermissionTo($role, $request->get('permission'));
     }
 
-    public function create(array $data): Model|Builder
+    /**
+     * Syn Role permissions
+     *
+     * @param Role $role
+     * @param SyncPermissionsRequest $request
+     *
+     * @return mixed
+     */
+    public function syncPermissions(Role $role, SyncPermissionsRequest $request): mixed
     {
-        $role = Role::create(['guard_name' => 'web', 'name' => $data['name']]);
-        if (isset($data['permissions']))
-            $role->syncPermissions($data['permissions']);
-        return $role;
-    }
-
-    public function update(string $name, array $data): Model|Builder
-    {
-        if ($name === 'admin') {
-            throw new \Exception(__('messages.cannot_change_admin'), 403);
-        }
-        $role = Role::query()->where('name', $name)->firstOrFail();
-        $role->syncPermissions($data['permissions']);
-        return $role;
-    }
-
-    public function delete(string $name)
-    {
-        if ($name === 'admin') {
-            throw new \Exception(__('messages.cannot_change_admin'), 403);
-        }
-
-        if ($name === 'customer') {
-            throw new \Exception(__('messages.cannot_delete_using_element'), 403);
-        }
-        $role = Role::where(['name' => $name])->first();
-        $role->delete();
+        return $this->repository->syncRolePermissions($role, $request->get('permissions'));
     }
 }

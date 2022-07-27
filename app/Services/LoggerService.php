@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Contracts\LoggerRepositoryContract;
 use App\Contracts\LoggerServiceContract;
 use App\Core\Services\CoreService;

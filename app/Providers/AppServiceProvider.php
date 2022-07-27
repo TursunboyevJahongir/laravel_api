@@ -2,24 +2,34 @@
 
 namespace App\Providers;
 
-use App\Contracts\{
-    CategoryRepositoryContract,
+use App\Contracts\{CategoryRepositoryContract,
     CategoryServiceContract,
     LoggerRepositoryContract,
     LoggerServiceContract,
+    PermissionRepositoryContract,
+    PermissionServiceContract,
     ProductRepositoryContract,
     ProductServiceContract,
     ResourceRepositoryContract,
     ResourceServiceContract,
+    RoleRepositoryContract,
+    RoleServiceContract,
     UserRepositoryContract,
-    UserServiceContract
-};
-use App\Repositories\{
-    CategoryRepository, LoggerRepository, ProductRepository, ResourceRepository, UserRepository
-};
-use App\Services\{
-    CategoryService, LoggerService, ProductService, ResourceService, UserService
-};
+    UserServiceContract};
+use App\Repositories\{CategoryRepository,
+    LoggerRepository,
+    PermissionRepository,
+    ProductRepository,
+    ResourceRepository,
+    RoleRepository,
+    UserRepository};
+use App\Services\{CategoryService,
+    LoggerService,
+    PermissionService,
+    ProductService,
+    ResourceService,
+    RoleService,
+    UserService};
 use App\Core\{
     Contracts\CoreRepositoryContract,
     Contracts\CoreServiceContract,
@@ -55,6 +65,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LoggerRepositoryContract::class, LoggerRepository::class);
         $this->app->bind(ProductServiceContract::class, ProductService::class);
         $this->app->bind(ProductRepositoryContract::class, ProductRepository::class);
+        $this->app->bind(PermissionServiceContract::class, PermissionService::class);
+        $this->app->bind(PermissionRepositoryContract::class, PermissionRepository::class);
+        $this->app->bind(RoleServiceContract::class, RoleService::class);
+        $this->app->bind(RoleRepositoryContract::class, RoleRepository::class);
     }
 
     /**

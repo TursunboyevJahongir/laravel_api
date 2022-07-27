@@ -19,14 +19,25 @@ class RolesTableSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleNames = ['superadmin', 'customer', 'owner', 'manager', 'salesman'];
-        $roles     = collect($roleNames)->map(function ($role) {
-            return ['name'       => $role,
-                    'guard_name' => 'api',
-                    'created_at' => now(),
-                    'updated_at' => now()];
-        });
-        Role::insert($roles->toArray());
+        $roleNames = [
+            'superadmin' => ['uz' => 'Administrator', 'ru' => "Администратор", 'en' => "Administrator"],
+            'moderator'  => ['uz' => 'moderator', 'ru' => "Модератор", 'en' => "moderator"],
+            'owner'      => ['uz' => "Korxona egasi", 'ru' => "Владелец", 'en' => "Owner"],
+            'salesman'   => ['uz' => "Sotuvchi", 'ru' => "Продавец", 'en' => "Salesman"],
+            'customer'   => ['uz' => "Xaridor", 'ru' => "Покупатель", 'en' => "Customer"],
+        ];
+
+        $roles = [];
+        foreach ($roleNames as $key => $value) {
+            $roles[] = [
+                'title'      => json_encode($value),
+                'name'       => $key,
+                'guard_name' => 'api',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        Role::insert($roles);
 
         $finder = new Finder();
         $path   = app_path('Http/Controllers/Api');

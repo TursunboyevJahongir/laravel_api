@@ -13,6 +13,10 @@ class CorePolicy
 
     protected string $name;
 
+    public function updateDelete(User $user, Model $model)
+    {
+    }
+
     public function viewAny(User $user): Response
     {
         return hasPermission("read-{$this->name}", $user)
@@ -36,6 +40,8 @@ class CorePolicy
 
     public function update(User $user, Model $model)
     {
+        $this->updateDelete($user, $model);
+
         return hasPermission("update-{$this->name}", $user)
             ? Response::allow()
             : Response::deny(__('messages.not_access'));
@@ -43,6 +49,8 @@ class CorePolicy
 
     public function delete(User $user, Model $model)
     {
+        $this->updateDelete($user, $model);
+
         return hasPermission("delete-{$this->name}", $user)
             ? Response::allow()
             : Response::deny(__('messages.not_access'));

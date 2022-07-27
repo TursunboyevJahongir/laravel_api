@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 
 use App\Contracts\ResourceServiceContract;
+use App\Events\UpdateFile;
 use App\Events\UpdateImage;
 
 class UpdateFileListener
@@ -21,12 +22,12 @@ class UpdateFileListener
     /**
      * Handle the event.
      *
-     * @param UpdateImage $event
+     * @param UpdateFile $event
      *
      * @return void
      */
-    public function handle(UpdateImage $event)
+    public function handle(UpdateFile $event)
     {
-        $this->resource->updateImage($event->file, $event->relation, $event->path, $event->identifier);
+        $this->resource->updateFile($event->file, $event->relation, path: $event->path, identifier: $event->identifier);
     }
 }
