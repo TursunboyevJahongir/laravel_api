@@ -48,7 +48,7 @@ Route::group(['prefix' => 'admin'], function () {
     #new Resource to here
 
     Route::prefix('logger')
-        ->middleware(['auth:api', 'isActive', 'permission:system|logger-read'])
+        ->middleware(['permission:read-logger'])
         ->controller(LoggerController::class)
         ->group(function () {
             Route::get('/', 'index');
