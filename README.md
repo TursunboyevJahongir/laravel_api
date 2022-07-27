@@ -30,7 +30,7 @@
   * working with collection
   * if string need send column name
     * if array pluck[column] required
-          *pluck[key] optional default null
+         * pluck[key] optional default null
 * `order`\->string default id
 * `sort`\-> string\[asc,desc\] default desc
 * `search`\->string default null
