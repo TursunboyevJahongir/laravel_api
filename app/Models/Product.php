@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Core\Traits\CoreModel;
 use App\Helpers\TranslatableJson;
 use App\Traits\Author;
+use App\Traits\IsActive;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,35 +15,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes, Author;
+    use HasFactory, SoftDeletes, Author, CoreModel, IsActive;
 
-    public const PRODUCT_MAIN_IMAGE_RESOURCES = 'PRODUCT_MAIN_IMAGE_RESOURCES';
-    public const PRODUCT_VIDEO_RESOURCES = 'PRODUCT_VIDEO_RESOURCES';
-    public const PRODUCT_IMAGES_RESOURCES = 'PRODUCT_IMAGES_RESOURCES';
+    public const MAIN_IMAGE = 'MAIN_IMAGE';
+    public const VIDEO      = 'VIDEO';
+    public const IMAGES     = 'IMAGES';
 
     protected $fillable = [
-        'author_id',
         'category_id',
         'name',
         'description',
-        'price',
         'position',
-        'tag',
-        'is_active',
         'barcode',
-        'barcode_path'
+        'barcode_path',
     ];
 
     protected $casts = [
-        'name' => TranslatableJson::class,
+        'category_id' => 'int',
+        'name'        => TranslatableJson::class,
         'description' => TranslatableJson::class,
     ];
 
-    protected $dates = ['created_at',
-        'updated_at',
-        'deleted_at'];
+    protected $appends = ['sub_description'];
 
-    protected array $json = ['name', 'description'];
+    protected array  $json     = ['name', 'description'];
+    protected string $filePath = 'products';
 
     protected array $searchable = ['name',
                                    'description',
@@ -49,32 +47,30 @@ class Product extends Model
 
     public function mainImage(): MorphOne
     {
-        return $this->morphOne(Resource::class, 'resource')->where('additional_identifier', self::PRODUCT_MAIN_IMAGE_RESOURCES);
+        return $this->morphOne(Resource::class, 'resource')
+            ->where('additional_identifier', self::MAIN_IMAGE)
+            ->withDefault([
+                              'path_original' => 'images/default/no_image_original.png',
+                              'path_1024'     => 'images/default/no_image_1024.png',
+                              'path_512'      => 'images/default/no_image_512.png',
+                          ]);
     }
 
     public function video(): MorphOne
     {
-        return $this->morphOne(Resource::class, 'resource')->where('additional_identifier', self::PRODUCT_VIDEO_RESOURCES);
+        return $this->morphOne(Resource::class, 'resource')
+            ->where('additional_identifier', self::VIDEO);
     }
 
     public function images(): MorphMany
     {
-        return $this->morphMany(Resource::class, 'resource')->where('additional_identifier', self::PRODUCT_IMAGES_RESOURCES);
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->whereActive(true);
+        return $this->morphMany(Resource::class, 'resource')
+            ->where('additional_identifier', self::IMAGES);
     }
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function getSubDescriptionAttribute(): string|null

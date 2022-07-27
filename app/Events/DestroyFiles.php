@@ -5,7 +5,7 @@ namespace App\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AttachImages
+class DestroyFiles
 {
     use SerializesModels, Dispatchable;
 
@@ -14,11 +14,7 @@ class AttachImages
      *
      * @return void
      */
-    public function __construct(
-        public array $images,
-        public $relation,
-        public string $path = 'files',
-        public string|null $identifier = null
-    ) {
+    public function __construct(public $imageIds)
+    {
     }
 }

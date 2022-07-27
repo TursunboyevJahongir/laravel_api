@@ -3,9 +3,10 @@
 namespace App\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\SerializesModels;
 
-class DestroyImages
+class UpdateFile
 {
     use SerializesModels, Dispatchable;
 
@@ -14,7 +15,11 @@ class DestroyImages
      *
      * @return void
      */
-    public function __construct(public $imageIds)
-    {
+    public function __construct(
+        public UploadedFile $file,
+        public $relation,
+        public string $path = 'files',
+        public string|null $identifier = null
+    ) {
     }
 }

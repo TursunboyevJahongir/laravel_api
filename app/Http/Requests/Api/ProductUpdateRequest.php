@@ -2,40 +2,31 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Models\Product;
-use App\Rules\PhoneRule;
+use App\Rules\checkActiveRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class ProductUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return Auth::check();
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
-            'category_id' => 'nullable|exists:categories,id',
-            'title' => 'nullable|string',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'position' => 'nullable|integer',
-            'tag' => 'nullable|string',
-            'main_image' => 'nullable|image|max:10000',
-            'images.*' => 'nullable|image|max:10000',
-            'video' => 'nullable|mimetypes:video/*|max:20000',
+            'category_id'                              => ['filled',
+                                                           new checkActiveRule('categories', $this->category_id, 'category')],
+            'name'                                     => 'filled|array',
+            'name.' . config('app.main_locale')        => 'filled|string',
+            'name.*'                                   => 'nullable|string',
+            'description'                              => 'nullable|array',
+            'description.' . config('app.main_locale') => 'required_with:description|string',
+            'description.*'                            => 'nullable|string',
+            'position'                                 => 'integer',
+            'main_image'                               => 'nullable|image|max:10000',
+            'images.*'                                 => 'nullable|image|max:10000',
+            'video'                                    => 'nullable|mimetypes:video/*|max:20000',
         ];
+    }
+
+    public function authorize(): bool
+    {
+        return true;
     }
 }

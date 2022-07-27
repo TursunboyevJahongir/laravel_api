@@ -22,7 +22,7 @@ class CategoryController extends Controller
     {
         $categories = $this->service->get($request);
 
-        return $this->responseWith(['categories' => $categories]);
+        return $this->responseWith(compact('categories'));
     }
 
     public function show(Category $category, GetAllFilteredRecordsRequest $request): JsonResponse

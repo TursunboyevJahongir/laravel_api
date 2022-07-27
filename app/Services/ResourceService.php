@@ -64,13 +64,47 @@ class ResourceService implements ResourceServiceContract
      * @param string $path
      * @param string|null $identifier
      */
+    public function saveFile(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    ) {
+        $type     = $file->getClientOriginalExtension();
+        $fileName = md5(time() . $file->getFilename()) . '.' . $type;
+        $file->storeAs("$path/original", $fileName);
+        $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName");
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param MorphOne|MorphMany|MorphToMany $relation
+     * @param string $path
+     * @param string|null $identifier
+     */
     public function updateImage(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
         string $path = 'files',
         string $identifier = null
     ) {
-        $this->deleteImage($relation);
+        $this->deleteFile($relation);
+        $this->saveImage($file, $relation, $path, $identifier);
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param MorphOne|MorphMany|MorphToMany $relation
+     * @param string $path
+     * @param string|null $identifier
+     */
+    public function updateFile(
+        UploadedFile $file,
+        MorphOne|MorphMany|MorphToMany $relation,
+        string $path = 'files',
+        string $identifier = null
+    ) {
+        $this->deleteFile($relation);
         $this->saveImage($file, $relation, $path, $identifier);
     }
 
@@ -85,7 +119,7 @@ class ResourceService implements ResourceServiceContract
     /**
      * @param $relation
      */
-    public function deleteImage($relation)
+    public function deleteFile($relation)
     {
         if ($relation->exists()) {
             $this->repository->removeFile($relation->first());

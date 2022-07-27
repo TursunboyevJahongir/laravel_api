@@ -11,6 +11,7 @@ return [
     'cannot_change_admin'         => "You don't have access to delete or update Admin",
     'not_found'                   => 'Не найдено',
     'not_access'                  => 'Нет доступа',
+    'attribute_not_found'         => ':attribute не найдено',
     'position_deleted'            => "':attribute' position removed",
     'employee_deleted'            => "Director ':attribute' removed",
     'user_deleted'                => "':attribute' User removed",
