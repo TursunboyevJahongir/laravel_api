@@ -147,38 +147,38 @@ abstract class CoreRepository implements CoreRepositoryContract
         $query->where(function ($query) use ($filters, $boolean) {
             $filters = $filters[array_key_first($filters)];
             foreach ($filters as $key => $filter) {
-                $query->when(in_array($key, $this->model->getFillable(), true)
-                             || in_array($key, $this->model->getDates(), true)
-                             || $key === "id",
-                    function (Builder $query) use ($key, $filter, $boolean) {
-                        if ($this->isSearchable($key)) {
-                            if ($this->isJson($key)) {
-                                $query->where(function ($query) use ($key, $filter) {
-                                    foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                        $query->orWhere("$key->$lang", "like", "%$filter%");
-                                    }
-                                });
-                            } elseif ($this->inDates($key)) {
-                                $time = Carbon::createFromTimestamp(strtotime($filter));
-                                $query->orWhereDate($key, $time);
-                            } else {
-                                $query->where($key, 'like', "%$filter%", boolean: $boolean);
-                            }
-                        } elseif (in_array($key, $this->model->getDates(), true)) {
+                if (in_array($key, $this->model->getFillable(), true)
+                    || in_array($key, $this->model->getDates(), true)
+                    || $key === "id") {
+                    if ($this->isSearchable($key)) {
+                        if ($this->isJson($key)) {
+                            $query->where(function ($query) use ($key, $filter) {
+                                foreach (AvailableLocalesEnum::toArray() as $lang) {
+                                    $query->orWhere("$key->$lang", "like", "%$filter%");
+                                }
+                            });
+                        } elseif ($this->inDates($key)) {
                             $time = Carbon::createFromTimestamp(strtotime($filter));
                             $query->orWhereDate($key, $time);
-                        } elseif ($key === "id" || is_array($filter)) {
-                            $filter = is_array($filter) ? $filter : explode(',', $filter);
-                            $query->whereIn($key, $filter, boolean: $boolean);
                         } else {
-                            $query->where($key, '=', $filter, boolean: $boolean);
+                            $query->where($key, 'like', "%$filter%", boolean: $boolean);
                         }
-                    })
-                    ->when(str_contains($key, '.'), function (Builder $query) use ($key, $filter, $boolean) {
-                        $relation = explode('.', $key);
-                        $column   = array_pop($relation);
-                        $this->whereInRelation($query, implode('.', $relation), $column, Arr::wrap($filter), $boolean);
-                    });
+                    } elseif (in_array($key, $this->model->getDates(), true)) {
+                        $time = Carbon::createFromTimestamp(strtotime($filter));
+                        $query->orWhereDate($key, $time);
+                    } elseif ($key === "id" || is_array($filter)) {
+                        $filter = is_array($filter) ? $filter : explode(',', $filter);
+                        $query->whereIn($key, $filter, boolean: $boolean);
+                    } else {
+                        $query->where($key, '=', $filter, boolean: $boolean);
+                    }
+                } elseif (str_contains($key, '.')) {
+                    $relation = explode('.', $key);
+                    $column   = array_pop($relation);
+                    $this->whereInRelation($query, implode('.', $relation), $column, Arr::wrap($filter), $boolean);
+                } else {
+                    $query->where($key, '=', $filter, boolean: $boolean);
+                }
             }
         });
     }
