@@ -15,9 +15,9 @@ class ProductRepository extends CoreRepository implements ProductRepositoryContr
         parent::__construct($model);
     }
 
-    public function availability(Model|Builder $query): Builder|Model
+    public function availability(Model|Builder $query): void
     {
-        return $query->when(!hasRole('superadmin'), function ($query) {
+        $query->when(!hasRole('superadmin'), function ($query) {
             $query->where('author_id', auth()->id());
         });
     }

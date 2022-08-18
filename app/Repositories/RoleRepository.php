@@ -19,9 +19,9 @@ class RoleRepository extends CoreRepository implements RoleRepositoryContract
         parent::__construct($model);
     }
 
-    public function availability(Builder|Model $query): Builder|Model
+    public function availability(Builder|Model $query): void
     {
-        return $query->when(!hasPermission("system") || !hasRole('superadmin'),
+        $query->when(!hasPermission("system") || !hasRole('superadmin'),
             function (Builder $query) {
                 $query->whereDoesntHave('permissions', function ($query) {
                     $query->where('name', 'system');
