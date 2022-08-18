@@ -1,36 +1,42 @@
 <?php
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
-Builder::macro('search', function ($columns, string $value) {
-    $this->where(function (Builder $query) use ($columns, $value) {
-        foreach (Arr::wrap($columns) as $column) {
-            $query->when(
-                Str::contains($column, '.'),
+$EloquentBuilder = EloquentBuilder::class;
+$queryBuilder    = QueryBuilder::class;
 
-                // Relational searches
-                function (Builder $query) use ($column, $value) {
-                    $parts = explode('.', $column);
-                    $relationColumn = array_pop($parts);
-                    $relationName = join('.', $parts);
+foreach ([$EloquentBuilder, $queryBuilder] as $builder) {
+    $builder::macro('search', function ($columns, string $value) {
+        $this->where(function ($query) use ($columns, $value) {
+            foreach (Arr::wrap($columns) as $column) {
+                $query->when(
+                    Str::contains($column, '.'),
 
-                    return $query->orWhereHas(
-                        $relationName,
-                        function (Builder $query) use ($relationColumn, $value) {
-                            $query->where($relationColumn, 'LIKE', "%{$value}%");
-                        }
-                    );
-                },
+                    // Relational searches
+                    function ($query) use ($column, $value) {
+                        $parts          = explode('.', $column);
+                        $relationColumn = array_pop($parts);
+                        $relationName   = join('.', $parts);
 
-                // Default searches
-                function (Builder $query) use ($column, $value) {
-                    return $query->orWhere($column, 'LIKE', "%{$value}%");
-                }
-            );
-        }
+                        return $query->orWhereHas(
+                            $relationName,
+                            function ($query) use ($relationColumn, $value) {
+                                $query->where($relationColumn, 'LIKE', "%{$value}%");
+                            }
+                        );
+                    },
+
+                    // Default searches
+                    function ($query) use ($column, $value) {
+                        return $query->orWhere($column, 'LIKE', "%{$value}%");
+                    }
+                );
+            }
+        });
+
+        return $this;
     });
-
-    return $this;
-});
+}

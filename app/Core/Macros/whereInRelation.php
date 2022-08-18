@@ -1,11 +1,15 @@
 <?php
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
-Builder::macro('whereInRelation', function ($relation, $column, array $value, $boolean = 'and') {
-    return $this->whereHas($relation, function (Builder $query) use ($column, $value, $boolean) {
-        $query->whereIn($column, $value, boolean: $boolean);
+$EloquentBuilder = EloquentBuilder::class;
+$queryBuilder    = QueryBuilder::class;
+
+foreach ([$EloquentBuilder, $queryBuilder] as $builder) {
+    $builder::macro('whereInRelation', function ($relation, $column, array $value, $boolean = 'and') {
+        return $this->whereHas($relation, function ($query) use ($column, $value, $boolean) {
+            $query->whereIn($column, $value, boolean: $boolean);
+        });
     });
-});
+}
