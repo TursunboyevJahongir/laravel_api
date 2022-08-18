@@ -3,14 +3,10 @@
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
-$EloquentBuilder = EloquentBuilder::class;
-$queryBuilder    = QueryBuilder::class;
-
-foreach ([$EloquentBuilder, $queryBuilder] as $builder) {
+foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('paginationOrCollection', function () {
         return $this->when(request()->get('list_type') == 'collection',
             function ($query): Collection {

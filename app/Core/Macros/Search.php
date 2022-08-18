@@ -5,10 +5,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
-$EloquentBuilder = EloquentBuilder::class;
-$queryBuilder    = QueryBuilder::class;
-
-foreach ([$EloquentBuilder, $queryBuilder] as $builder) {
+foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('search', function ($columns, string $value) {
         $this->where(function ($query) use ($columns, $value) {
             foreach (Arr::wrap($columns) as $column) {
