@@ -11,13 +11,9 @@ Builder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC'
         if (str_contains($orderBy, ',')) {
             $fields = explode(',', $orderBy);
             foreach ($fields as $field) {
-                $field = $this->isJson($field) ?
-                    $field . "->" . app()->getLocale() : $field;
                 $query->orderBy($field, $sort);
             }
         } else {
-            $orderBy = $this->isJson($orderBy) ?
-                $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
     });

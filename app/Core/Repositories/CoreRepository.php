@@ -43,6 +43,8 @@ abstract class CoreRepository implements CoreRepositoryContract
         array|null $notFilters = null,
         array|null $orFilters = null,
         bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
         $columns    = request()->get('columns', ['*']);
@@ -52,8 +54,10 @@ abstract class CoreRepository implements CoreRepositoryContract
         $notFilters = request()->get('not_filters');
         $orFilters  = request()->get('or_filters');
         $trashed    = request()->get('only_deleted', false);
+        $orderBy    = request()->get('order', 'id');
+        $sort       = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $search, $filters, $notFilters, $orFilters, $trashed);
+        return $this->mainQuery($columns, $relations, $search, $filters, $notFilters, $orFilters, $trashed, $orderBy, $sort, $query);
     }
 
     public function mainQuery(
@@ -64,6 +68,8 @@ abstract class CoreRepository implements CoreRepositoryContract
         array|null $notFilters = null,
         array|null $orFilters = null,
         bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
         return $this->model
@@ -85,6 +91,9 @@ abstract class CoreRepository implements CoreRepositoryContract
              */
             ->when($orFilters, fn($q) => $this->filters($q, $filters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
+            ->when(true, function ($query) use ($orderBy, $sort) {
+                return $this->orderBy($query, $orderBy, $sort);
+            })
             ->with($relations);
     }
 
@@ -164,6 +173,25 @@ abstract class CoreRepository implements CoreRepositoryContract
                 }
             }
         });
+    }
+
+    public function orderBy(
+        Builder $query,
+        string $orderBy = "id",
+        string $sort = 'DESC'
+    ) {
+        if (str_contains($orderBy, ',')) {
+            $fields = explode(',', $orderBy);
+            foreach ($fields as $field) {
+                $field = $this->isJson($field) ?
+                    $field . "->" . app()->getLocale() : $field;
+                $query->orderBy($field, $sort);
+            }
+        } else {
+            $orderBy = $this->isJson($orderBy) ?
+                $orderBy . "->" . app()->getLocale() : $orderBy;
+            $query->orderBy($orderBy, $sort);
+        }
     }
 
     public function whereInRelation(Builder $query, $relation, $column, array $value, $boolean = 'and')
@@ -318,11 +346,12 @@ abstract class CoreRepository implements CoreRepositoryContract
      */
     public function findById(
         int $modelId,
-        array $columns = [' * '],
+        array $columns = ['*'],
         array $relations = [],
         array $appends = [],
     ): ?Model {
         return $this->model
+            ->where(\Closure::fromCallable([$this, 'availability']))
             ->select($columns)
             ->with($relations)
             ->findOrFail($modelId)

@@ -17,6 +17,8 @@ interface CoreRepositoryContract
      * @param array|null $notFilters
      * @param array|null $orFilters
      * @param bool $trashed
+     * @param string $orderBy
+     * @param string $sort
      * @param Builder|null $query
      *
      * @return Builder
@@ -29,6 +31,8 @@ interface CoreRepositoryContract
         array|null $notFilters = null,
         array|null $orFilters = null,
         bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         Builder|null $query = null
     ): Builder;
 
@@ -40,6 +44,8 @@ interface CoreRepositoryContract
      * @param array|null $notFilters
      * @param array|null $orFilters
      * @param bool $trashed
+     * @param string $orderBy
+     * @param string $sort
      * @param Builder|null $query
      *
      * @return Builder
@@ -52,6 +58,8 @@ interface CoreRepositoryContract
         array|null $notFilters = null,
         array|null $orFilters = null,
         bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         Builder|null $query = null
     ): Builder;
 

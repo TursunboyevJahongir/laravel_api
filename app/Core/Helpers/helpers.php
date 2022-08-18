@@ -115,19 +115,16 @@ if (!function_exists('mine')) {
     }
 }
 
-if (!function_exists('core')) {
+if (!function_exists('core_path')) {
     /**
-     * Get the available container instance.
+     * Get the path to the application folder.
      *
-     * @param string|null $abstract
-     * @param array $parameters
+     * @param string $path
      *
-     * @return mixed|\Illuminate\Contracts\Foundation\Application
+     * @return string
      */
-    function core($abstract = null, array $parameters = [])
+    function core_path($path = '')
     {
-        $abstract = $abstract ? $abstract . '/Core' : null;
-
-        return app($abstract, $parameters);
+        return app_path('Core/' . $path);
     }
 }

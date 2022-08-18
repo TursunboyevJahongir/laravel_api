@@ -14,7 +14,7 @@ class EloquentMacroServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Collection::make(core('Macros/*.php'))
+        Collection::make(glob(core_path('Macros/*.php')))
             ->mapWithKeys(function ($path) {
                 return [$path => pathinfo($path, PATHINFO_FILENAME)];
             })

@@ -39,7 +39,8 @@ class UserRepository extends CoreRepository implements UserRepositoryContract
         array $relations = [],
         array $appends = [],
     ): ?Model {
-        return $this->availability($this->model)
+        return $this->model
+            ->where(\Closure::fromCallable([$this, 'availability']))
             ->with($relations)
             ->wherePhone($phone)
             ->first($columns)
