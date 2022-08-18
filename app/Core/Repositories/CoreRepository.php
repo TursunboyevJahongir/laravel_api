@@ -91,9 +91,8 @@ abstract class CoreRepository implements CoreRepositoryContract
              */
             ->when($orFilters, fn($q) => $this->filters($q, $filters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
-            ->when(true, function ($query) use ($orderBy, $sort) {
-                return $this->orderBy($query, $orderBy, $sort);
-            })
+            ->when($trashed, fn($query) => $query->onlyTrashed())
+            ->when(true, fn($q) => $this->orderBy($q, $orderBy, $sort))
             ->with($relations);
     }
 
