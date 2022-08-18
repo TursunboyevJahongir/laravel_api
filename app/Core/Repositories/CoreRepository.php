@@ -84,12 +84,12 @@ abstract class CoreRepository implements CoreRepositoryContract
              * not equal
              * not filter not_filters[0][status]=activated
              */
-            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $this->filters($q, $filters)))
+            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $this->filters($q, $notFilters)))
             /**
              * or filter
              * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
              */
-            ->when($orFilters, fn($q) => $this->filters($q, $filters, 'or'))
+            ->when($orFilters, fn($q) => $this->filters($q, $orFilters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->when(true, fn($q) => $this->orderBy($q, $orderBy, $sort))

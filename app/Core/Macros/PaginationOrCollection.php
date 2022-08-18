@@ -9,7 +9,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('paginationOrCollection', function () {
         return $this->when(request()->get('list_type') == 'collection',
-            function ($query): Collection {
+            function (EloquentBuilder|QueryBuilder $query): Collection {
                 $limit = request()->get('limit', config('app.page_size'));
                 (array)$appends = request()->get('appends', []);
                 $pluck = request()->get('pluck');
@@ -30,7 +30,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
                     return $query->get()->append($appends);
                 }
             },
-            function ($query): LengthAwarePaginator {
+            function (EloquentBuilder|QueryBuilder $query): LengthAwarePaginator {
                 (int)$per_page = request()->get('per_page', config('app.pagination_size'));
 
                 return $query->paginate($per_page);

@@ -5,7 +5,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
-        $this->where(function ($query) use ($orderBy, $sort) {
+        $this->where(function (EloquentBuilder|QueryBuilder $query) use ($orderBy, $sort) {
             $orderBy = request()->get('order', $orderBy);
             $sort    = request()->get('sort', $sort);
             if (str_contains($orderBy, ',')) {

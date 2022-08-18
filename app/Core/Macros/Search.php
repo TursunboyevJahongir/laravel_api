@@ -7,13 +7,13 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('search', function ($columns, string $value) {
-        $this->where(function ($query) use ($columns, $value) {
+        $this->where(function (EloquentBuilder|QueryBuilder $query) use ($columns, $value) {
             foreach (Arr::wrap($columns) as $column) {
                 $query->when(
                     Str::contains($column, '.'),
 
                     // Relational searches
-                    function ($query) use ($column, $value) {
+                    function (EloquentBuilder|QueryBuilder $query) use ($column, $value) {
                         $parts          = explode('.', $column);
                         $relationColumn = array_pop($parts);
                         $relationName   = join('.', $parts);
@@ -27,7 +27,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
                     },
 
                     // Default searches
-                    function ($query) use ($column, $value) {
+                    function (EloquentBuilder|QueryBuilder $query) use ($column, $value) {
                         return $query->orWhere($column, 'LIKE', "%{$value}%");
                     }
                 );
