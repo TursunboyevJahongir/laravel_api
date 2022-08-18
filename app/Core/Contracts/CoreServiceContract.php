@@ -22,7 +22,7 @@ interface CoreServiceContract
      */
     public function show(Model|int $model, FormRequest $request): mixed;
 
-    public function creating(FormRequest $request);
+    public function creating(FormRequest &$request): void;
 
     /**
      * Create entity
@@ -35,7 +35,7 @@ interface CoreServiceContract
 
     public function created(Model $model, FormRequest $request): void;
 
-    public function updating(Model $model, FormRequest $request): FormRequest;
+    public function updating(Model $model, FormRequest &$request): void;
 
     /**
      * Update entity

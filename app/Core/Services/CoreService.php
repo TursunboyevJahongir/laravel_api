@@ -25,29 +25,14 @@ abstract class CoreService implements CoreServiceContract
      */
     public function get(GetAllFilteredRecordsRequest $request, ...$appends): Collection|LengthAwarePaginator
     {
-        return $this->repository->mainQuery($request->get('columns', ['*']),
-                                            $request->get('relations', []),
-                                            $request->get('status'),
-                                            $request->get('search'),
-                                            $request->get('filters'),
-                                            $request->get('not_filters'),
-                                            $request->get('or_filters'),
-                                            $request->get('order', 'id'),
-                                            $request->get('sort', 'desc'),
-                                            $request->get('only_deleted', false))
-            ->where(function ($query) use ($appends) {
-                $this->appends($query, $appends);
-            })
-            ->when($request->get('list_type') == 'collection',
-                fn($query) => $this->repository->collection($query,
-                                                            $request->get('limit', config('app.page_size')),
-                                                            $request->get('appends', []),
-                                                            $request->get('pluck')),
-                fn($query) => $this->repository->pagination($query,
-                                                            $request->get('per_page', config('app.pagination_size'))));
+        return $this->repository->query()
+            ->isActive()
+            ->where(\Closure::fromCallable([$this, 'appends']))
+            ->sortBy()
+            ->paginationOrCollection();
     }
 
-    public function appends(Builder $query, ...$appends)
+    public function appends(Builder $query)
     {
     }
 
@@ -68,9 +53,8 @@ abstract class CoreService implements CoreServiceContract
         );
     }
 
-    public function creating(FormRequest $request)
+    public function creating(FormRequest &$request): void
     {
-        return $request;
     }
 
     /**
@@ -82,23 +66,20 @@ abstract class CoreService implements CoreServiceContract
      */
     public function create(FormRequest $request): mixed
     {
-        return Db::transaction(function () use ($request) {
-            $request = $this->creating($request);
+        $this->creating($request);
 
-            $model = $this->repository->create($request->validated());
-            $this->created($model, $request);
+        $model = $this->repository->create($request->validated());
+        $this->created($model, $request);
 
-            return $model;
-        });
+        return $model;
     }
 
     public function created(Model $model, FormRequest $request): void
     {
     }
 
-    public function updating(Model $model, FormRequest $request): FormRequest
+    public function updating(Model $model, FormRequest &$request): void
     {
-        return $request;
     }
 
     /**
@@ -111,12 +92,10 @@ abstract class CoreService implements CoreServiceContract
      */
     public function update(Model|int $model, FormRequest $request): bool
     {
-        $model = $this->repository->show($model);
-        Db::transaction(function () use ($request, $model) {
-            $request = $this->updating($model, $request);
-            $this->repository->update($model, $request->validated());
-            $this->updated($model, $request);
-        });
+        $model = $this->repository->show($model);//check availability
+        $this->updating($model, $request);
+        $this->repository->update($model, $request->validated());
+        $this->updated($model, $request);
 
         return true;
     }
@@ -145,7 +124,7 @@ abstract class CoreService implements CoreServiceContract
      */
     public function delete(Model|int $model): mixed
     {
-        $model = $this->repository->show($model);
+        $model = $this->repository->show($model);//check availability
 
         return Db::transaction(function () use ($model) {
             $this->deleting($model);

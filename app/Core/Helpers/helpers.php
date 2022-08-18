@@ -114,3 +114,20 @@ if (!function_exists('mine')) {
         return auth()->user()->isMine($id);
     }
 }
+
+if (!function_exists('core')) {
+    /**
+     * Get the available container instance.
+     *
+     * @param string|null $abstract
+     * @param array $parameters
+     *
+     * @return mixed|\Illuminate\Contracts\Foundation\Application
+     */
+    function core($abstract = null, array $parameters = [])
+    {
+        $abstract = $abstract ? $abstract . '/Core' : null;
+
+        return app($abstract, $parameters);
+    }
+}

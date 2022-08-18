@@ -12,13 +12,33 @@ interface CoreRepositoryContract
     /**
      * @param array|string[] $columns
      * @param array $relations
-     * @param int|null $status
      * @param string|null $search
      * @param array|null $filters
      * @param array|null $notFilters
      * @param array|null $orFilters
-     * @param string $orderBy
-     * @param string $sort
+     * @param bool $trashed
+     * @param Builder|null $query
+     *
+     * @return Builder
+     */
+    public function query(
+        array $columns = ['*'],
+        array $relations = [],
+        string $search = null,
+        array|null $filters = null,
+        array|null $notFilters = null,
+        array|null $orFilters = null,
+        bool $trashed = false,
+        Builder|null $query = null
+    ): Builder;
+
+    /**
+     * @param array|string[] $columns
+     * @param array $relations
+     * @param string|null $search
+     * @param array|null $filters
+     * @param array|null $notFilters
+     * @param array|null $orFilters
      * @param bool $trashed
      * @param Builder|null $query
      *
@@ -27,13 +47,10 @@ interface CoreRepositoryContract
     public function mainQuery(
         array $columns = ['*'],
         array $relations = [],
-        int|null $status = null,
         string $search = null,
         array|null $filters = null,
         array|null $notFilters = null,
         array|null $orFilters = null,
-        string $orderBy = 'id',
-        string $sort = 'desc',
         bool $trashed = false,
         Builder|null $query = null
     ): Builder;
