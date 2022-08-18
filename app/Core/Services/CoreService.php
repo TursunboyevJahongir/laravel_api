@@ -27,7 +27,7 @@ abstract class CoreService implements CoreServiceContract
     {
         return $this->repository->query()
             ->isActive()
-            ->where(\Closure::fromCallable([$this, 'appends']))
+            ->closure($this, 'appends')
             ->paginationOrCollection();
     }
 

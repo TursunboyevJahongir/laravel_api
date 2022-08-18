@@ -74,7 +74,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): Builder {
         return $this->model
             ->select($columns)
-            ->where(\Closure::fromCallable([$this, 'availability']))
+            ->closure($this, 'availability')
             ->when($search, fn($q) => $this->search($q, $search))
             /**
              * to filter filters[0][status]=activated&filters[0][name]="Jahongir"
@@ -344,7 +344,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $appends = [],
     ): ?Model {
         return $this->model
-            ->where(\Closure::fromCallable([$this, 'availability']))
+            ->closure($this, 'availability')
             ->select($columns)
             ->with($relations)
             ->findOrFail($modelId)
