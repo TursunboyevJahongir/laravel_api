@@ -136,7 +136,7 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     private function filters($query, $filters, string $boolean = 'and'): void
     {
-        $query->where(function ($query) use ($filters, $boolean) {
+        $query->where(function (Builder $query) use ($filters, $boolean) {
             $filters = $filters[array_key_first($filters)];
             foreach ($filters as $key => $filter) {
                 if (in_array($key, $this->model->getFillable(), true)
@@ -167,7 +167,7 @@ abstract class CoreRepository implements CoreRepositoryContract
                 } elseif (str_contains($key, '.')) {
                     $relation = explode('.', $key);
                     $column   = array_pop($relation);
-                    $this->whereInRelation($query, implode('.', $relation), $column, Arr::wrap($filter), $boolean);
+                    $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
                 } else {
                     $query->where($key, '=', $filter, boolean: $boolean);
                 }
@@ -192,13 +192,6 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
-    }
-
-    public function whereInRelation(Builder $query, $relation, $column, array $value, $boolean = 'and')
-    {
-        return $query->whereHas($relation, function (Builder $query) use ($column, $value, $boolean) {
-            $query->whereIn($column, $value, boolean: $boolean);
-        });
     }
 
     protected function inDates(string $field)
