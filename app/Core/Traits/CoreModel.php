@@ -52,7 +52,7 @@ trait CoreModel
             in_array($field, $this->getSearchable() ?? [], true);
     }
 
-    public function inDates(string $field)
+    public function inDates(string $field): bool
     {
         $dates = Cache::remember($this->getTable(), 60 * 60 * 24, function () {
             $keys = collect($this->getCasts())
@@ -68,5 +68,10 @@ trait CoreModel
         })->toArray();
 
         return in_array($field, $dates);
+    }
+
+    public function inFillable(string $field): bool
+    {
+        return in_array($field, $this->model->getFillable(), true);
     }
 }

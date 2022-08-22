@@ -13,9 +13,6 @@ interface CoreRepositoryContract
      * @param array|string[] $columns
      * @param array $relations
      * @param string|null $search
-     * @param array|null $filters
-     * @param array|null $notFilters
-     * @param array|null $orFilters
      * @param bool $trashed
      * @param string $orderBy
      * @param string $sort
@@ -27,9 +24,6 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         string $search = null,
-        array|null $filters = null,
-        array|null $notFilters = null,
-        array|null $orFilters = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -40,9 +34,6 @@ interface CoreRepositoryContract
      * @param array|string[] $columns
      * @param array $relations
      * @param string|null $search
-     * @param array|null $filters
-     * @param array|null $notFilters
-     * @param array|null $orFilters
      * @param bool $trashed
      * @param string $orderBy
      * @param string $sort
@@ -54,9 +45,6 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         string $search = null,
-        array|null $filters = null,
-        array|null $notFilters = null,
-        array|null $orFilters = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
