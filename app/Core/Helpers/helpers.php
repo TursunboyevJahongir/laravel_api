@@ -114,3 +114,17 @@ if (!function_exists('mine')) {
         return auth()->user()->isMine($id);
     }
 }
+
+if (!function_exists('core_path')) {
+    /**
+     * Get the path to the application folder.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    function core_path($path = '')
+    {
+        return app_path('Core/' . $path);
+    }
+}

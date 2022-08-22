@@ -13,9 +13,9 @@ class DateCasts implements CastsAttributes
     {
     }
 
-    public function get($model, $key, $value, $attributes): Carbon|null
+    public function get($model, $key, $value, $attributes)
     {
-        return $value ? Date::parse(Carbon::create($value)->format($this->format)) : null;
+        return $value ? Carbon::create($value)->format($this->format) : null;
     }
 
     public function set($model, string $key, $value, array $attributes)

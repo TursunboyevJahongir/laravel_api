@@ -18,7 +18,7 @@ class UserService extends CoreService implements UserServiceContract
         parent::__construct($repository);
     }
 
-    public function appends(Builder $query, ...$appends)
+    public function appends(Builder $query)
     {
         $this->repository->selfExclude($query, request()->get('self_exclude', false));
 
@@ -36,13 +36,11 @@ class UserService extends CoreService implements UserServiceContract
         }
     }
 
-    public function updating(Model $model, FormRequest $request): FormRequest
+    public function updating(Model $model, FormRequest &$request): void
     {
         if ($request->exists('roles')) {
             $this->repository->syncRoleToUser($model, $request['roles']);
         }
-
-        return $request;
     }
 
     public function updated(Model $model, FormRequest $request): void

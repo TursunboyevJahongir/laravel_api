@@ -22,7 +22,7 @@ class PermissionService extends CoreService implements PermissionServiceContract
         parent::__construct($repository);
     }
 
-    public function appends(Builder $query, ...$appends)
+    public function appends(Builder $query)
     {
         $this->repository->role($query, request()->get('role'));
     }

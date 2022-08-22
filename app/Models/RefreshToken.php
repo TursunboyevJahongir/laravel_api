@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\DateCasts;
 use App\Helpers\RefreshTokenGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,8 +20,8 @@ class RefreshToken extends Model
     ];
 
     protected $casts = [
-        'expired_at'         => DateCasts::class,
-        'refresh_expired_at' => DateCasts::class,
+        'expired_at'         => 'datetime:Y.m.d H:i:s',
+        'refresh_expired_at' => 'datetime:Y.m.d H:i:s',
     ];
     protected $with  = ['user'];
 

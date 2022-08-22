@@ -28,61 +28,71 @@ abstract class CoreRepository implements CoreRepositoryContract
      *
      * @param Builder|Model $query
      *
-     * @return Builder|Model
+     * @return void
      */
     public function availability(
         Builder|Model $query
-    ): Builder|Model {
-        return $query;
+    ): void {
     }
 
-    public function mainQuery(
+    public function query(
         array $columns = ['*'],
         array $relations = [],
-        int|null $status = null,
         string $search = null,
         array|null $filters = null,
         array|null $notFilters = null,
         array|null $orFilters = null,
+        bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
+        Builder|null $query = null
+    ): Builder {
+        $columns    = request()->get('columns', ['*']);
+        $relations  = request()->get('relations', []);
+        $search     = request()->get('search');
+        $filters    = request()->get('filters');
+        $notFilters = request()->get('not_filters');
+        $orFilters  = request()->get('or_filters');
+        $trashed    = request()->get('only_deleted', false);
+        $orderBy    = request()->get('order', 'id');
+        $sort       = request()->get('sort', 'DESC');
+
+        return $this->mainQuery($columns, $relations, $search, $filters, $notFilters, $orFilters, $trashed, $orderBy, $sort, $query);
+    }
+
+    public function mainQuery(
+        array $columns = [' * '],
+        array $relations = [],
+        string $search = null,
+        array|null $filters = null,
+        array|null $notFilters = null,
+        array|null $orFilters = null,
         bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
         return $this->model
-            ->when($status, function ($query) use ($status) {
-                $query->where('is_active', $status);
-            })
             ->select($columns)
-            ->when($search, function ($query) use ($search) {
-                $this->search($query, $search);
-            })
+            ->closure($this, 'availability')
+            ->when($search, fn($q) => $this->search($q, $search))
             /**
              * to filter filters[0][status]=activated&filters[0][name]="Jahongir"
              */
-            ->when($filters, function ($query, $filters) {
-                $this->filters($query, $filters);
-            })
+            ->when($filters, fn($q) => $this->filters($q, $filters, 'and'))
             /**
              * not equal
              * not filter not_filters[0][status]=activated
              */
-            ->when($notFilters, function ($query, $filters) {
-                $query->whereNot(function ($query) use ($filters) {
-                    $this->filters($query, $filters);
-                });
-            })
+            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $this->filters($q, $notFilters)))
             /**
              * or filter
              * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
              */
-            ->when($orFilters, function ($query, $filters) {
-                $this->filters($query, $filters, 'or');
-            })
-            ->when(true, function ($query) use ($orderBy, $sort) {
-                return $this->orderBy($query, $orderBy, $sort);
-            })
+            ->when($orFilters, fn($q) => $this->filters($q, $orFilters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
+            ->when($trashed, fn($query) => $query->onlyTrashed())
+            ->when(true, fn($q) => $this->orderBy($q, $orderBy, $sort))
             ->with($relations);
     }
 
@@ -123,28 +133,9 @@ abstract class CoreRepository implements CoreRepositoryContract
         });
     }
 
-    private function orderBy(
-        Builder $query,
-        string $orderBy = "id",
-        string $sort = 'DESC'
-    ) {
-        if (str_contains($orderBy, ',')) {
-            $fields = explode(',', $orderBy);
-            foreach ($fields as $field) {
-                $field = $this->isJson($field) ?
-                    $field . "->" . app()->getLocale() : $field;
-                $query->orderBy($field, $sort);
-            }
-        } else {
-            $orderBy = $this->isJson($orderBy) ?
-                $orderBy . "->" . app()->getLocale() : $orderBy;
-            $query->orderBy($orderBy, $sort);
-        }
-    }
-
     private function filters($query, $filters, string $boolean = 'and'): void
     {
-        $query->where(function ($query) use ($filters, $boolean) {
+        $query->where(function (Builder $query) use ($filters, $boolean) {
             $filters = $filters[array_key_first($filters)];
             foreach ($filters as $key => $filter) {
                 if (in_array($key, $this->model->getFillable(), true)
@@ -175,7 +166,7 @@ abstract class CoreRepository implements CoreRepositoryContract
                 } elseif (str_contains($key, '.')) {
                     $relation = explode('.', $key);
                     $column   = array_pop($relation);
-                    $this->whereInRelation($query, implode('.', $relation), $column, Arr::wrap($filter), $boolean);
+                    $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
                 } else {
                     $query->where($key, '=', $filter, boolean: $boolean);
                 }
@@ -183,11 +174,23 @@ abstract class CoreRepository implements CoreRepositoryContract
         });
     }
 
-    public function whereInRelation(Builder $query, $relation, $column, array $value, $boolean = 'and')
-    {
-        return $query->whereHas($relation, function (Builder $query) use ($column, $value, $boolean) {
-            $query->whereIn($column, $value, boolean: $boolean);
-        });
+    public function orderBy(
+        Builder $query,
+        string $orderBy = "id",
+        string $sort = 'DESC'
+    ) {
+        if (str_contains($orderBy, ',')) {
+            $fields = explode(',', $orderBy);
+            foreach ($fields as $field) {
+                $field = $this->isJson($field) ?
+                    $field . "->" . app()->getLocale() : $field;
+                $query->orderBy($field, $sort);
+            }
+        } else {
+            $orderBy = $this->isJson($orderBy) ?
+                $orderBy . "->" . app()->getLocale() : $orderBy;
+            $query->orderBy($orderBy, $sort);
+        }
     }
 
     protected function inDates(string $field)
@@ -214,7 +217,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $appends = [],
         string|array|null $pluck = null
     ): Collection {
-        $query = $this->availability($query)
+        $query = $query->when(true, fn($q) => $this->availability($q))
             ->when($limit !== 'all', function ($query) use ($limit) {
                 $query->limit($limit);
             });
@@ -240,7 +243,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         int $per_page = 30,
         array $appends = [],
     ): LengthAwarePaginator {
-        return $this->availability($query)
+        return $query->when(true, fn($q) => $this->availability($q))
             ->paginate($per_page);
     }
 
@@ -339,7 +342,9 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $relations = [],
         array $appends = [],
     ): ?Model {
-        return $this->availability($this->model)->select($columns)
+        return $this->model
+            ->closure($this, 'availability')
+            ->select($columns)
             ->with($relations)
             ->findOrFail($modelId)
             ->append($appends);
