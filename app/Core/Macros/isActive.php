@@ -5,8 +5,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('isActive', function (bool $status = null) {
-        $status = request()->get('isActive', $status);
-        $this->when($status, function (EloquentBuilder|QueryBuilder $query) use ($status) {
+        $status = request()->get('is_active', $status);
+        $this->when(!is_null($status), function (EloquentBuilder|QueryBuilder $query) use ($status) {
             $query->where('is_active', $status);
         });
 

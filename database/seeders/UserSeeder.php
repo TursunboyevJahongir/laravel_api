@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
     public function run()
     {
         for ($i = 1; $i <= 5; $i++) {
-            for ($j = 1; $j <= 10000; $j++) {
-                User::insert(['first_name'      => fake()->firstName,
+            for ($j = 1; $j <= 1000; $j++) {
+                User::insert(['first_name'      => fake()->firstName(),
                               'last_name'       => fake()->lastName,
                               'phone'           => fake()->phoneNumber,
                               'password'        => fake()->password,

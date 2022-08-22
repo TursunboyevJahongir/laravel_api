@@ -24,7 +24,7 @@
     *   **working with colection**
 * `per_page`\->integer default 30
     *   **working with pagination**
-* `status`\->boolean\[or 0,1\] default all
+* `is_active`\->boolean\[or 0,1\] default all
     *   or `filters[][is_active]=0` \[0,1\]
 * `pluck`->string | array default null
   * working with collection
