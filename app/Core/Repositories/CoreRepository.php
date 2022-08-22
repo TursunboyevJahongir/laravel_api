@@ -79,17 +79,17 @@ abstract class CoreRepository implements CoreRepositoryContract
             /**
              * to filter filters[0][status]=activated&filters[0][name]="Jahongir"
              */
-            ->when($filters, fn($q) => $this->filters($q, $filters, 'and'))
+            ->when($filters, fn($q) => $q->filters($filters,'and'))
             /**
              * not equal
              * not filter not_filters[0][status]=activated
              */
-            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $this->filters($q, $notFilters)))
+            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $q->filters($q, $notFilters)))
             /**
              * or filter
              * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
              */
-            ->when($orFilters, fn($q) => $this->filters($q, $orFilters, 'or'))
+            ->when($orFilters, fn($q) => $q->filters($orFilters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->when(true, fn($q) => $this->orderBy($q, $orderBy, $sort))
@@ -133,47 +133,6 @@ abstract class CoreRepository implements CoreRepositoryContract
         });
     }
 
-    private function filters($query, $filters, string $boolean = 'and'): void
-    {
-        $query->where(function (Builder $query) use ($filters, $boolean) {
-            $filters = $filters[array_key_first($filters)];
-            foreach ($filters as $key => $filter) {
-                if (in_array($key, $this->model->getFillable(), true)
-                    || in_array($key, $this->model->getDates(), true)
-                    || $key === "id") {
-                    if ($this->isSearchable($key)) {
-                        if ($this->isJson($key)) {
-                            $query->where(function ($query) use ($key, $filter) {
-                                foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                    $query->orWhere("$key->$lang", "like", "%$filter%");
-                                }
-                            });
-                        } elseif ($this->inDates($key)) {
-                            $time = Carbon::createFromTimestamp(strtotime($filter));
-                            $query->orWhereDate($key, $time);
-                        } else {
-                            $query->where($key, 'like', "%$filter%", boolean: $boolean);
-                        }
-                    } elseif (in_array($key, $this->model->getDates(), true)) {
-                        $time = Carbon::createFromTimestamp(strtotime($filter));
-                        $query->orWhereDate($key, $time);
-                    } elseif ($key === "id" || is_array($filter)) {
-                        $filter = is_array($filter) ? $filter : explode(',', $filter);
-                        $query->whereIn($key, $filter, boolean: $boolean);
-                    } else {
-                        $query->where($key, '=', $filter, boolean: $boolean);
-                    }
-                } elseif (str_contains($key, '.')) {
-                    $relation = explode('.', $key);
-                    $column   = array_pop($relation);
-                    $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
-                } else {
-                    $query->where($key, '=', $filter, boolean: $boolean);
-                }
-            }
-        });
-    }
-
     public function orderBy(
         Builder $query,
         string $orderBy = "id",
@@ -191,24 +150,6 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
-    }
-
-    protected function inDates(string $field)
-    {
-        $dates = Cache::remember($this->model->getTable(), 60 * 60 * 24, function () {
-            $keys = collect($this->model->getCasts())
-                ->filter(function ($value, $key) {
-                    if (str_contains($value, 'DateCasts')
-                        || str_contains($value, 'datetime')
-                        || str_contains($value, 'date')) {
-                        return $key;
-                    }
-                });
-
-            return $keys->keys();
-        })->toArray();
-
-        return in_array($field, $dates);
     }
 
     public function collection(
@@ -256,12 +197,6 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return method_exists($this->model, 'getJsonColumns') &&
             in_array($field, $this->model->getJsonColumns() ?? [], true);
-    }
-
-    public function isSearchable(string $field): bool
-    {
-        return method_exists($this->model, 'getSearchable') &&
-            in_array($field, $this->model->getSearchable() ?? [], true);
     }
 
     /**
