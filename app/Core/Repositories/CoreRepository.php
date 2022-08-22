@@ -7,9 +7,7 @@ use App\Enums\AvailableLocalesEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Pivot};
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
@@ -39,34 +37,25 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         string $search = null,
-        array|null $filters = null,
-        array|null $notFilters = null,
-        array|null $orFilters = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
-        $columns    = request()->get('columns', ['*']);
-        $relations  = request()->get('relations', []);
-        $search     = request()->get('search');
-        $filters    = request()->get('filters');
-        $notFilters = request()->get('not_filters');
-        $orFilters  = request()->get('or_filters');
-        $trashed    = request()->get('only_deleted', false);
-        $orderBy    = request()->get('order', 'id');
-        $sort       = request()->get('sort', 'DESC');
+        $columns   = request()->get('columns', ['*']);
+        $relations = request()->get('relations', []);
+        $search    = request()->get('search');
+        $trashed   = request()->get('only_deleted', false);
+        $orderBy   = request()->get('order', 'id');
+        $sort      = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $search, $filters, $notFilters, $orFilters, $trashed, $orderBy, $sort, $query);
+        return $this->mainQuery($columns, $relations, $search, $trashed, $orderBy, $sort, $query);
     }
 
     public function mainQuery(
         array $columns = [' * '],
         array $relations = [],
         string $search = null,
-        array|null $filters = null,
-        array|null $notFilters = null,
-        array|null $orFilters = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -75,24 +64,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         return $this->model
             ->select($columns)
             ->closure($this, 'availability')
-            ->when($search, fn($q) => $this->search($q, $search))
-            /**
-             * to filter filters[0][status]=activated&filters[0][name]="Jahongir"
-             */
-            ->when($filters, fn($q) => $this->filters($q, $filters, 'and'))
-            /**
-             * not equal
-             * not filter not_filters[0][status]=activated
-             */
-            ->when($notFilters, fn($que) => $que->whereNot(fn($q) => $this->filters($q, $notFilters)))
-            /**
-             * or filter
-             * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
-             */
-            ->when($orFilters, fn($q) => $this->filters($q, $orFilters, 'or'))
             ->when($trashed, fn($query) => $query->onlyTrashed())
-            ->when($trashed, fn($query) => $query->onlyTrashed())
-            ->when(true, fn($q) => $this->orderBy($q, $orderBy, $sort))
             ->with($relations);
     }
 
@@ -119,56 +91,15 @@ abstract class CoreRepository implements CoreRepositoryContract
                     $relation = explode('.', $field);
                     $column   = array_pop($relation);
                     $query->orWhereRelation(implode('.', $relation), $column, "like", "%$search%");
-                } elseif ($this->isJson($field)) {
+                } elseif ($this->model->isJson($field)) {
                     foreach (AvailableLocalesEnum::toArray() as $lang) {
                         $query->orWhere("$field->$lang", "like", "%$search%");
                     }
-                } elseif ($this->inDates($field)) {
+                } elseif ($this->model->inDates($field)) {
                     $time = Carbon::createFromTimestamp(strtotime($search));
                     $query->orWhereDate($field, $time);
                 } else {
                     $query->orWhere($field, "like", "%$search%");
-                }
-            }
-        });
-    }
-
-    private function filters($query, $filters, string $boolean = 'and'): void
-    {
-        $query->where(function (Builder $query) use ($filters, $boolean) {
-            $filters = $filters[array_key_first($filters)];
-            foreach ($filters as $key => $filter) {
-                if (in_array($key, $this->model->getFillable(), true)
-                    || in_array($key, $this->model->getDates(), true)
-                    || $key === "id") {
-                    if ($this->isSearchable($key)) {
-                        if ($this->isJson($key)) {
-                            $query->where(function ($query) use ($key, $filter) {
-                                foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                    $query->orWhere("$key->$lang", "like", "%$filter%");
-                                }
-                            });
-                        } elseif ($this->inDates($key)) {
-                            $time = Carbon::createFromTimestamp(strtotime($filter));
-                            $query->orWhereDate($key, $time);
-                        } else {
-                            $query->where($key, 'like', "%$filter%", boolean: $boolean);
-                        }
-                    } elseif (in_array($key, $this->model->getDates(), true)) {
-                        $time = Carbon::createFromTimestamp(strtotime($filter));
-                        $query->orWhereDate($key, $time);
-                    } elseif ($key === "id" || is_array($filter)) {
-                        $filter = is_array($filter) ? $filter : explode(',', $filter);
-                        $query->whereIn($key, $filter, boolean: $boolean);
-                    } else {
-                        $query->where($key, '=', $filter, boolean: $boolean);
-                    }
-                } elseif (str_contains($key, '.')) {
-                    $relation = explode('.', $key);
-                    $column   = array_pop($relation);
-                    $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
-                } else {
-                    $query->where($key, '=', $filter, boolean: $boolean);
                 }
             }
         });
@@ -182,33 +113,15 @@ abstract class CoreRepository implements CoreRepositoryContract
         if (str_contains($orderBy, ',')) {
             $fields = explode(',', $orderBy);
             foreach ($fields as $field) {
-                $field = $this->isJson($field) ?
+                $field = $this->model->isJson($field) ?
                     $field . "->" . app()->getLocale() : $field;
                 $query->orderBy($field, $sort);
             }
         } else {
-            $orderBy = $this->isJson($orderBy) ?
+            $orderBy = $this->model->isJson($orderBy) ?
                 $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
-    }
-
-    protected function inDates(string $field)
-    {
-        $dates = Cache::remember($this->model->getTable(), 60 * 60 * 24, function () {
-            $keys = collect($this->model->getCasts())
-                ->filter(function ($value, $key) {
-                    if (str_contains($value, 'DateCasts')
-                        || str_contains($value, 'datetime')
-                        || str_contains($value, 'date')) {
-                        return $key;
-                    }
-                });
-
-            return $keys->keys();
-        })->toArray();
-
-        return in_array($field, $dates);
     }
 
     public function collection(
@@ -245,23 +158,6 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): LengthAwarePaginator {
         return $query->when(true, fn($q) => $this->availability($q))
             ->paginate($per_page);
-    }
-
-    public function inFillable(string $field): bool
-    {
-        return in_array($field, $this->model->getFillable(), true);
-    }
-
-    public function isJson(string $field): bool
-    {
-        return method_exists($this->model, 'getJsonColumns') &&
-            in_array($field, $this->model->getJsonColumns() ?? [], true);
-    }
-
-    public function isSearchable(string $field): bool
-    {
-        return method_exists($this->model, 'getSearchable') &&
-            in_array($field, $this->model->getSearchable() ?? [], true);
     }
 
     /**

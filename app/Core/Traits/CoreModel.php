@@ -3,6 +3,7 @@
 namespace App\Core\Traits;
 
 use App\Helpers\DateCasts;
+use Illuminate\Support\Facades\Cache;
 
 trait CoreModel
 {
@@ -43,5 +44,34 @@ trait CoreModel
     public function getFilePath(): string
     {
         return $this->filePath ?? 'files';
+    }
+
+    public function isSearchable(string $field): bool
+    {
+        return method_exists($this, 'getSearchable') &&
+            in_array($field, $this->getSearchable() ?? [], true);
+    }
+
+    public function inDates(string $field): bool
+    {
+        $dates = Cache::remember($this->getTable(), 60 * 60 * 24, function () {
+            $keys = collect($this->getCasts())
+                ->filter(function ($value, $key) {
+                    if (str_contains($value, 'DateCasts')
+                        || str_contains($value, 'datetime')
+                        || str_contains($value, 'date')) {
+                        return $key;
+                    }
+                });
+
+            return $keys->keys();
+        })->toArray();
+
+        return in_array($field, $dates);
+    }
+
+    public function inFillable(string $field): bool
+    {
+        return in_array($field, $this->model->getFillable(), true);
     }
 }

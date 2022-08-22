@@ -23,8 +23,8 @@ class UserSeeder extends Seeder
                               'password'        => fake()->password,
                               'phone_confirmed' => fake()->boolean,
                               'is_active'       => fake()->boolean,
-                              'created_at'      => now(),
-                              'updated_at'      => now(),
+                              'created_at'      => fake()->dateTime,
+                              'updated_at'      => fake()->dateTime,
                              ]);
             }
         }

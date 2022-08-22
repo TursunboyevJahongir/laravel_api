@@ -24,8 +24,12 @@ abstract class CoreService implements CoreServiceContract
      */
     public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator
     {
-        return $this->repository->query()
+        return $this->repository
+            ->query()
             ->isActive()
+            ->filters()
+            ->orFilters()
+            ->notFilters()
             ->closure($this, 'appends')
             ->paginationOrCollection();
     }
