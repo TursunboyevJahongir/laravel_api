@@ -1,13 +1,12 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Picqer\Barcode\BarcodeGeneratorSVG;
-use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 if (!function_exists('diffMinutesOnString')) {
     function diffMinutesOnString(Carbon $datetime1, Carbon $datetime2)
@@ -126,5 +125,19 @@ if (!function_exists('core_path')) {
     function core_path($path = '')
     {
         return app_path('Core/' . $path);
+    }
+}
+
+if (!function_exists('isEloquentModel')) {
+    function isEloquentModel($query): bool
+    {
+        return isEloquent($query) and $query->getModel() instanceof \Illuminate\Database\Eloquent\Model;
+    }
+}
+
+if (!function_exists('isEloquent')) {
+    function isEloquent($query): bool
+    {
+        return $query instanceof EloquentBuilder;
     }
 }

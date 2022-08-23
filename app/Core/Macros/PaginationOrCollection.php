@@ -27,7 +27,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
 
                     return $query->pluck($column, $key);
                 } else {
-                    return $query->get()->append($appends);
+                    return $query->get()->when(isEloquentModel($query), fn($q) => $q->append($appends));
                 }
             },
             function (EloquentBuilder|QueryBuilder $query): LengthAwarePaginator {
