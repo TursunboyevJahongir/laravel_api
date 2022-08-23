@@ -2,24 +2,27 @@
 
 namespace App\Core\Contracts;
 
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use App\Core\Models\CoreModel;
 
 interface CoreServiceContract
 {
-    public function get(FormRequest $request): Collection|LengthAwarePaginator;
+    public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator;
 
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param Model|int $model
      * @param FormRequest $request
      *
      * @return mixed
      */
-    public function show(CoreModel|int $model, FormRequest $request): mixed;
+    public function show(Model|int $model, FormRequest $request): mixed;
+
+    public function creating(FormRequest &$request): void;
 
     /**
      * Create entity
@@ -30,24 +33,39 @@ interface CoreServiceContract
      */
     public function create(FormRequest $request): mixed;
 
+    public function created(Model $model, FormRequest $request): void;
+
+    public function updating(Model $model, FormRequest &$request): void;
+
     /**
      * Update entity
      *
-     * @param CoreModel $model
+     * @param Model $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel $model, FormRequest $request): bool;
+    public function update(Model $model, FormRequest $request): bool;
+
+    public function updated(Model $model, FormRequest $request): void;
+
+    /**
+     * you can use Observer or this
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    public function deleting(Model $model);
 
     /**
      * Delete entity
      *
-     * @param CoreModel $model
+     * @param Model $model
      *
      * @return mixed
      */
-    public function delete(CoreModel $model): mixed;
+    public function delete(Model $model): mixed;
 
     /**
      * Find entity by id

@@ -2,13 +2,14 @@
 
 namespace App\Core\Services;
 
-use Exception;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
-use App\Core\Models\CoreModel;
-use Throwable;
+use Illuminate\Support\Facades\DB;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -17,48 +18,45 @@ abstract class CoreService implements CoreServiceContract
     }
 
     /**
-     * @param FormRequest $request
-     * @param mixed ...$appends
+     * @param GetAllFilteredRecordsRequest $request
      *
      * @return Collection|LengthAwarePaginator
      */
-    public function get(FormRequest $request, ...$appends): Collection|LengthAwarePaginator
+    public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator
     {
-        $query = $this->repository->mainQuery($request->get('columns', ['*']),
-                                              $request->get('relations', []),
-                                              $request->get('status'),
-                                              $request->get('start', 1),
-                                              $request->get('search'),
-                                              $request->get('filters'),
-                                              $request->get('not_filters'),
-                                              $request->get('filterBy', 'id'),
-                                              $request->get('order', 'desc'));
+        return $this->repository
+            ->query()
+            ->isActive()
+            ->filters()
+            ->orFilters()
+            ->notFilters()
+            ->closure($this, 'appends')
+            ->paginationOrCollection();
+    }
 
-        return match ($request->get('list_type')) {
-            'collection' => $this->repository->collection($query,
-                                                          $request->get('limit', config('app.page_size')),
-                                                          $request->get('appends', [])),
-            default => $this->repository->pagination($query,
-                                                     $request->get('per_page', config('app.pagination_size')),
-                                                     $request->get('appends', [])),
-        };
+    public function appends(Builder $query)
+    {
     }
 
     /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param Model|int $model
      * @param FormRequest $request
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
-    public function show(CoreModel|int $model, FormRequest $request): ?CoreModel
+    public function show(Model|int $model, FormRequest $request): ?Model
     {
         return $this->repository->show($model,
                                        $request->get('columns') ?? ['*'],
                                        $request->get('relations') ?? [],
                                        $request->get('appends') ?? []
         );
+    }
+
+    public function creating(FormRequest &$request): void
+    {
     }
 
     /**
@@ -70,32 +68,71 @@ abstract class CoreService implements CoreServiceContract
      */
     public function create(FormRequest $request): mixed
     {
-        return $this->repository->create($request->validated());
+        $this->creating($request);
+
+        $model = $this->repository->create($request->validated());
+        $this->created($model, $request);
+
+        return $model;
+    }
+
+    public function created(Model $model, FormRequest $request): void
+    {
+    }
+
+    public function updating(Model $model, FormRequest &$request): void
+    {
     }
 
     /**
      * Update entity
      *
-     * @param CoreModel $model
+     * @param Model|int $model
      * @param FormRequest $request
      *
      * @return bool
      */
-    public function update(CoreModel $model, FormRequest $request): bool
+    public function update(Model|int $model, FormRequest $request): bool
     {
-        return $this->repository->update($model, $request->validated());
+        $model = $this->repository->show($model);//check availability
+        $this->updating($model, $request);
+        $this->repository->update($model, $request->validated());
+        $this->updated($model, $request);
+
+        return true;
+    }
+
+    public function updated(Model $model, FormRequest $request): void
+    {
+    }
+
+    /**
+     * you can use Observer or this
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    public function deleting(Model $model)
+    {
     }
 
     /**
      * Delete entity
      *
-     * @param CoreModel $model
+     * @param Model|int $model
      *
      * @return mixed
      */
-    public function delete(CoreModel $model): mixed
+    public function delete(Model|int $model): mixed
     {
-        return $this->repository->delete($model);
+        $model = $this->repository->show($model);//check availability
+
+        return Db::transaction(function () use ($model) {
+            $this->deleting($model);
+
+            return $this->repository->delete($model);
+        });
     }
 
     /**

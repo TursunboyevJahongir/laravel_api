@@ -25,15 +25,16 @@ class GetAllFilteredRecordsRequest extends FormRequest
                 'search'       => 'nullable|string',
                 'filters'      => 'array',
                 'not_filters'  => 'array',
+                'or_filters'   => 'array',
+                'pluck'        => !is_array($this->get('pluck')) ? 'string' : "array|required_array_keys:column",
                 'only_deleted' => ['bool',
                                    function ($attribute, $value, $fail) {
                                        if (!hasPermission('system')) {
                                            $fail(__('messages.you_havnt_permission'));
                                        }
                                    }],
-                'start'        => 'integer',
-                'filterBy'     => 'string',
-                'order'        => 'in:desc,asc',
+                'order'        => 'string',
+                'sort'         => 'in:desc,asc',
         ];
     }
 

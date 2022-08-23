@@ -48,7 +48,7 @@ class RefreshAppCommand extends Command
             $progressBar->advance(5);
             $this->info("\n" . '<fg=green>Migration refreshed</>');
             $progressBar->advance();
-            File::deleteDirectory(public_path('uploads'));
+            File::deleteDirectory(storage_path('/app/public/uploads'));
             $this->info("\n" . '<fg=green>Uploads folder deleted</>');
             Artisan::call('db:seed');
             $output = Artisan::output();

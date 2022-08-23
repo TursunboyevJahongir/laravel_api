@@ -3,41 +3,59 @@
 namespace App\Core\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use App\Core\Models\CoreModel;
 
 interface CoreRepositoryContract
 {
     /**
      * @param array|string[] $columns
      * @param array $relations
-     * @param int|null $status
-     * @param int $start
      * @param string|null $search
-     * @param array|null $filters
-     * @param array|null $notFilters
-     * @param string $filterBy
-     * @param string $order
+     * @param bool $trashed
+     * @param string $orderBy
+     * @param string $sort
+     * @param Builder|null $query
+     *
+     * @return Builder
+     */
+    public function query(
+        array $columns = ['*'],
+        array $relations = [],
+        string $search = null,
+        bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
+        Builder|null $query = null
+    ): Builder;
+
+    /**
+     * @param array|string[] $columns
+     * @param array $relations
+     * @param string|null $search
+     * @param bool $trashed
+     * @param string $orderBy
+     * @param string $sort
+     * @param Builder|null $query
      *
      * @return Builder
      */
     public function mainQuery(
         array $columns = ['*'],
         array $relations = [],
-        int|null $status = null,
-        int $start = 1,
         string $search = null,
-        array|null $filters = null,
-        array|null $notFilters = null,
-        string $filterBy = 'id',
-        string $order = 'desc'
+        bool $trashed = false,
+        string $orderBy = 'id',
+        string $sort = 'desc',
+        Builder|null $query = null
     ): Builder;
 
     public function collection(
         Builder $query,
         int|string $limit = 30,
-        array $appends = []
+        array $appends = [],
+        string|null $pluck = null
     ): Collection;
 
     public function pagination(
@@ -47,34 +65,21 @@ interface CoreRepositoryContract
     ): LengthAwarePaginator;
 
     /**
-     * фильтр доступности
-     * availability filter
-     * for example check system
-     *
-     * @param Builder|CoreModel $query
-     *
-     * @return Builder|CoreModel
-     */
-    public function availability(
-        Builder|CoreModel $query,
-    ): Builder|CoreModel;
-
-    /**
      * Show entity
      *
-     * @param CoreModel|int $model
+     * @param Model|int $model
      * @param string[] $columns
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function show(
-        CoreModel|int $model,
+        Model|int $model,
         array $columns = ['*'],
         array $relations = [],
         array $appends = []
-    ): ?CoreModel;
+    ): ?Model;
 
     /**
      * Find element by id
@@ -84,14 +89,14 @@ interface CoreRepositoryContract
      * @param array $relations
      * @param array $appends
      *
-     * @return CoreModel|null
+     * @return Model|null
      */
     public function findById(
         int $modelId,
         array $columns = ['*'],
         array $relations = [],
         array $appends = [],
-    ): ?CoreModel;
+    ): ?Model;
 
     /**
      * Create element
@@ -105,20 +110,19 @@ interface CoreRepositoryContract
     /**
      * Update element
      *
-     * @param CoreModel|int $model
+     * @param Model|int $model
      * @param array $payload
      *
      * @return bool
      */
-    public function update(CoreModel|int $model, array $payload): bool;
+    public function update(Model|int $model, array $payload): bool;
 
     /**
      * Delete element
      *
-     * @param CoreModel|int $model
+     * @param Model|int $model
      *
      * @return bool
      */
-    public function delete(CoreModel|int $model): bool;
-
+    public function delete(Model|int $model): bool;
 }

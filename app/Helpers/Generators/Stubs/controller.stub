@@ -32,7 +32,7 @@ class #ClassNameController extends Controller
         return $this->responseWith(compact('#modelSingular'));
     }
 
-    public function create(#ClassNameCreateRequest $request): JsonResponse
+    public function store(#ClassNameCreateRequest $request): JsonResponse
     {
         try {
             $#modelSingular = $this->service->create($request);
@@ -53,7 +53,7 @@ class #ClassNameController extends Controller
         }
     }
 
-    public function delete(#ModelName $#modelSingular): JsonResponse
+    public function destroy(#ModelName $#modelSingular): JsonResponse
     {
         $this->service->delete($#modelSingular);
         return $this->responseWith(code: 204);

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Core\Models\CoreModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Core\Traits\CoreModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\URL;
 
-class Resource extends CoreModel
+class Resource extends Model
 {
-    use HasFactory;
+    use CoreModel;
 
     protected $fillable = [
         'additional_identifier',
@@ -17,7 +17,7 @@ class Resource extends CoreModel
         'path_512',
         'path_1024',
         'path_original',
-        'resource'
+        'resource',
     ];
 
     protected $hidden = ['additional_identifier', 'resource_type', 'resource_id', 'created_at', 'updated_at'];

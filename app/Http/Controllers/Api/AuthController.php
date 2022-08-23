@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Core\Http\Controllers\BaseController as Controller;
+use App\Core\Http\Controllers\CoreController as Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\UserCreateRequest;
 use App\Services\AuthService;
@@ -25,12 +25,14 @@ class AuthController extends Controller
 
     /**
      * @param LoginRequest $request
+     *
      * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
         try {
             $token = $this->service->login($request);
+
             return $this->responseWith(compact('token'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
@@ -41,6 +43,7 @@ class AuthController extends Controller
     {
         try {
             $token = $this->service->refresh($request);
+
             return $this->responseWith(compact('token'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());

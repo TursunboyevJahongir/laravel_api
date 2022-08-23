@@ -28,16 +28,18 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'first_name' => 'filled|string',
-            'last_name' => 'nullable|string',
-            'phone' => [
+            'last_name'  => 'nullable|string',
+            'phone'      => [
                 'filled',
                 new PhoneRule(),
-                new UniqueRule('users', 'phone', $this->route('user', auth()->user())->id),
+                new UniqueRule('users', 'phone', auth()->user()->id),
             ],
-            'password' => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
-            'avatar' => 'image',
-            'roles' => 'array',
-            'roles.*' => 'nullable|exists:roles,name|not_in:superadmin',
+            'password'   => ['filled', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'birthday'   => 'nullable|date|before_or_equal:' . now(),
+            'is_active'  => 'bool',
+            'avatar'     => 'image',
+            'roles'      => 'array',
+            'roles.*'    => 'nullable|exists:roles,name|not_in:superadmin',
         ];
     }
 }

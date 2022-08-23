@@ -3,25 +3,26 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\UserServiceContract;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\ProfileUpdateRequest;
 use App\Http\Requests\Api\UserCreateRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
-use App\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Controllers\CoreController as Controller;
 
 class UserController extends Controller
 {
-
     public function __construct(UserServiceContract $service)
     {
         parent::__construct($service);
+        $this->authorizeResource(User::class, 'user');
     }
 
     public function me(GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $user = $this->service->show(auth()->user(), $request);
+
         return $this->responseWith(compact('user'));
     }
 
@@ -29,6 +30,7 @@ class UserController extends Controller
     {
         try {
             $this->service->update(auth()->user(), $request);
+
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
@@ -39,7 +41,7 @@ class UserController extends Controller
     {
         $users = $this->service->get($request);
 
-        return $this->responseWith(['users' => $users]);
+        return $this->responseWith(compact('users'));
     }
 
     public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse
@@ -49,11 +51,10 @@ class UserController extends Controller
         return $this->responseWith(compact('user'));
     }
 
-
-    public function create(UserCreateRequest $request): JsonResponse
+    public function store(UserCreateRequest $request): JsonResponse
     {
         try {
-            $user = $this->service->create($request);
+            $user = $this->service->create($request)->loadMissing('roles', 'avatar');
 
             return $this->responseWith(compact('user'), 201);
         } catch (\Exception $e) {
@@ -65,15 +66,17 @@ class UserController extends Controller
     {
         try {
             $this->service->update($user, $request);
+
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
     }
 
-    public function delete(User $user): JsonResponse
+    public function destroy(User $user): JsonResponse
     {
         $this->service->delete($user);
+
         return $this->responseWith(code: 204);
     }
 }

@@ -19,17 +19,28 @@ class RolesTableSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleNames = ['superadmin', 'customer', 'owner', 'manager', 'salesman'];
-        $roles = collect($roleNames)->map(function ($role) {
-            return ['name' => $role,
+        $roleNames = [
+            'superadmin' => ['uz' => 'Administrator', 'ru' => "Администратор", 'en' => "Administrator"],
+            'moderator'  => ['uz' => 'moderator', 'ru' => "Модератор", 'en' => "moderator"],
+            'owner'      => ['uz' => "Korxona egasi", 'ru' => "Владелец", 'en' => "Owner"],
+            'salesman'   => ['uz' => "Sotuvchi", 'ru' => "Продавец", 'en' => "Salesman"],
+            'customer'   => ['uz' => "Xaridor", 'ru' => "Покупатель", 'en' => "Customer"],
+        ];
+
+        $roles = [];
+        foreach ($roleNames as $key => $value) {
+            $roles[] = [
+                'title'      => json_encode($value),
+                'name'       => $key,
                 'guard_name' => 'api',
                 'created_at' => now(),
-                'updated_at' => now()];
-        });
-        Role::insert($roles->toArray());
+                'updated_at' => now(),
+            ];
+        }
+        Role::insert($roles);
 
         $finder = new Finder();
-        $path = 'App/Http/Controllers/Api';
+        $path   = app_path('Http/Controllers/Api');
         $finder->in($path)->name('*.php')->notName('AuthController.php');
         $controllerNames = [];
         foreach ($finder as $f) {
@@ -39,10 +50,10 @@ class RolesTableSeeder extends Seeder
             try {
                 $commonPermissions = ['create', 'read', 'update', 'delete'];
                 foreach ($commonPermissions as $key => $permission) {
-                    $permissions[$key] = ['name' => mb_strtolower($permission . '-' . $name),
-                        'guard_name' => 'api',
-                        'created_at' => now(),
-                        'updated_at' => now()];
+                    $permissions[$key] = ['name'       => mb_strtolower($permission . '-' . $name),
+                                          'guard_name' => 'api',
+                                          'created_at' => now(),
+                                          'updated_at' => now()];
                 }
                 Permission::insert($permissions);
             } catch (\Exception $e) {

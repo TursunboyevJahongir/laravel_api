@@ -4,8 +4,8 @@ namespace App\Repositories;
 
 
 use App\Contracts\ResourceRepositoryContract;
-use App\Core\Models\CoreModel;
 use App\Models\Resource;
+use Illuminate\Database\Eloquent\Model;
 
 class ResourceRepository implements ResourceRepositoryContract
 {
@@ -16,7 +16,7 @@ class ResourceRepository implements ResourceRepositoryContract
     {
     }
 
-    public function removeFile(CoreModel $model)
+    public function removeFile(Model $model)
     {
         @unlink(public_path($model->path_original));
         @unlink(public_path($model->path_1024));
@@ -29,11 +29,11 @@ class ResourceRepository implements ResourceRepositoryContract
                            'path_1024'             => $path_1024,
                            'path_512'              => $path_512,
                            'type'                  => $type,
-                           'additional_identifier' => $identifier
+                           'additional_identifier' => $identifier,
                           ]);
     }
 
-    public function findById(int $modelId): ?CoreModel
+    public function findById(int $modelId): ?Model
     {
         return $this->model->findOrFail($modelId);
     }
@@ -45,7 +45,7 @@ class ResourceRepository implements ResourceRepositoryContract
         }
     }
 
-    public function delete(CoreModel $image)
+    public function delete(Model $image)
     {
         $this->removeFile($image);
         $image->delete();

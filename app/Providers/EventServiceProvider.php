@@ -2,26 +2,45 @@
 
 namespace App\Providers;
 
+use App\Events\LoggerEvent;
+use App\Events\UpdateFile;
+use App\Listeners\LoggerListener;
+use App\Listeners\UpdateFileListener;
+use App\Models\Product;
+use App\Models\User;
+use App\Observers\ProductObserver;
+use App\Observers\UserObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\AttachImages;
-use App\Events\DestroyImages;
+use App\Events\DestroyFiles;
 use App\Events\UpdateImage;
 use App\Listeners\AttachImagesListener;
-use App\Listeners\DestroyImagesListener;
-use App\Listeners\UpdateImagesListener;
+use App\Listeners\DestroyFilesListener;
+use App\Listeners\UpdateImageListener;
 
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        UpdateImage::class   => [
-            UpdateImagesListener::class
+        LoggerEvent::class  => [
+            LoggerListener::class,
         ],
-        AttachImages::class  => [
-            AttachImagesListener::class
+        UpdateImage::class  => [
+            UpdateImageListener::class,
         ],
-        DestroyImages::class => [
-            DestroyImagesListener::class
-        ]
+        UpdateFile::class   => [
+            UpdateFileListener::class,
+        ],
+        AttachImages::class => [
+            AttachImagesListener::class,
+        ],
+        DestroyFiles::class => [
+            DestroyFilesListener::class,
+        ],
+    ];
+
+    protected $observers = [
+        User::class    => [UserObserver::class],
+        Product::class => [ProductObserver::class],
     ];
 
     /**
