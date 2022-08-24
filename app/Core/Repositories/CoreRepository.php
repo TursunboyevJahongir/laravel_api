@@ -45,17 +45,19 @@ abstract class CoreRepository implements CoreRepositoryContract
         $columns   = request()->get('columns', ['*']);
         $relations = request()->get('relations', []);
         $search    = request()->get('search');
+        $searchBy    = request()->get('search_by',[]);
         $trashed   = request()->get('only_deleted', false);
         $orderBy   = request()->get('order', 'id');
         $sort      = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $search, $trashed, $orderBy, $sort, $query);
+        return $this->mainQuery($columns, $relations, $search,$searchBy, $trashed, $orderBy, $sort, $query);
     }
 
     public function mainQuery(
         array $columns = [' * '],
         array $relations = [],
         string $search = null,
+        array $searchBy = [],
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -63,46 +65,11 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): Builder {
         return $this->model
             ->select($columns)
+//            ->search($search)
+            ->searchBy($searchBy)
             ->closure($this, 'availability')
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->with($relations);
-    }
-
-    protected function search(Builder $query, $search): void
-    {
-        $search = rtrim($search, " \t.");
-        $query->where(function (Builder $query) use ($search) {
-            foreach ($this->model->getSearchable() as $key => $field) {
-                if (is_array($field)) {
-                    $relation = $field[0];
-                    foreach ($field[1] as $index => $value) {
-                        if ($index === "json") {
-                            foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                $query->orWhereRelation($relation, "$value->$lang", "like", "%$search%");
-                            }
-                        } elseif ($index === "date") {
-                            $time = Carbon::createFromTimestamp(strtotime($search));
-                            $query->orWhereDate($index, $time);
-                        } else {
-                            $query->orWhereRelation($relation, $value, 'like', "%$search%");
-                        }
-                    }
-                } elseif (str_contains($field, '.')) {
-                    $relation = explode('.', $field);
-                    $column   = array_pop($relation);
-                    $query->orWhereRelation(implode('.', $relation), $column, "like", "%$search%");
-                } elseif ($this->model->isJson($field)) {
-                    foreach (AvailableLocalesEnum::toArray() as $lang) {
-                        $query->orWhere("$field->$lang", "like", "%$search%");
-                    }
-                } elseif ($this->model->inDates($field)) {
-                    $time = Carbon::createFromTimestamp(strtotime($search));
-                    $query->orWhereDate($field, $time);
-                } else {
-                    $query->orWhere($field, "like", "%$search%");
-                }
-            }
-        });
     }
 
     public function orderBy(

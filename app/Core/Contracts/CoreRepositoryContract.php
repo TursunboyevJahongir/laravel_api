@@ -45,6 +45,7 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         string $search = null,
+        array $searchBy = [],
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
