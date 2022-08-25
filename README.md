@@ -28,12 +28,13 @@
     *   or `filters[][is_active]=0` \[0,1\]
 * `pluck`->string | array default null
   * working with collection
-  * if string need send column name
-    * if array pluck[column] required
-         * pluck[key] optional default null
+    * if string need send column name
+  * if array pluck[column] required
+    * pluck[key] optional default null
 * `order`\->string default id
 * `sort`\-> string\[asc,desc\] default desc
 * `search`\->string default null
+* `search_by`\->array default null
 * `filters`\->array default null
     *   array accessive key=column value=searching text
     *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
