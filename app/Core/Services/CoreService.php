@@ -26,10 +26,12 @@ abstract class CoreService implements CoreServiceContract
     {
         return $this->repository
             ->query()
-            ->isActive()
             ->filters()
             ->orFilters()
             ->notFilters()
+            ->search()
+            ->searchBy()
+            ->isActive()
             ->closure($this, 'appends')
             ->paginationOrCollection();
     }

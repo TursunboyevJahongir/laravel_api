@@ -3,11 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use App\Enums\AvailableLocalesEnum;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Pivot};
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
@@ -36,7 +32,6 @@ abstract class CoreRepository implements CoreRepositoryContract
     public function query(
         array $columns = ['*'],
         array $relations = [],
-        string $search = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -44,20 +39,16 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): Builder {
         $columns   = request()->get('columns', ['*']);
         $relations = request()->get('relations', []);
-        $search    = request()->get('search');
-        $searchBy    = request()->get('search_by',[]);
         $trashed   = request()->get('only_deleted', false);
         $orderBy   = request()->get('order', 'id');
         $sort      = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $search,$searchBy, $trashed, $orderBy, $sort, $query);
+        return $this->mainQuery($columns, $relations, $trashed, $orderBy, $sort, $query);
     }
 
     public function mainQuery(
         array $columns = [' * '],
         array $relations = [],
-        string $search = null,
-        array $searchBy = [],
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -65,8 +56,6 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): Builder {
         return $this->model
             ->select($columns)
-//            ->search($search)
-            ->searchBy($searchBy)
             ->closure($this, 'availability')
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->with($relations);
@@ -89,42 +78,6 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
-    }
-
-    public function collection(
-        Builder $query,
-        int|string $limit = 30,
-        array $appends = [],
-        string|array|null $pluck = null
-    ): Collection {
-        $query = $query->when(true, fn($q) => $this->availability($q))
-            ->when($limit !== 'all', function ($query) use ($limit) {
-                $query->limit($limit);
-            });
-
-        if ($pluck) {
-            if (is_array($pluck)) {
-                $column = $pluck['column'];
-                $key    = $pluck['key'] ?? null;
-            } else {
-                $column = $pluck;
-                $key    = null;
-            }
-
-            return $query->pluck($column, $key);
-        } else {
-            return $query->get()
-                ->append($appends);
-        }
-    }
-
-    public function pagination(
-        Builder $query,
-        int $per_page = 30,
-        array $appends = [],
-    ): LengthAwarePaginator {
-        return $query->when(true, fn($q) => $this->availability($q))
-            ->paginate($per_page);
     }
 
     /**

@@ -13,48 +13,56 @@ use Illuminate\Database\{
  *
  * @param string $boolean
  */
-foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
-    $builder::macro('filters', function ($filters = null, string $boolean = 'and') {
-        $filters = $filters ?? request()->get('filters');
-        $this->when($filters, function (EloquentBuilder|QueryBuilder $query) use ($filters, $boolean) {
-            $filters = $filters[array_key_first($filters)];
-            foreach ($filters as $key => $filter) {
-                if (isEloquentModel($this)) {
-                    if ($this->model->isSearchable($key)) {
-                        if ($this->model->isJson($key)) {
-                            $query->where(function ($query) use ($key, $filter) {
-                                foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                    $query->orWhere("$key->$lang", "like", "%$filter%");
-                                }
-                            }, boolean: $boolean);
-                        } elseif ($this->model->inDates($key)) {
-                            $time = Carbon::createFromTimestamp(strtotime($filter));
-                            $query->whereDate($key, $time, $boolean);
-                        } else {
-                            $query->where($key, 'like', "%$filter%", boolean: $boolean);
+EloquentBuilder::macro('filters', function ($filters = null, string $boolean = 'and') {
+    $filters = $filters ?? request()->get('filters');
+    $this->when($filters, function (EloquentBuilder $query) use ($filters, $boolean) {
+        $filters = $filters[array_key_first($filters)];
+        foreach ($filters as $key => $filter) {
+            if ($this->model->isSearchable($key)) {
+                if ($this->model->isJson($key)) {
+                    $query->where(function ($query) use ($key, $filter) {
+                        foreach (AvailableLocalesEnum::toArray() as $lang) {
+                            $query->orWhere("$key->$lang", "like", "%$filter%");
                         }
-                    } elseif (in_array($key, $this->model->getDates(), true)) {
-                        $time = Carbon::createFromTimestamp(strtotime($filter));
-                        $query->whereDate($key, $time, $boolean);
-                    } elseif ($key === "id" || is_array($filter)) {
-                        $filter = is_array($filter) ? $filter : explode(',', $filter);
-                        $query->whereIn($key, $filter, boolean: $boolean);
-                    } elseif (str_contains($key, '.')) {
-                        $relation = explode('.', $key);
-                        $column   = array_pop($relation);
-                        $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
-                    } else {
-                        $query->where($key, '=', $filter, boolean: $boolean);
-                    }
+                    }, boolean: $boolean);
+                } elseif ($this->model->inDates($key)) {
+                    $time = Carbon::createFromTimestamp(strtotime($filter));
+                    $query->whereDate($key, $time, $boolean);
                 } else {
-                    $query->where($key, '=', $filter, boolean: $boolean);
+                    $query->where($key, 'like', "%$filter%", boolean: $boolean);
                 }
+            } elseif (in_array($key, $this->model->getDates(), true)) {
+                $time = Carbon::createFromTimestamp(strtotime($filter));
+                $query->whereDate($key, $time, $boolean);
+            } elseif ($key === "id" || is_array($filter)) {
+                $filter = is_array($filter) ? $filter : explode(',', $filter);
+                $query->whereIn($key, $filter, boolean: $boolean);
+            } elseif (str_contains($key, '.')) {
+                $relation = explode('.', $key);
+                $column   = array_pop($relation);
+                $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($filter), $boolean);
+            } else {
+                $query->where($key, '=', $filter, boolean: $boolean);
             }
-        });
-
-        return $this;
+        }
     });
 
+    return $this;
+});
+
+QueryBuilder::macro('filters', function ($filters = null, string $boolean = 'and') {
+    $filters = $filters ?? request()->get('filters');
+    $this->when($filters, function (EloquentBuilder|QueryBuilder $query) use ($filters, $boolean) {
+        $filters = $filters[array_key_first($filters)];
+        foreach ($filters as $key => $filter) {
+            $query->where($key, '=', $filter, boolean: $boolean);
+        }
+    });
+
+    return $this;
+});
+
+foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     /**
      * not equal
      * not filter not_filters[0][status]=activated

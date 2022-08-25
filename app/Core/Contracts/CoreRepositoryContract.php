@@ -12,7 +12,6 @@ interface CoreRepositoryContract
     /**
      * @param array|string[] $columns
      * @param array $relations
-     * @param string|null $search
      * @param bool $trashed
      * @param string $orderBy
      * @param string $sort
@@ -23,7 +22,6 @@ interface CoreRepositoryContract
     public function query(
         array $columns = ['*'],
         array $relations = [],
-        string $search = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -33,7 +31,6 @@ interface CoreRepositoryContract
     /**
      * @param array|string[] $columns
      * @param array $relations
-     * @param string|null $search
      * @param bool $trashed
      * @param string $orderBy
      * @param string $sort
@@ -44,26 +41,11 @@ interface CoreRepositoryContract
     public function mainQuery(
         array $columns = ['*'],
         array $relations = [],
-        string $search = null,
-        array $searchBy = [],
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
         Builder|null $query = null
     ): Builder;
-
-    public function collection(
-        Builder $query,
-        int|string $limit = 30,
-        array $appends = [],
-        string|null $pluck = null
-    ): Collection;
-
-    public function pagination(
-        Builder $query,
-        int $per_page = 30,
-        array $appends = []
-    ): LengthAwarePaginator;
 
     /**
      * Show entity
