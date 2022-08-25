@@ -141,3 +141,10 @@ if (!function_exists('isEloquent')) {
         return $query instanceof EloquentBuilder;
     }
 }
+
+if (!function_exists('like')) {
+    function like(): string
+    {
+        return \DB::connection()->getDriverName() === 'postgresql'?'ilike':'like';
+    }
+}

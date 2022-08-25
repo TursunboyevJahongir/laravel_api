@@ -21,7 +21,7 @@ EloquentBuilder::macro('search', function (string|null $search = null) {
                         $time = Carbon::createFromTimestamp(strtotime($search));
                         $query->orWhereDate($index, $time);
                     } else {
-                        $query->orWhereRelation($relation, $value, 'like', "%$search%");
+                        $query->orWhereLikeRelation($relation, "$value->$lang", $search);
                     }
                 }
             } elseif (str_contains($field, '.')) {

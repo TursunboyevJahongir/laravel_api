@@ -57,14 +57,14 @@ EloquentBuilder::macro('filters', function ($filters = null, string $boolean = '
                 if ($this->model->isJson($key)) {
                     $query->where(function ($query) use ($key, $filter) {
                         foreach (AvailableLocalesEnum::toArray() as $lang) {
-                            $query->orWhere("$key->$lang", "like", "%$filter%");
+                            $query->orWhereLike("$key->$lang", $filter);
                         }
                     }, boolean: $boolean);
                 } elseif ($this->model->inDates($key)) {
                     $time = Carbon::createFromTimestamp(strtotime($filter));
                     $query->whereDate($key, $time, $boolean);
                 } else {
-                    $query->where($key, 'like', "%$filter%", boolean: $boolean);
+                    $query->orWhereLike($key, $filter);
                 }
             } elseif (in_array($key, $this->model->getDates(), true)) {
                 $time = Carbon::createFromTimestamp(strtotime($filter));
