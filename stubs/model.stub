@@ -1,0 +1,11 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Core\Models\CoreModel;
+
+class {{ class }} extends CoreModel
+{
+    use HasFactory;
+}

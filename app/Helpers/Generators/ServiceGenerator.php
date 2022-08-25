@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Generators;
 
-class ServiceGenerator extends BaseGenerator
+class ServiceGenerator extends Generator
 {
     protected $path = 'App/Services';
     protected $stub = [

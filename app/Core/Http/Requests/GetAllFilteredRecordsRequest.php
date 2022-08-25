@@ -21,8 +21,9 @@ class GetAllFilteredRecordsRequest extends FormRequest
                     is_numeric($value) || $value === 'all' ? : $fail("$attribute must be numeric or 'all'");
                 }],
                 'per_page'     => 'integer',
-                'status'       => 'boolean',
+                'is_active'    => 'boolean',
                 'search'       => 'nullable|string',
+                'search_by'    => 'nullable|array',
                 'filters'      => 'array',
                 'not_filters'  => 'array',
                 'or_filters'   => 'array',

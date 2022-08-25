@@ -3,11 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use App\Enums\AvailableLocalesEnum;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Pivot};
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
@@ -36,7 +32,6 @@ abstract class CoreRepository implements CoreRepositoryContract
     public function query(
         array $columns = ['*'],
         array $relations = [],
-        string $search = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -44,18 +39,16 @@ abstract class CoreRepository implements CoreRepositoryContract
     ): Builder {
         $columns   = request()->get('columns', ['*']);
         $relations = request()->get('relations', []);
-        $search    = request()->get('search');
         $trashed   = request()->get('only_deleted', false);
         $orderBy   = request()->get('order', 'id');
         $sort      = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $search, $trashed, $orderBy, $sort, $query);
+        return $this->mainQuery($columns, $relations, $trashed, $orderBy, $sort, $query);
     }
 
     public function mainQuery(
         array $columns = [' * '],
         array $relations = [],
-        string $search = null,
         bool $trashed = false,
         string $orderBy = 'id',
         string $sort = 'desc',
@@ -66,43 +59,6 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->closure($this, 'availability')
             ->when($trashed, fn($query) => $query->onlyTrashed())
             ->with($relations);
-    }
-
-    protected function search(Builder $query, $search): void
-    {
-        $search = rtrim($search, " \t.");
-        $query->where(function (Builder $query) use ($search) {
-            foreach ($this->model->getSearchable() as $key => $field) {
-                if (is_array($field)) {
-                    $relation = $field[0];
-                    foreach ($field[1] as $index => $value) {
-                        if ($index === "json") {
-                            foreach (AvailableLocalesEnum::toArray() as $lang) {
-                                $query->orWhereRelation($relation, "$value->$lang", "like", "%$search%");
-                            }
-                        } elseif ($index === "date") {
-                            $time = Carbon::createFromTimestamp(strtotime($search));
-                            $query->orWhereDate($index, $time);
-                        } else {
-                            $query->orWhereRelation($relation, $value, 'like', "%$search%");
-                        }
-                    }
-                } elseif (str_contains($field, '.')) {
-                    $relation = explode('.', $field);
-                    $column   = array_pop($relation);
-                    $query->orWhereRelation(implode('.', $relation), $column, "like", "%$search%");
-                } elseif ($this->model->isJson($field)) {
-                    foreach (AvailableLocalesEnum::toArray() as $lang) {
-                        $query->orWhere("$field->$lang", "like", "%$search%");
-                    }
-                } elseif ($this->model->inDates($field)) {
-                    $time = Carbon::createFromTimestamp(strtotime($search));
-                    $query->orWhereDate($field, $time);
-                } else {
-                    $query->orWhere($field, "like", "%$search%");
-                }
-            }
-        });
     }
 
     public function orderBy(
@@ -122,42 +78,6 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $orderBy . "->" . app()->getLocale() : $orderBy;
             $query->orderBy($orderBy, $sort);
         }
-    }
-
-    public function collection(
-        Builder $query,
-        int|string $limit = 30,
-        array $appends = [],
-        string|array|null $pluck = null
-    ): Collection {
-        $query = $query->when(true, fn($q) => $this->availability($q))
-            ->when($limit !== 'all', function ($query) use ($limit) {
-                $query->limit($limit);
-            });
-
-        if ($pluck) {
-            if (is_array($pluck)) {
-                $column = $pluck['column'];
-                $key    = $pluck['key'] ?? null;
-            } else {
-                $column = $pluck;
-                $key    = null;
-            }
-
-            return $query->pluck($column, $key);
-        } else {
-            return $query->get()
-                ->append($appends);
-        }
-    }
-
-    public function pagination(
-        Builder $query,
-        int $per_page = 30,
-        array $appends = [],
-    ): LengthAwarePaginator {
-        return $query->when(true, fn($q) => $this->availability($q))
-            ->paginate($per_page);
     }
 
     /**

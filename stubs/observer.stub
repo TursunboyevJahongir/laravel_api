@@ -1,0 +1,49 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+
+class {{ class }}
+{
+    public function created({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    public function creating({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    public function updated({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    public function updating({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    public function deleted({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    public function deleting({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Handle the {{ model }} "force deleted" event.
+     *
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return void
+     */
+    public function forceDeleted({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+}
