@@ -1,0 +1,6 @@
+<?php
+
+use #controllerPath\{#ClassNameController};
+use Illuminate\Support\Facades\Route;
+
+Route::apiResource('#namePlural', #ClassNameController::class);

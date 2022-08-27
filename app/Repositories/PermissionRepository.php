@@ -2,13 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Contracts\PermissionRepositoryContract;
 use App\Core\Repositories\CoreRepository;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Models\Permission;
 
-class PermissionRepository extends CoreRepository implements PermissionRepositoryContract
+class PermissionRepository extends CoreRepository
 {
     public function __construct(Permission $model)
     {

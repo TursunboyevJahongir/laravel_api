@@ -2,11 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Contracts\LoggerRepositoryContract;
 use App\Core\Repositories\CoreRepository;
 use App\Models\Logger;
 
-class LoggerRepository extends CoreRepository implements LoggerRepositoryContract
+class LoggerRepository extends CoreRepository
 {
     /**
      * @param Logger $model

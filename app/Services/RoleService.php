@@ -2,17 +2,15 @@
 
 namespace App\Services;
 
-use App\Contracts\RoleRepositoryContract;
-use App\Contracts\RoleServiceContract;
 use App\Core\Services\CoreService;
-use App\Http\Requests\Api\Role\PermissionRequest;
-use App\Http\Requests\Api\Role\SyncPermissionsRequest;
+use App\Http\Requests\Role\PermissionRequest;
+use App\Http\Requests\Role\SyncPermissionsRequest;
 use App\Models\Role;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Repositories\RoleRepository;
 
-class RoleService extends CoreService implements RoleServiceContract
+class RoleService extends CoreService
 {
-    public function __construct(RoleRepositoryContract $repository)
+    public function __construct(RoleRepository $repository)
     {
         parent::__construct($repository);
     }

@@ -2,22 +2,17 @@
 
 namespace App\Services;
 
-use App\Contracts\PermissionRepositoryContract;
-use App\Contracts\PermissionServiceContract;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Core\Services\CoreService;
-use App\Http\Requests\Api\Role\CheckPermissionsRequest;
+use App\Http\Requests\Role\CheckPermissionsRequest;
 use App\Models\User;
+use App\Repositories\PermissionRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
-class PermissionService extends CoreService implements PermissionServiceContract
+class PermissionService extends CoreService
 {
-    public function __construct(PermissionRepositoryContract $repository)
+    public function __construct(PermissionRepository $repository)
     {
         parent::__construct($repository);
     }
@@ -34,7 +29,7 @@ class PermissionService extends CoreService implements PermissionServiceContract
      * @return bool
      * @throws \Exception
      */
-    public function hasAllPermissions(CheckPermissionsRequest $request, ?User $user): bool
+    public function hasAllPermissions(CheckPermissionsRequest $request, User $user = null): bool
     {
         $user = $user ?? auth()->user();
 

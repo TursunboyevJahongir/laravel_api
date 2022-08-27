@@ -1,0 +1,61 @@
+<?php
+
+namespace #controllerPath;
+
+use #servicePath\#ClassNameService;
+use #requestsPath\#ClassNameCreateRequest;
+use #requestsPath\#ClassNameUpdateRequest;
+use App\Core\Http\Requests\GetAllFilteredRecordsRequest as RequestFilter;
+use #modelPath\#ModelName;
+use Illuminate\Http\JsonResponse;
+use #CoreController as Controller;
+
+class #ClassNameController extends Controller
+{
+    public function __construct(#ClassNameService $service)
+    {
+        parent::__construct($service);
+        $this->authorizeResource(#ModelName::class);
+    }
+
+    public function index(RequestFilter $request): JsonResponse
+    {
+        $#namePlural = $this->service->get($request);
+
+        return $this->responseWith(compact('#namePlural'));
+    }
+
+    public function show(#ModelName $#nameSingular, RequestFilter $request): JsonResponse
+    {
+        $#nameSingular = $this->service->show($#nameSingular, $request);
+
+        return $this->responseWith(compact('#nameSingular'));
+    }
+
+    public function store(#ClassNameCreateRequest $request): JsonResponse
+    {
+        try {
+            $#nameSingular = $this->service->create($request);
+
+            return $this->responseWith(compact('#nameSingular'), 201);
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
+    }
+
+    public function update(#ModelName $#nameSingular, #ClassNameUpdateRequest $request): JsonResponse
+    {
+        try {
+            $this->service->update($#nameSingular, $request);
+            return $this->responseWith(code: 204);
+        } catch (\Exception $e) {
+            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
+        }
+    }
+
+    public function destroy(#ModelName $#nameSingular): JsonResponse
+    {
+        $this->service->delete($#nameSingular);
+        return $this->responseWith(code: 204);
+    }
+}

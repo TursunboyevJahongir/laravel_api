@@ -3,17 +3,16 @@
 
 namespace App\Services;
 
-use App\Contracts\CategoryServiceContract;
-use App\Contracts\CategoryRepositoryContract;
+use App\Repositories\CategoryRepository;
 use App\Core\Services\CoreService;
 use App\Events\DestroyFiles;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryService extends CoreService implements CategoryServiceContract
+class CategoryService extends CoreService
 {
-    public function __construct(CategoryRepositoryContract $repository)
+    public function __construct(CategoryRepository $repository)
     {
         parent::__construct($repository);
     }

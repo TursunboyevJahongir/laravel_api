@@ -1,0 +1,10 @@
+<?php
+
+namespace #policyPath;
+
+use App\Core\Policies\CorePolicy;
+
+class #ClassNamePolicy extends CorePolicy
+{
+    protected string $name = '#nameSingular';
+}

@@ -1,9 +1,0 @@
-<?php
-
-namespace #contractPath;
-
-use #BaseServiceContract as CoreServiceContract;
-
-interface #ClassNameServiceContract extends CoreServiceContract
-{
-}

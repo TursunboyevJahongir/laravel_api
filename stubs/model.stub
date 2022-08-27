@@ -3,9 +3,10 @@
 namespace {{ namespace }};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Core\Models\CoreModel;
+use Illuminate\Database\Eloquent\Model;
+use App\Core\Traits\CoreModel;
 
-class {{ class }} extends CoreModel
+class {{ class }} extends Model
 {
-    use HasFactory;
+    use HasFactory, CoreModel;
 }

@@ -18,11 +18,13 @@ class RouteServiceProvider extends ServiceProvider
         $this->aliasMiddleware('setAppLocale', SetAppLocale::class);
         $this->aliasMiddleware('isActive', IsActive::class);
 
-        $this->routes(function () {
-            Route::prefix('api/v1')
-                ->middleware(['api', 'auth:api', 'setAppLocale', 'bindings', 'isActive'])
-                ->group(base_path('routes/api.php'));
+        $routeFiles = array_slice(scandir(base_path('routes/api')), 2);
+        foreach ($routeFiles as $file) {
+            Route::middleware(['api', 'setAppLocale', 'isActive', 'bindings'])
+                ->group(base_path('routes/api/' . $file));
+        }
 
+        $this->routes(function () {
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

@@ -1,0 +1,14 @@
+<?php
+
+namespace #repasitoryPath;
+
+use #CoreRepository as Repository;
+use #modelPath\#ModelName;
+
+class #ClassNameRepository extends Repository
+{
+      public function __construct(#ModelName $model)
+        {
+            parent::__construct($model);
+        }
+}

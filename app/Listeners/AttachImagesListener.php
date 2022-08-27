@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Contracts\ResourceServiceContract;
+use App\Services\ResourceService;
 use App\Events\AttachImages;
 
 class AttachImagesListener
@@ -12,7 +12,7 @@ class AttachImagesListener
      *
      * @return void
      */
-    public function __construct(protected ResourceServiceContract $resource)
+    public function __construct(protected ResourceService $resource)
     {
         //
     }

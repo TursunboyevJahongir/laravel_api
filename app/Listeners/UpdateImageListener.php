@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 
-use App\Contracts\ResourceServiceContract;
+use App\Services\ResourceService;
 use App\Events\UpdateImage;
 
 class UpdateImageListener
@@ -13,7 +13,7 @@ class UpdateImageListener
      *
      * @return void
      */
-    public function __construct(protected ResourceServiceContract $resource)
+    public function __construct(protected ResourceService $resource)
     {
         //
     }
