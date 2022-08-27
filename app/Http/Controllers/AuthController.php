@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Http\Requests\Api\Auth\LoginRequest;
-use App\Http\Requests\Api\UserCreateRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\UserCreateRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

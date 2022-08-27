@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\UserService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\Api\ProfileUpdateRequest;
-use App\Http\Requests\Api\UserCreateRequest;
-use App\Http\Requests\Api\UserUpdateRequest;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller

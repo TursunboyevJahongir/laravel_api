@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests;
 
-use App\Rules\PhoneRule;
 use App\Rules\UniqueJsonRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class CategoryUpdateRequest extends FormRequest
+class CategoryCreateRequest extends FormRequest
 {
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules()
     {
-        return ['name'                                     => 'filled|array',
-                'name.' . config('app.main_locale')        => ['required_with:name',
+        return ['name'                                     => 'required|array',
+                'name.' . config('app.main_locale')        => ['required',
                                                                'string',
                                                                new UniqueJsonRule('categories',
-                                                                                  'name', $this->route()
-                                                                                      ->originalParameter('category'))],
+                                                                                  'name')],
                 'name.*'                                   => ['nullable',
                                                                'string',
                                                                new UniqueJsonRule('categories',
-                                                                                  'name', $this->route()
-                                                                                      ->originalParameter('category'))],
+                                                                                  'name')],
                 'description'                              => 'nullable|array',
                 'description.' . config('app.main_locale') => 'required_with:description|string',
                 'description.*'                            => 'nullable|string',
@@ -39,4 +40,5 @@ class CategoryUpdateRequest extends FormRequest
     {
         return true;
     }
+
 }

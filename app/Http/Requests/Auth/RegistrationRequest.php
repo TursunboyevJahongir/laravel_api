@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api\Auth;
+namespace App\Http\Requests\Auth;
 
 use App\Rules\PhoneRule;
 use App\Rules\UniqueRule;

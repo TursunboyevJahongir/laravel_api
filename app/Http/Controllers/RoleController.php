@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\RoleService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\Api\Role\PermissionRequest;
-use App\Http\Requests\Api\Role\RoleCreateRequest;
-use App\Http\Requests\Api\Role\RoleUpdateRequest;
-use App\Http\Requests\Api\Role\SyncPermissionsRequest;
+use App\Http\Requests\Role\PermissionRequest;
+use App\Http\Requests\Role\RoleCreateRequest;
+use App\Http\Requests\Role\RoleUpdateRequest;
+use App\Http\Requests\Role\SyncPermissionsRequest;
 use App\Models\Role;
+use App\Services\RoleService;
 use Illuminate\Http\{JsonResponse};
 
 

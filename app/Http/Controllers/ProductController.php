@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ProductService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\Api\ProductCreateRequest;
-use App\Http\Requests\Api\ProductUpdateRequest;
+use App\Http\Requests\ProductCreateRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller

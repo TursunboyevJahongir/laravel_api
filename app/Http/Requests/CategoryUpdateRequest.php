@@ -1,28 +1,25 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests;
 
 use App\Rules\UniqueJsonRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryCreateRequest extends FormRequest
+class CategoryUpdateRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
-        return ['name'                                     => 'required|array',
-                'name.' . config('app.main_locale')        => ['required',
+        return ['name'                                     => 'filled|array',
+                'name.' . config('app.main_locale')        => ['required_with:name',
                                                                'string',
                                                                new UniqueJsonRule('categories',
-                                                                                  'name')],
+                                                                                  'name', $this->route()
+                                                                                      ->originalParameter('category'))],
                 'name.*'                                   => ['nullable',
                                                                'string',
                                                                new UniqueJsonRule('categories',
-                                                                                  'name')],
+                                                                                  'name', $this->route()
+                                                                                      ->originalParameter('category'))],
                 'description'                              => 'nullable|array',
                 'description.' . config('app.main_locale') => 'required_with:description|string',
                 'description.*'                            => 'nullable|string',
@@ -40,5 +37,4 @@ class CategoryCreateRequest extends FormRequest
     {
         return true;
     }
-
 }

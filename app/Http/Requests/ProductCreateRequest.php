@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests;
 
 use App\Rules\checkActiveRule;
 use Illuminate\Foundation\Http\FormRequest;

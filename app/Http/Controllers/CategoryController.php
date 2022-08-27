@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CategoryService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\Api\CategoryCreateRequest;
-use App\Http\Requests\Api\CategoryUpdateRequest;
+use App\Http\Requests\CategoryCreateRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller

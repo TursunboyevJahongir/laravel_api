@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Repositories\PermissionRepository;
 use App\Core\Services\CoreService;
-use App\Http\Requests\Api\Role\CheckPermissionsRequest;
+use App\Http\Requests\Role\CheckPermissionsRequest;
 use App\Models\User;
+use App\Repositories\PermissionRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;

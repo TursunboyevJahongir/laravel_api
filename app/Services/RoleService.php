@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Repositories\RoleRepository;
 use App\Core\Services\CoreService;
-use App\Http\Requests\Api\Role\PermissionRequest;
-use App\Http\Requests\Api\Role\SyncPermissionsRequest;
+use App\Http\Requests\Role\PermissionRequest;
+use App\Http\Requests\Role\SyncPermissionsRequest;
 use App\Models\Role;
+use App\Repositories\RoleRepository;
 
 class RoleService extends CoreService
 {

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PermissionService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\Api\Role\CheckPermissionsRequest;
-use App\Http\Requests\Api\Role\PermissionCreateRequest;
-use App\Http\Requests\Api\Role\PermissionUpdateRequest;
+use App\Http\Requests\Role\CheckPermissionsRequest;
+use App\Http\Requests\Role\PermissionCreateRequest;
+use App\Http\Requests\Role\PermissionUpdateRequest;
 use App\Models\User;
+use App\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Permission;
 
