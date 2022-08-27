@@ -2,12 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Contracts\ProductRepositoryContract;
 use App\Core\Repositories\CoreRepository;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\{Builder, Model};
 
-class ProductRepository extends CoreRepository implements ProductRepositoryContract
+class ProductRepository extends CoreRepository
 {
     public function __construct(Product $model)
     {

@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\CategoryServiceContract;
+use App\Services\CategoryService;
+use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\CategoryCreateRequest;
 use App\Http\Requests\Api\CategoryUpdateRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\CoreController as Controller;
 
 class CategoryController extends Controller
 {
-    public function __construct(CategoryServiceContract $service)
+    public function __construct(CategoryService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(Category::class, 'category');

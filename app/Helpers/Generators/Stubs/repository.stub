@@ -2,11 +2,10 @@
 
 namespace #repasitoryPath;
 
-use #contractPath\#ClassNameRepositoryContract;
-use #BaseRepository as Repository;
+use #CoreRepository as Repository;
 use #modelPath\#ModelName;
 
-class #ClassNameRepository extends Repository implements #ClassNameRepositoryContract
+class #ClassNameRepository extends Repository
 {
       public function __construct(#ModelName $model)
         {

@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\LoggerServiceContract;
+use App\Services\LoggerService;
+use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\Logger;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\CoreController as Controller;
 
 class LoggerController extends Controller
 {
-    public function __construct(LoggerServiceContract $service)
+    public function __construct(LoggerService $service)
     {
         parent::__construct($service);
     }

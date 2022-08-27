@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\PermissionServiceContract;
+use App\Services\PermissionService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\Role\CheckPermissionsRequest;
@@ -14,7 +14,7 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public function __construct(PermissionServiceContract $service)
+    public function __construct(PermissionService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(Permission::class, 'permission');
@@ -67,9 +67,8 @@ class PermissionController extends Controller
      *
      * @return JsonResponse
      */
-    public function hasAllPermissions(CheckPermissionsRequest $request): JsonResponse
+    public function hasAllPermissions(CheckPermissionsRequest $request, User $user = null): JsonResponse
     {
-        dd('d');
         $result = $this->service->hasAllPermissions($request, $user);
 
         return $this->responseWith(compact('result'));

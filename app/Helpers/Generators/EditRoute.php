@@ -9,7 +9,7 @@ class EditRoute
     public static function handle($module): void
     {
         $route = Str::plural(Str::kebab($module));
-        $uses  = "use App\Http\Controllers\Api\\" . $module . "Controller;";
+        $uses  = "use App\Http\Controllers\\" . $module . "Controller;";
         $route = "        Route::apiResource('$route', {$module}Controller::class);\n";
 
         $file    = 'Routes/api.php';

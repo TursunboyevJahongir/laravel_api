@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\ProductServiceContract;
+use App\Services\ProductService;
+use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\ProductCreateRequest;
 use App\Http\Requests\Api\ProductUpdateRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\CoreController as Controller;
 
 class ProductController extends Controller
 {
-    public function __construct(ProductServiceContract $service)
+    public function __construct(ProductService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(Product::class, 'product');

@@ -2,19 +2,17 @@
 
 namespace App\Repositories;
 
-use App\Contracts\PermissionRepositoryContract;
-use App\Contracts\RoleRepositoryContract;
 use App\Core\Repositories\CoreRepository;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\{Builder, Model};
 
-class RoleRepository extends CoreRepository implements RoleRepositoryContract
+class RoleRepository extends CoreRepository
 {
     /**
      * @param Role $model
-     * @param PermissionRepositoryContract $permissionRepository
+     * @param PermissionRepository $permissionRepository
      */
-    public function __construct(Role $model, protected PermissionRepositoryContract $permissionRepository)
+    public function __construct(Role $model, protected PermissionRepository $permissionRepository)
     {
         parent::__construct($model);
     }

@@ -3,13 +3,13 @@
 
 namespace #servicePath;
 
-use #contractPath\#ClassNameRepositoryContract;
-use #contractPath\#ClassNameServiceContract;
-use #BaseService as Service;
+use #repositoryPath\#ClassNameRepository;
 
-class #ClassNameService extends CoreService implements #ClassNameServiceContract
+use #CoreService as Service;
+
+class #ClassNameService extends CoreService
 {
-    public function __construct(#ClassNameRepositoryContract $repository)
+    public function __construct(#ClassNameRepository $repository)
     {
         parent::__construct($repository);
     }

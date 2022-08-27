@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\UserServiceContract;
+use App\Services\UserService;
+use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\ProfileUpdateRequest;
 use App\Http\Requests\Api\UserCreateRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use App\Core\Http\Controllers\CoreController as Controller;
 
 class UserController extends Controller
 {
-    public function __construct(UserServiceContract $service)
+    public function __construct(UserService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(User::class, 'user');
     }
 
-    public function me(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function profile(GetAllFilteredRecordsRequest $request): JsonResponse
     {
         $user = $this->service->show(auth()->user(), $request);
 

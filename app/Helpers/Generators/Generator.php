@@ -10,8 +10,8 @@ class Generator
 {
     public function __construct(
         protected string $name,
-        protected string $path,
-        protected string|array $stub,
+        protected $path,
+        protected $stub,
         protected string|null $model = null,
     ) {
         $this->makeFolder();
@@ -21,30 +21,29 @@ class Generator
     public function getStubVariables()
     {
         return [
-            '#namespace'     => str_replace('/', '\\', $this->path),
-            '#ClassName'     => $this->name,
-            '#ModelName'     => $this->model ?? $this->name,
-            '#modelPlural'   => Str::plural(Str::camel($this->model ?? $this->name)),
-            '#modelSingular' => Str::singular(Str::camel($this->model ?? $this->name)),
+            '#namespace'    => str_replace('/', '\\', $this->path),
+            '#ClassName'    => $this->name,
+            '#ModelName'    => $this->model ?? $this->name,
+            '#namePlural'   => Str::plural(Str::camel($this->model ?? $this->name)),
+            '#nameSingular' => Str::singular(Str::camel($this->model ?? $this->name)),
 
-            '#BaseController'         => config('customizegenerator.base_controller'),
-            '#BaseService'            => config('customizegenerator.base_service'),
-            '#BaseRepository'         => config('customizegenerator.base_repository'),
-            '#BaseRepositoryContract' => config('customizegenerator.base_repository_contract'),
-            '#BaseServiceContract'    => config('customizegenerator.base_service_contract'),
+            '#CoreController' => config('modulegenerator.core_controller'),
+            '#CoreService'    => config('modulegenerator.core_service'),
+            '#CoreRepository' => config('modulegenerator.core_repository'),
 
-            '#webController' => config('customizegenerator.web.controller_path'),
-            '#webRoute'      => config('customizegenerator.web.route'),
+            '#webController' => config('modulegenerator.web.controller_path'),
+            '#webRoute'      => config('modulegenerator.web.route'),
 
-            '#apiController' => config('customizegenerator.api.controller_path'),
-            '#apiRoute'      => config('customizegenerator.api.route'),
+            '#apiController' => config('modulegenerator.api.controller_path'),
+            '#apiRoute'      => config('modulegenerator.api.route'),
 
-            '#repasitoryPath' => config('customizegenerator.repository_path'),
-            '#servicePath'    => config('customizegenerator.service_path'),
-            '#policyPath'     => config('customizegenerator.policy_path'),
-            '#modelPath'      => config('customizegenerator.model_path'),
-            '#contractPath'   => config('customizegenerator.contract_path'),
-            '#requestsPath'   => config('customizegenerator.request_path'),
+            '#controllerPath' => config('modulegenerator.controller_path'),
+            '#repasitoryPath' => config('modulegenerator.repository_path'),
+            '#routePath'      => config('modulegenerator.route_path'),
+            '#servicePath'    => config('modulegenerator.service_path'),
+            '#policyPath'     => config('modulegenerator.policy_path'),
+            '#modelPath'      => config('modulegenerator.model_path'),
+            '#requestsPath'   => config('modulegenerator.request_path'),
         ];
     }
 
@@ -59,7 +58,8 @@ class Generator
         }
     }
 
-    public function getFilename($stub) {
+    public function getFilename($stub)
+    {
         return $this->name . Str::studly($stub) . '.php';
     }
 

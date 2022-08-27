@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Contracts\RoleServiceContract;
+use App\Services\RoleService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Api\Role\PermissionRequest;
 use App\Http\Requests\Api\Role\RoleCreateRequest;
-use App\Http\Requests\Api\Role\RolesPermissionsRequest;
 use App\Http\Requests\Api\Role\RoleUpdateRequest;
 use App\Http\Requests\Api\Role\SyncPermissionsRequest;
 use App\Models\Role;
@@ -16,7 +15,7 @@ use Illuminate\Http\{JsonResponse};
 
 class RoleController extends Controller
 {
-    public function __construct(RoleServiceContract $service)
+    public function __construct(RoleService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(Role::class, 'role');

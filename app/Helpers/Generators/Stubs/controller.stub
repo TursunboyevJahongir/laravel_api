@@ -1,18 +1,18 @@
 <?php
 
-namespace #apiController;
+namespace #controllerPath;
 
-use #contractPath\#ClassNameServiceContract;
+use #servicePath\#ClassNameService;
 use #requestsPath\#ClassNameCreateRequest;
 use #requestsPath\#ClassNameUpdateRequest;
-use #contractPath\GetAllFilteredRecordsRequest;
+use #contractPath\GetAllFilteredRecordsRequest;//todo
 use #modelPath\#ModelName;
 use Illuminate\Http\JsonResponse;
-use #BaseController as Controller;
+use #CoreController as Controller;
 
 class #ClassNameController extends Controller
 {
-    public function __construct(#ClassNameServiceContract $service)
+    public function __construct(#ClassNameService $service)
     {
         parent::__construct($service);
         $this->authorizeResource(#ModelName::class);
@@ -20,42 +20,42 @@ class #ClassNameController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $#modelPlural = $this->service->get($request);
+        $#namePlural = $this->service->get($request);
 
-        return $this->responseWith(compact('#modelPlural'));
+        return $this->responseWith(compact('#namePlural'));
     }
 
-    public function show(#ModelName $#modelSingular, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(#ModelName $#nameSingular, GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $#modelSingular = $this->service->show($#modelSingular, $request);
+        $#nameSingular = $this->service->show($#nameSingular, $request);
 
-        return $this->responseWith(compact('#modelSingular'));
+        return $this->responseWith(compact('#nameSingular'));
     }
 
     public function store(#ClassNameCreateRequest $request): JsonResponse
     {
         try {
-            $#modelSingular = $this->service->create($request);
+            $#nameSingular = $this->service->create($request);
 
-            return $this->responseWith(compact('#modelSingular'), 201);
+            return $this->responseWith(compact('#nameSingular'), 201);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
     }
 
-    public function update(#ModelName $#modelSingular, #ClassNameUpdateRequest $request): JsonResponse
+    public function update(#ModelName $#nameSingular, #ClassNameUpdateRequest $request): JsonResponse
     {
         try {
-            $this->service->update($#modelSingular, $request);
+            $this->service->update($#nameSingular, $request);
             return $this->responseWith(code: 204);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
     }
 
-    public function destroy(#ModelName $#modelSingular): JsonResponse
+    public function destroy(#ModelName $#nameSingular): JsonResponse
     {
-        $this->service->delete($#modelSingular);
+        $this->service->delete($#nameSingular);
         return $this->responseWith(code: 204);
     }
 }

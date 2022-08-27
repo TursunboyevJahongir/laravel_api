@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Contracts\UserRepositoryContract;
 use App\Core\Repositories\CoreRepository;
 use App\Models\RefreshToken;
 use App\Models\User;
@@ -10,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
-class UserRepository extends CoreRepository implements UserRepositoryContract
+class UserRepository extends CoreRepository
 {
     public function __construct(User $model)
     {

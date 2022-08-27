@@ -63,56 +63,65 @@ class Handler extends ExceptionHandler
                 $message = 'No records found, try another request';
             }
 
-            return response()->json(['code' => 404,
-                'message' => $message,
-                'data' => []],
-                404);
+            return response()->json(['code'    => 404,
+                                     'message' => $message,
+                                     'data'    => []],
+                                    404);
+        }
+
+        if ($e instanceof NotFoundHttpException) {//route not found
+            $message = 'No records found, try another request';
+
+            return response()->json(['code'    => 404,
+                                     'message' => $message,
+                                     'data'    => []],
+                                    404);
         }
         if ($e instanceof PermissionAlreadyExists) {
-            return response()->json(['code' => 422,
-                'message' => 'Permission already exists for this guard',
-                'data' => []],
-                422);
+            return response()->json(['code'    => 422,
+                                     'message' => 'Permission already exists for this guard',
+                                     'data'    => []],
+                                    422);
         }
         if ($e instanceof AuthorizationException) {
-            return response()->json(['code' => 403,
-                'message' => $e->getMessage(),
-                'data' => []],
-                403);
+            return response()->json(['code'    => 403,
+                                     'message' => $e->getMessage(),
+                                     'data'    => []],
+                                    403);
         }
 
         if ($e instanceof UnauthorizedException) {
-            return response()->json(['code' => 403,
-                'message' => 'You dont have permissions to do this action',
-                'data' => []],
-                403);
+            return response()->json(['code'    => 403,
+                                     'message' => 'You dont have permissions to do this action',
+                                     'data'    => []],
+                                    403);
         }
         if ($e instanceof RoleAlreadyExists) {
-            return response()->json(['code' => 422,
-                'message' => 'This role already exists',
-                'data' => []],
-                422);
+            return response()->json(['code'    => 422,
+                                     'message' => 'This role already exists',
+                                     'data'    => []],
+                                    422);
         }
 
         if ($e instanceof TypeError) {
-            return response()->json(['code' => 500,
-                'message' => $e->getMessage(),
-                'data' => []],
-                500);
+            return response()->json(['code'    => 500,
+                                     'message' => $e->getMessage(),
+                                     'data'    => []],
+                                    500);
         }
 
         if ($e instanceof MethodNotAllowedHttpException) {
-            return response()->json(['code' => 405,
-                'message' => $e->getMessage(),
-                'data' => []],
-                405);
+            return response()->json(['code'    => 405,
+                                     'message' => $e->getMessage(),
+                                     'data'    => []],
+                                    405);
         }
 
         if ($e instanceof AuthenticationException) {
-            return response()->json(['code' => 401,
-                'message' => $e->getMessage(),
-                'data' => []],
-                401);
+            return response()->json(['code'    => 401,
+                                     'message' => $e->getMessage(),
+                                     'data'    => []],
+                                    401);
         }
         // End
 
@@ -144,10 +153,10 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof \Exception) {
-            return response()->json(['code' => 500,
-                'message' => $e->getMessage(),
-                'data' => $e->getTrace()],
-                500);
+            return response()->json(['code'    => 500,
+                                     'message' => $e->getMessage(),
+                                     'data'    => $e->getTrace()],
+                                    500);
         }
 
         return $this->shouldReturnJson($request, $e)
