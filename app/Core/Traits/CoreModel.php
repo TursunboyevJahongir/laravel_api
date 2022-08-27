@@ -36,11 +36,6 @@ trait CoreModel
         return $this->searchable ?? [];
     }
 
-    public function isJson(string $field): bool
-    {
-        return in_array($field, $this->getJsonColumns(), true);
-    }
-
     public function getFilePath(): string
     {
         return $this->filePath ?? 'files';

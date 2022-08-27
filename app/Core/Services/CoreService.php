@@ -31,6 +31,7 @@ abstract class CoreService implements CoreServiceContract
             ->notFilters()
             ->search()
             ->searchBy()
+            ->sortBy()
             ->isActive()
             ->closure($this, 'appends')
             ->paginationOrCollection();
