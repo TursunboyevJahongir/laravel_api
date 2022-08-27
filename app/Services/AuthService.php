@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-use App\Contracts\UserRepositoryContract;
+use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthService extends CoreService
 {
-    public function __construct(UserRepositoryContract $repository)
+    public function __construct(UserRepository $repository)
     {
         parent::__construct($repository);
     }

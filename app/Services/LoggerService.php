@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
-use App\Contracts\LoggerRepositoryContract;
-use App\Contracts\LoggerServiceContract;
+use App\Repositories\LoggerRepository;
 use App\Core\Services\CoreService;
 use App\Jobs\LoggerJob;
 
-class LoggerService extends CoreService implements LoggerServiceContract
+class LoggerService extends CoreService
 {
     public function __construct(
-        LoggerRepositoryContract $repository,
+        LoggerRepository $repository,
     ) {
         parent::__construct($repository);
     }

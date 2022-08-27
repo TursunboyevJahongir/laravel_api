@@ -3,17 +3,16 @@
 
 namespace App\Services;
 
-use App\Contracts\UserRepositoryContract;
-use App\Contracts\UserServiceContract;
+use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use App\Events\UpdateImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserService extends CoreService implements UserServiceContract
+class UserService extends CoreService
 {
-    public function __construct(UserRepositoryContract $repository)
+    public function __construct(UserRepository $repository)
     {
         parent::__construct($repository);
     }

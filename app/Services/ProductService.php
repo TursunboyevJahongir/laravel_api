@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Contracts\{ProductServiceContract, ProductRepositoryContract};
+use App\Repositories\{ProductRepository};
 use App\Core\Services\CoreService;
 use App\Events\{AttachImages, DestroyFiles, UpdateFile, UpdateImage};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductService extends CoreService implements ProductServiceContract
+class ProductService extends CoreService
 {
-    public function __construct(ProductRepositoryContract $repository)
+    public function __construct(ProductRepository $repository)
     {
         parent::__construct($repository);
     }

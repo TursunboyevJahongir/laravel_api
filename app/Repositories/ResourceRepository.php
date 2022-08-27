@@ -3,11 +3,10 @@
 namespace App\Repositories;
 
 
-use App\Contracts\ResourceRepositoryContract;
 use App\Models\Resource;
 use Illuminate\Database\Eloquent\Model;
 
-class ResourceRepository implements ResourceRepositoryContract
+class ResourceRepository
 {
     /**
      * @param Resource $model

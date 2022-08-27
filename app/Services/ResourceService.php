@@ -9,15 +9,14 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
-use App\Contracts\ResourceRepositoryContract;
-use App\Contracts\ResourceServiceContract;
+use App\Repositories\ResourceRepository;
 
-class ResourceService implements ResourceServiceContract
+class ResourceService
 {
     /**
-     * @param ResourceRepositoryContract $repository
+     * @param ResourceRepository $repository
      */
-    public function __construct(protected ResourceRepositoryContract $repository)
+    public function __construct(protected ResourceRepository $repository)
     {
     }
 

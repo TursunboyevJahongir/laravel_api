@@ -1,0 +1,16 @@
+<?php
+
+
+namespace #servicePath;
+
+use #repositoryPath\#ClassNameRepository;
+
+use #CoreService as Service;
+
+class #ClassNameService extends CoreService
+{
+    public function __construct(#ClassNameRepository $repository)
+    {
+        parent::__construct($repository);
+    }
+}
