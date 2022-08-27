@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Generators;
+namespace App\Core\Helpers\Generators;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
@@ -21,7 +21,6 @@ class Generator
     public function getStubVariables()
     {
         return [
-            '#namespace'    => str_replace('/', '\\', $this->path),
             '#ClassName'    => $this->name,
             '#ModelName'    => $this->model ?? $this->name,
             '#namePlural'   => Str::plural(Str::camel($this->model ?? $this->name)),
@@ -50,9 +49,10 @@ class Generator
     public function make()
     {
         foreach (Arr::wrap($this->stub) as $stub) {
-            $path = $this->path . '/' . $this->getFilename($stub);
+            $path = str_replace('\\', '/', $this->path) . '/' . $this->getFilename($stub);
+            dump($path);
             if (!File::exists($path)) {
-                File::put($path, $this->getContents($stub));
+                File::put($path, $this->getContents($stub), 0777);
                 echo "File $path created successfull \n";
             }
         }
@@ -60,7 +60,7 @@ class Generator
 
     public function getFilename($stub)
     {
-        return $this->name . Str::studly($stub) . '.php';
+        return ($stub == 'route' ? strtolower($this->name) : $this->name . Str::studly($stub)) . '.php';
     }
 
     public function getContents($stub)
@@ -76,7 +76,7 @@ class Generator
 
     public function makeFolder()
     {
-        File::makeDirectory($this->path, 0777, true, true);
+        File::makeDirectory(str_replace('\\', '/', $this->path), 0777, true, true);
     }
 
     public function getPath()

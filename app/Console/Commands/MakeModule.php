@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\Generators\Generator;
+use App\Core\Helpers\Generators\Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -63,33 +63,33 @@ class MakeModule extends Command
         $model = $this->option('model') ?? $module;
         Artisan::call("make:model " . str_replace('\\', '/', config('modulegenerator.model_path')) . '/' . $model . "$migrate");
         $progressBar->advance();
-        $this->info("\n" . '<fg=green> Model created</>');
+        //$this->info("\n" . '<fg=green> Model created</>');
 
         new Generator($module, config('modulegenerator.repository_path'), 'repository', $model);
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>Repository created</>');
+        //$this->info("\n" . '<fg=green>Repository created</>');
 
         new Generator($module, config('modulegenerator.service_path'), 'service', $model);
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>Service created</>');
+        //$this->info("\n" . '<fg=green>Service created</>');
 
         new Generator($module, config('modulegenerator.controller_path'), 'controller', $model);
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>Controller created</>');
+        //$this->info("\n" . '<fg=green>Controller created</>');
 
         //new Generator($module, config('modulegenerator.request_path'), 'request', $model);
         Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "CreateRequest");
         Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "UpdateRequest");
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>Requests created</>');
+        //$this->info("\n" . '<fg=green>Requests created</>');
 
         new Generator($module, config('modulegenerator.policy_path'), 'policy', $model);
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>Policy created</>');
+        //$this->info("\n" . '<fg=green>Policy created</>');
 
         new Generator($module, config('modulegenerator.route_path'), 'route', $model);
         $progressBar->advance();
-        $this->info("\n" . '<fg=green>route created</>');
+        //$this->info("\n" . '<fg=green>route created</>');
 
         $progressBar->finish();
         $this->info("\n" . 'Command completed successfully ✅');

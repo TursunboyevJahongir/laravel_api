@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Generators;
+namespace App\Core\Helpers\Generators;
 
 use Illuminate\Support\Str;
 
