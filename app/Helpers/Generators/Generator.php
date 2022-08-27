@@ -65,7 +65,7 @@ class Generator
 
     public function getContents($stub)
     {
-        $contents = file_get_contents(app_path('Helpers/Generators/Stubs/' . $stub . '.stub'));
+        $contents = file_get_contents(__DIR__ . '/Stubs/' . $stub . '.stub');
 
         foreach ($this->getStubVariables() as $search => $replace) {
             $contents = str_replace($search, $replace, $contents);
