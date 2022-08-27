@@ -5,23 +5,14 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
-        $this->where(function (EloquentBuilder|QueryBuilder $query) use ($orderBy, $sort) {
-            $orderBy = request()->get('order', $orderBy);
-            $sort    = request()->get('sort', $sort);
+        $orderBy = request()->get('order', $orderBy);
+        $sort    = request()->get('sort', $sort);
 
-            if (str_contains($orderBy, ',')) {
-                $fields = explode(',', $orderBy);
-                foreach ($fields as $field) {
-                    $field = $this->isJson($field) ?
-                        $field . "->" . app()->getLocale() : $field;
-                    $query->orderBy($field, $sort);
-                }
-            } else {
-                $orderBy = $this->isJson($orderBy) ?
-                    $orderBy . "->" . app()->getLocale() : $orderBy;
-                $query->orderBy($orderBy, $sort);
+        if (str_contains($orderBy, ',') && $fields = explode(',', $orderBy)) {
+            foreach ($fields as $field) {
+                $this->orderBy($this->isJson($field), $sort);
             }
-        });
+        } else $this->orderBy($this->isJson($orderBy), $sort);
 
         return $this;
     });
