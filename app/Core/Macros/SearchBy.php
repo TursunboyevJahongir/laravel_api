@@ -33,7 +33,6 @@ EloquentBuilder::macro('searchBy', function (array|null $searchBy = null) {
             } elseif (str_contains($column, '.')) {
                 $relation = explode('.', $column);
                 $column   = array_pop($relation);
-                //dd(implode('.', $relation), $column, $search);
                 $query->orWhereLikeRelation(implode('.', $relation), $column, $search);
             } else {
                 $query->orWhereLike($column, $search);
