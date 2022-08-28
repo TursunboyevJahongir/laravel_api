@@ -8,11 +8,14 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
         $orderBy = request()->get('order', $orderBy);
         $sort    = request()->get('sort', $sort);
 
-        if (str_contains($orderBy, ',') && $fields = explode(',', $orderBy)) {
+        if (str_contains($orderBy, ',')) {
+            $fields = explode(',', $orderBy);
             foreach ($fields as $field) {
-                $this->orderBy($this->isJson($field), $sort);
+                $this->orderBy(isEloquentModel($this) ? $this->jsonLang($field) : $field, $sort);
             }
-        } else $this->orderBy($this->isJson($orderBy), $sort);
+        } else {
+            $this->orderBy(isEloquentModel($this) ? $this->jsonLang($orderBy) : $orderBy, $sort);
+        }
 
         return $this;
     });

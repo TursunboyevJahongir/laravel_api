@@ -32,25 +32,19 @@ class UserRepository extends CoreRepository
         });
     }
 
-    public function findByPhone(
-        int $phone,
-        array $columns = ['*'],
-        array $relations = [],
-        array $appends = [],
-    ): ?Model {
-        return $this->model
-            ->closure($this, 'availability')
-            ->with($relations)
+    public function firstByPhone($phone): ?User
+    {
+        return $this->query()
             ->wherePhone($phone)
-            ->first($columns)
-            ?->append($appends);
+            ->first()
+            ?->append(\request()->get('appends', []));
     }
 
     public function syncRoleToUser(
         Model|int $user,
         array|int|string $roles
     ) {
-        $this->model = is_int($user) ? $this->findById($user) : $user;
+        $this->model = $this->show($user);
         $this->model->syncRoles($roles);
     }
 
@@ -61,12 +55,12 @@ class UserRepository extends CoreRepository
         return $user->token()->create(['token' => $token])->load('user');
     }
 
-    public function findByRefreshToken(Request $request): ?RefreshToken
+    public function firstByRefreshToken(Request $request): ?RefreshToken
     {
         return RefreshToken::firstWhere('refresh_token', decrypt($request->bearerToken()));
     }
 
-    public function findByToken(Request $request): ?RefreshToken
+    public function firstByToken(Request $request): ?RefreshToken
     {
         return RefreshToken::firstWhere('token', $request->bearerToken());
     }

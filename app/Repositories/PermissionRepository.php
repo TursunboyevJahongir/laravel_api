@@ -28,12 +28,7 @@ class PermissionRepository extends CoreRepository
 
     public function attachToAdmin(Permission|int|string $permission)
     {
-        Role::findByName('superadmin')->givePermissionTo($permission);
-    }
-
-    public function findByName(string $name): mixed
-    {
-        return $this->availability($this->model)->whereName($name)->firstOrFail();
+        Role::firstByName('superadmin')->givePermissionTo($permission);
     }
 
     public function role(

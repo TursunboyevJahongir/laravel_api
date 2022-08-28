@@ -33,25 +33,19 @@ abstract class CoreRepository implements CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         bool $trashed = false,
-        string $orderBy = 'id',
-        string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
         $columns   = request()->get('columns', ['*']);
         $relations = request()->get('relations', []);
         $trashed   = request()->get('only_deleted', false);
-        $orderBy   = request()->get('order', 'id');
-        $sort      = request()->get('sort', 'DESC');
 
-        return $this->mainQuery($columns, $relations, $trashed, $orderBy, $sort, $query);
+        return $this->mainQuery($columns, $relations, $trashed, $query);
     }
 
     public function mainQuery(
         array $columns = [' * '],
         array $relations = [],
         bool $trashed = false,
-        string $orderBy = 'id',
-        string $sort = 'desc',
         Builder|null $query = null
     ): Builder {
         return $this->model
@@ -64,22 +58,18 @@ abstract class CoreRepository implements CoreRepositoryContract
     /**
      * Show entity
      *
-     * @param Model|int $model
-     * @param array|string[] $columns
-     * @param array $relations
-     * @param array $appends
+     * @param mixed $value
+     * @param string $column
      *
      * @return Model|null
      */
     public function show(
-        Model|int $model,
-        array $columns = ['*'],
-        array $relations = [],
-        array $appends = []
+        mixed $value,
+        string $column = 'id'
     ): ?Model {
-        $id = ($model instanceof Model) ? $model->id : $model;
+        $value = ($value instanceof Model) ? $value->id : $value;
 
-        return $this->findById($id, $columns, $relations, $appends);
+        return $this->firstBy($value, $column);
     }
 
     /**
@@ -104,9 +94,7 @@ abstract class CoreRepository implements CoreRepositoryContract
      */
     public function update(Model|int $model, array $payload): bool
     {
-        return ($model instanceof Model)
-            ? $model->update($payload)
-            : $this->findById($model)->update($payload);
+        return $this->show($model)->update($payload);
     }
 
     /**
@@ -118,32 +106,24 @@ abstract class CoreRepository implements CoreRepositoryContract
      */
     public function delete(Model|int $model): bool
     {
-        return ($model instanceof Model)
-            ? $model->delete()
-            : $this->findById($model)->delete();
+        return $this->show($model)->delete();
     }
 
     /**
      * Find element by id
      *
-     * @param int $modelId
-     * @param array|string[] $columns
-     * @param array $relations
-     * @param array $appends
+     * @param mixed $value
+     * @param string $column
      *
      * @return Model|null
      */
-    public function findById(
-        int $modelId,
-        array $columns = ['*'],
-        array $relations = [],
-        array $appends = [],
+    public function firstBy(
+        mixed $value,
+        string $column = 'id'
     ): ?Model {
-        return $this->model
-            ->closure($this, 'availability')
-            ->select($columns)
-            ->with($relations)
-            ->findOrFail($modelId)
-            ->append($appends);
+        return $this->query()
+            ->where($column, $value)
+            ->firstOrFail()
+            ->append(request()->get('appends', []));
     }
 }

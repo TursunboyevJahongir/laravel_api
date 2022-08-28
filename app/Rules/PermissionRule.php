@@ -19,9 +19,9 @@ class PermissionRule implements Rule
     public function passes($attribute, $value): bool
     {
         if (is_numeric($value)) {
-            $permission = Permission::findById($value);
+            $permission = Permission::firstById($value);
         } elseif (is_string($value)) {
-            $permission = Permission::findByName($value);
+            $permission = Permission::firstByName($value);
         } else {
             $this->message = __('messages.error_type');
         }

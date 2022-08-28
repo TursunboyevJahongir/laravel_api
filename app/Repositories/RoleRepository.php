@@ -49,16 +49,4 @@ class RoleRepository extends CoreRepository
     {
         return $role->syncPermissions($permissions);
     }
-
-    /**
-     * Find Role by name
-     *
-     * @param string $name Role name
-     *
-     * @return mixed
-     */
-    public function findByName(string $name): mixed
-    {
-        return $this->availability($this->model)->whereName($name)->firstOrFail();
-    }
 }

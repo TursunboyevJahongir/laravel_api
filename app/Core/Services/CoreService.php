@@ -17,11 +17,6 @@ abstract class CoreService implements CoreServiceContract
     {
     }
 
-    /**
-     * @param GetAllFilteredRecordsRequest $request
-     *
-     * @return Collection|LengthAwarePaginator
-     */
     public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator
     {
         return $this->repository
@@ -31,9 +26,9 @@ abstract class CoreService implements CoreServiceContract
             ->notFilters()
             ->search()
             ->searchBy()
-            ->sortBy()
             ->isActive()
             ->closure($this, 'appends')
+            ->sortBy()
             ->paginationOrCollection();
     }
 
@@ -51,11 +46,7 @@ abstract class CoreService implements CoreServiceContract
      */
     public function show(Model|int $model, FormRequest $request): ?Model
     {
-        return $this->repository->show($model,
-                                       $request->get('columns') ?? ['*'],
-                                       $request->get('relations') ?? [],
-                                       $request->get('appends') ?? []
-        );
+        return $this->repository->show($model);
     }
 
     public function creating(FormRequest &$request): void
@@ -97,7 +88,6 @@ abstract class CoreService implements CoreServiceContract
      */
     public function update(Model|int $model, FormRequest $request): bool
     {
-        $model = $this->repository->show($model);//check availability
         $this->updating($model, $request);
         $this->repository->update($model, $request->validated());
         $this->updated($model, $request);
@@ -129,22 +119,10 @@ abstract class CoreService implements CoreServiceContract
      */
     public function delete(Model|int $model): mixed
     {
-        $model = $this->repository->show($model);//check availability
-
         return Db::transaction(function () use ($model) {
             $this->deleting($model);
 
             return $this->repository->delete($model);
         });
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return mixed
-     */
-    public function findById(int $id): mixed
-    {
-        return $this->repository->findById($id);
     }
 }
