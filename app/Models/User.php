@@ -44,6 +44,8 @@ class User extends Authenticatable
         'phone_confirmed'    => 'bool',
     ];
 
+    protected $dates = ['birthday', 'phone_confirmed_at'];
+
     public function avatar(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource')

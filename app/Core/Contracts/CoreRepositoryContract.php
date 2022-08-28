@@ -4,8 +4,6 @@ namespace App\Core\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 interface CoreRepositoryContract
 {
@@ -13,8 +11,6 @@ interface CoreRepositoryContract
      * @param array|string[] $columns
      * @param array $relations
      * @param bool $trashed
-     * @param string $orderBy
-     * @param string $sort
      * @param Builder|null $query
      *
      * @return Builder
@@ -23,8 +19,6 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         bool $trashed = false,
-        string $orderBy = 'id',
-        string $sort = 'desc',
         Builder|null $query = null
     ): Builder;
 
@@ -32,8 +26,6 @@ interface CoreRepositoryContract
      * @param array|string[] $columns
      * @param array $relations
      * @param bool $trashed
-     * @param string $orderBy
-     * @param string $sort
      * @param Builder|null $query
      *
      * @return Builder
@@ -42,44 +34,18 @@ interface CoreRepositoryContract
         array $columns = ['*'],
         array $relations = [],
         bool $trashed = false,
-        string $orderBy = 'id',
-        string $sort = 'desc',
         Builder|null $query = null
     ): Builder;
 
     /**
      * Show entity
      *
-     * @param Model|int $model
-     * @param string[] $columns
-     * @param array $relations
-     * @param array $appends
+     * @param mixed $value
+     * @param string $column
      *
      * @return Model|null
      */
-    public function show(
-        Model|int $model,
-        array $columns = ['*'],
-        array $relations = [],
-        array $appends = []
-    ): ?Model;
-
-    /**
-     * Find element by id
-     *
-     * @param int $modelId
-     * @param array|string[] $columns
-     * @param array $relations
-     * @param array $appends
-     *
-     * @return Model|null
-     */
-    public function findById(
-        int $modelId,
-        array $columns = ['*'],
-        array $relations = [],
-        array $appends = [],
-    ): ?Model;
+    public function show(mixed $value, string $column = 'id'): ?Model;
 
     /**
      * Create element
@@ -108,4 +74,17 @@ interface CoreRepositoryContract
      * @return bool
      */
     public function delete(Model|int $model): bool;
+
+    /**
+     * Find element by id
+     *
+     * @param mixed $value
+     * @param string $column
+     *
+     * @return Model|null
+     */
+    public function firstBy(
+        mixed $value,
+        string $column = 'id'
+    ): ?Model;
 }

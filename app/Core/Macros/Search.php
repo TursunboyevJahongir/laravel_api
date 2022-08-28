@@ -9,7 +9,7 @@ EloquentBuilder::macro('search', function (string|null $search = null) {
     $search = $search ?? request()->get('search');
     $this->when($search, function (Builder $query) use ($search) {
         $search = rtrim($search, " \t.");
-        foreach ($this->model->getSearchable() as $key => $field) {
+        foreach ($query->getSearchable() as $key => $field) {
             if (is_array($field)) {
                 $relation = $field[0];
                 foreach ($field[1] as $index => $value) {
@@ -28,11 +28,11 @@ EloquentBuilder::macro('search', function (string|null $search = null) {
                 $relation = explode('.', $field);
                 $column   = array_pop($relation);
                 $query->orWhereLikeRelation(implode('.', $relation), $column, $search);
-            } elseif ($this->model->isJson($field)) {
+            } elseif ($this->isJson($field)) {
                 foreach (AvailableLocalesEnum::toArray() as $lang) {
                     $query->orWhereLike("$field->$lang", $search);
                 }
-            } elseif ($this->model->inDates($field)) {
+            } elseif ($this->inDates($field)) {
                 $time = Carbon::createFromTimestamp(strtotime($search));
                 $query->orWhereDate($field, $time);
             } else {

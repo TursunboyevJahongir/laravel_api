@@ -53,20 +53,20 @@ EloquentBuilder::macro('filters', function ($filters = null, string $boolean = '
     $this->when($filters, function (EloquentBuilder $query) use ($filters, $boolean) {
         $filters = $filters[array_key_first($filters)];
         foreach ($filters as $key => $filter) {
-            if ($this->model->isSearchable($key)) {
-                if ($this->model->isJson($key)) {
+            if ($this->isSearchable($key)) {
+                if ($this->isJson($key)) {
                     $query->where(function ($query) use ($key, $filter) {
                         foreach (AvailableLocalesEnum::toArray() as $lang) {
                             $query->orWhereLike("$key->$lang", $filter);
                         }
                     }, boolean: $boolean);
-                } elseif ($this->model->inDates($key)) {
+                } elseif ($this->inDates($key)) {
                     $time = Carbon::createFromTimestamp(strtotime($filter));
                     $query->whereDate($key, $time, $boolean);
                 } else {
                     $query->orWhereLike($key, $filter);
                 }
-            } elseif (in_array($key, $this->model->getDates(), true)) {
+            } elseif ($this->inDates($key)) {
                 $time = Carbon::createFromTimestamp(strtotime($filter));
                 $query->whereDate($key, $time, $boolean);
             } elseif ($key === "id" || is_array($filter)) {

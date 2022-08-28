@@ -22,6 +22,7 @@ class AuthService extends CoreService
         $user = DB::transaction(function () use ($request) {
             $user = $this->repository->create($request->validated());
             $this->repository->syncRoleToUser($user, 'customer');
+
             return $user;
         });
 
@@ -30,20 +31,22 @@ class AuthService extends CoreService
 
     public function login(FormRequest $request)
     {
-        $user = $this->repository->findByPhone($request['phone']);
+        $user = $this->repository->firstByPhone($request['phone']);
         if (!$user && !Hash::check($request['password'], $user->password)) {
             throw new \Exception(__('auth.failed'), 401);
         }
+
         return $this->repository->generateRefreshToken($user);
     }
 
     public function refresh(Request $request)
     {
-        $token = $this->repository->findByRefreshToken($request);
+        $token = $this->repository->firstByRefreshToken($request);
         if ($token) {
             if ($token->refresh_expired_at->greaterThan(now())) {
                 $user = $token->user;
                 $this->repository->delete($token);
+
                 return $this->repository->generateRefreshToken($user);
             }
             $this->repository->delete($token);
@@ -54,7 +57,7 @@ class AuthService extends CoreService
 
     public function logout(Request $request)
     {
-        $token = $this->repository->findByToken($request);
+        $token = $this->repository->firstByToken($request);
         if (!$token) {
             return throw new \Exception('Unauthenticated', 401);
         }

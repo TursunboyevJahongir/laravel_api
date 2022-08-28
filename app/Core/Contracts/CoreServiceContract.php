@@ -66,13 +66,4 @@ interface CoreServiceContract
      * @return mixed
      */
     public function delete(Model $model): mixed;
-
-    /**
-     * Find entity by id
-     *
-     * @param int $id
-     *
-     * @return mixed
-     */
-    public function findById(int $id): mixed;
 }

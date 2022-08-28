@@ -32,7 +32,7 @@ class ResourceRepository
                           ]);
     }
 
-    public function findById(int $modelId): ?Model
+    public function firstBy(int $modelId): ?Model
     {
         return $this->model->findOrFail($modelId);
     }
@@ -40,7 +40,7 @@ class ResourceRepository
     public function destroy(array $images)
     {
         foreach ($images as $image) {
-            $this->delete($this->findById($image));
+            $this->delete($this->firstBy($image));
         }
     }
 

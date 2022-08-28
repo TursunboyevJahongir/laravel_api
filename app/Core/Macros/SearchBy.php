@@ -23,17 +23,17 @@ EloquentBuilder::macro('searchBy', function (array|null $searchBy = null) {
     $this->when($searchBy, function (EloquentBuilder $query) use ($searchBy) {
         foreach ($searchBy as $column => $search) {
             $search = rtrim($search, " \t.");
-
-            if ($this->model->isJson($column)) {
+            if ($query->isJson($column)) {
                 foreach (AvailableLocalesEnum::toArray() as $lang) {
                     $query->orWhereLike("$column->$lang", $search);
                 }
-            } elseif ($this->model->inDates($column)) {
+            } elseif ($query->inDates($column)) {
                 $time = Carbon::createFromTimestamp(strtotime($search));
                 $query->orWhereDate($column, $time);
             } elseif (str_contains($column, '.')) {
                 $relation = explode('.', $column);
                 $column   = array_pop($relation);
+                //dd(implode('.', $relation), $column, $search);
                 $query->orWhereLikeRelation(implode('.', $relation), $column, $search);
             } else {
                 $query->orWhereLike($column, $search);
