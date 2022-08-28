@@ -3,13 +3,12 @@
 namespace App\Core\Services;
 
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
-use Illuminate\Support\Facades\DB;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -17,10 +16,12 @@ abstract class CoreService implements CoreServiceContract
     {
     }
 
-    public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator
-    {
+    public function get(
+        GetAllFilteredRecordsRequest $request,
+        Builder|Relation|null $query = null
+    ): Collection|LengthAwarePaginator {
         return $this->repository
-            ->query()
+            ->query(query: $query)
             ->filters()
             ->orFilters()
             ->notFilters()
@@ -32,6 +33,29 @@ abstract class CoreService implements CoreServiceContract
             ->paginationOrCollection();
     }
 
+    public function getByDb(
+        GetAllFilteredRecordsRequest $request,
+        QueryBuilder $query
+    ): Collection|LengthAwarePaginator {
+        return $this->repository
+            ->dbQuery(query: $query)
+            ->filters()
+            ->orFilters()
+            ->notFilters()
+            ->searchBy()
+            ->isActive()
+            ->sortBy()
+            ->paginationOrCollection();
+    }
+
+    public function dbFirstBy(
+        QueryBuilder $query,
+        mixed $value,
+        string $column = 'id',
+    ) {
+        return $this->repository->dbFirstBy($query, $value, $column);
+    }
+
     public function appends(Builder $query)
     {
     }
@@ -41,12 +65,13 @@ abstract class CoreService implements CoreServiceContract
      *
      * @param Model|int $model
      * @param FormRequest $request
+     * @param Builder|Relation|null $query
      *
      * @return Model|null
      */
-    public function show(Model|int $model, FormRequest $request): ?Model
+    public function show(Model|int $model, FormRequest $request, Builder|Relation $query = null): ?Model
     {
-        return $this->repository->show($model);
+        return $this->repository->show($model, query: $query);
     }
 
     public function creating(FormRequest &$request): void
@@ -119,10 +144,8 @@ abstract class CoreService implements CoreServiceContract
      */
     public function delete(Model|int $model): mixed
     {
-        return Db::transaction(function () use ($model) {
-            $this->deleting($model);
+        $this->deleting($model);
 
-            return $this->repository->delete($model);
-        });
+        return $this->repository->delete($model);
     }
 }

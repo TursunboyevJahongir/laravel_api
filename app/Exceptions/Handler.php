@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof ModelNotFoundException) {
             $message = $e->getMessage();
             if (str_contains($message, 'No query results for model')) {
-                $message = 'No records found, try another request';
+                $message = __('errors.no_records');
             }
 
             return response()->json(['code'    => 404,
@@ -70,10 +70,8 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof NotFoundHttpException) {//route not found
-            $message = 'No records found, try another request';
-
             return response()->json(['code'    => 404,
-                                     'message' => $message,
+                                     'message' => __('errors.no_records'),
                                      'data'    => []],
                                     404);
         }

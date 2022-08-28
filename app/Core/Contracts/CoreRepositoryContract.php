@@ -2,50 +2,41 @@
 
 namespace App\Core\Contracts;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 interface CoreRepositoryContract
 {
     /**
      * @param array|string[] $columns
-     * @param array $relations
+     * @param array|null $relations
      * @param bool $trashed
-     * @param Builder|null $query
+     * @param Builder|Relation|null $query
      *
-     * @return Builder
+     * @return Builder|Relation
      */
     public function query(
-        array $columns = ['*'],
-        array $relations = [],
-        bool $trashed = false,
-        Builder|null $query = null
-    ): Builder;
+        array|null $columns = null,
+        array|null $relations = null,
+        bool|null $trashed = null,
+        Builder|Relation|null $query = null
+    ): Builder|Relation;
 
-    /**
-     * @param array|string[] $columns
-     * @param array $relations
-     * @param bool $trashed
-     * @param Builder|null $query
-     *
-     * @return Builder
-     */
-    public function mainQuery(
-        array $columns = ['*'],
-        array $relations = [],
-        bool $trashed = false,
-        Builder|null $query = null
-    ): Builder;
+    public function dbQuery(
+        QueryBuilder $query,
+        array $columns = null,
+    ): QueryBuilder;
 
     /**
      * Show entity
      *
      * @param mixed $value
-     * @param string $column
+     * @param string|null $column
+     * @param Builder|Relation|null $query
      *
      * @return Model|null
      */
-    public function show(mixed $value, string $column = 'id'): ?Model;
+    public function show(mixed $value, string $column = null, Builder|Relation $query = null): ?Model;
 
     /**
      * Create element
@@ -85,6 +76,13 @@ interface CoreRepositoryContract
      */
     public function firstBy(
         mixed $value,
-        string $column = 'id'
+        string $column = 'id',
+        Builder|Relation $query = null
     ): ?Model;
+
+    public function dbFirstBy(
+        QueryBuilder $query,
+        mixed $value,
+        string $column = 'id'
+    );
 }

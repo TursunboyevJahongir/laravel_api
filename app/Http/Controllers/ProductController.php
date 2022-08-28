@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\ProductCreateRequest;
-use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Requests\{ProductCreateRequest, ProductUpdateRequest};
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
@@ -25,9 +24,9 @@ class ProductController extends Controller
         return $this->responseWith(compact('products'));
     }
 
-    public function show(Product $Product, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Product $product, GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $product = $this->service->show($Product, $request);
+        $product = $this->service->show($product, $request);
 
         return $this->responseWith(compact('product'));
     }

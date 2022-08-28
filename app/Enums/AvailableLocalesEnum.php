@@ -3,7 +3,9 @@
 
 namespace App\Enums;
 
-class AvailableLocalesEnum extends BaseEnum
+use App\Core\Enums\CoreEnum;
+
+class AvailableLocalesEnum extends CoreEnum
 {
     public const UZ = 'uz';
     public const RU = 'ru';

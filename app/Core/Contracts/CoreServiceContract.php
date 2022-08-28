@@ -3,14 +3,29 @@
 namespace App\Core\Contracts;
 
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface CoreServiceContract
 {
-    public function get(GetAllFilteredRecordsRequest $request): Collection|LengthAwarePaginator;
+    public function get(
+        GetAllFilteredRecordsRequest $request,
+        Builder|Relation|null $query = null
+    ): Collection|LengthAwarePaginator;
+
+    public function getByDb(
+        GetAllFilteredRecordsRequest $request,
+        QueryBuilder $query
+    ): Collection|LengthAwarePaginator;
+
+    public function dbFirstBy(
+        QueryBuilder $query,
+        mixed $value,
+        string $column = 'id',
+    );
 
     /**
      * Show entity
