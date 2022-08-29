@@ -84,7 +84,7 @@ if (!function_exists('hasPermission')) {
             return true;
         }
 
-        return $user->hasPermissionTo($permission, $guardName);
+        return (bool)$user?->hasPermissionTo($permission, $guardName);
     }
 }
 
@@ -103,7 +103,7 @@ if (!function_exists('hasRole')) {
         $role = $role ? [$role, 'superadmin'] : 'superadmin';
         $user = $user ?? auth()->user();
 
-        return $user->hasRole($role, $guard);
+        return (bool)$user?->hasRole($role, $guard);
     }
 }
 
