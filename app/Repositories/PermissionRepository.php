@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Core\Repositories\CoreRepository;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Permission;
 
 class PermissionRepository extends CoreRepository
@@ -12,6 +13,14 @@ class PermissionRepository extends CoreRepository
     public function __construct(Permission $model)
     {
         parent::__construct($model);
+    }
+
+    public function availability(Builder|Model $query): void
+    {
+        $query->when(notSystem(),
+            function (Builder $query) {
+                $query->whereIn('name', auth()->user()->getAllPermissions()->pluck('name'));
+            });
     }
 
     /**
@@ -28,7 +37,7 @@ class PermissionRepository extends CoreRepository
 
     public function attachToAdmin(Permission|int|string $permission)
     {
-        Role::firstByName('superadmin')->givePermissionTo($permission);
+        $this->firstBy('superadmin', 'name', Role::query())->givePermissionTo($permission);
     }
 
     public function role(

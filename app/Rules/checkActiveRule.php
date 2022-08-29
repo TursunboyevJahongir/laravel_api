@@ -11,6 +11,7 @@ class checkActiveRule implements Rule
         protected string $table,
         protected int|null $id,
         protected string $attribute,
+        protected string $column = 'id',
     ) {
     }
 
@@ -24,13 +25,13 @@ class checkActiveRule implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        $user = DB::table($this->table)->find($value);
+        $user = DB::table($this->table)->where($this->column, $value)->first();
         if (!$user) {
             $this->message = __('messages.attribute_not_found', ['attribute' => __('attributes.' . $this->attribute)]);
 
             return false;
         }
-        if ($user->is_active === false && !$user->deleted_at) {
+        if ($user->is_active === false || $user->deleted_at) {
             $this->message = __('messages.inactive', ['attribute' => __('attributes.' . $this->attribute)]);
 
             return false;

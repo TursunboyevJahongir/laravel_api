@@ -16,6 +16,7 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
+        Permission::create(['name' => 'system']);
         Role::findByName('superadmin')->syncPermissions(Permission::all());
         $manager = Role::findByName('moderator');
         $manager->syncPermissions(

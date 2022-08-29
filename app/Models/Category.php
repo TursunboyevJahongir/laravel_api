@@ -4,18 +4,27 @@ namespace App\Models;
 
 use App\Core\Traits\CoreModel;
 use App\Helpers\TranslatableJson;
-use App\Traits\Author;
-use App\Traits\IsActive;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\{Author, IsActive};
+use Illuminate\Database\Eloquent\{
+    Builder,
+    Model,
+    SoftDeletes,
+    Factories\HasFactory,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\MorphOne
+};
 
 class Category extends Model
 {
     use HasFactory, SoftDeletes, Author, CoreModel, IsActive;
+
+    public function newQuery(): Builder
+    {
+        return parent::newQuery()->when(notSystem(), function ($query) {
+            $query->whereNull('deleted_at')->active();
+        });
+    }
 
     protected $fillable = [
         'name',
@@ -43,22 +52,23 @@ class Category extends Model
 
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class)
+            ->when(notSystem(), function ($query) {
+                $query->whereNull('deleted_at')->active();
+            });
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')
+            ->when(notSystem(), function ($query) {
+                $query->whereNull('deleted_at')->active();
+            });
     }
 
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->whereActive(true);
     }
 
     public function getSubDescriptionAttribute(): string|null

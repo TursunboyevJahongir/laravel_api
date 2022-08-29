@@ -19,7 +19,7 @@ class RoleRepository extends CoreRepository
 
     public function availability(Builder|Model $query): void
     {
-        $query->when(!hasPermission("system") || !hasRole('superadmin'),
+        $query->when(notSystem(),
             function (Builder $query) {
                 $query->whereDoesntHave('permissions', function ($query) {
                     $query->where('name', 'system');

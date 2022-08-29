@@ -107,6 +107,20 @@ if (!function_exists('hasRole')) {
     }
 }
 
+if (!function_exists('isSystem')) {
+    function isSystem(): bool
+    {
+        return hasPermission("system") || hasRole('superadmin');
+    }
+}
+
+if (!function_exists('notSystem')) {
+    function notSystem(): bool
+    {
+        return !hasPermission("system") || !hasRole('superadmin');
+    }
+}
+
 if (!function_exists('mine')) {
     function isMine(int $id): bool
     {
@@ -145,6 +159,6 @@ if (!function_exists('isEloquent')) {
 if (!function_exists('like')) {
     function like(): string
     {
-        return \DB::connection()->getDriverName() === 'postgresql'?'ilike':'like';
+        return \DB::connection()->getDriverName() === 'postgresql' ? 'ilike' : 'like';
     }
 }

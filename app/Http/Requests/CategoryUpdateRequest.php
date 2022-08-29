@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\checkActiveRule;
 use App\Rules\UniqueJsonRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,6 +26,9 @@ class CategoryUpdateRequest extends FormRequest
                 'description.*'                            => 'nullable|string',
                 'position'                                 => 'nullable|numeric',
                 'ico'                                      => 'nullable|image',
+                'is_active'                                => 'filled|bool',
+                'parent_id'                                => ['nullable',
+                                                               new checkActiveRule('categories', $this->parent_id, 'category')],
         ];
     }
 

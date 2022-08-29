@@ -6,6 +6,7 @@ use App\Core\Traits\CoreModel;
 use App\Helpers\TranslatableJson;
 use App\Traits\Author;
 use App\Traits\IsActive;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes, Author, CoreModel, IsActive;
+
+    public function newQuery(): Builder
+    {
+        return parent::newQuery()->when(notSystem(), function ($query) {
+            $query->whereNull('deleted_at')->active();
+        });
+    }
 
     public const MAIN_IMAGE = 'MAIN_IMAGE';
     public const VIDEO      = 'VIDEO';
