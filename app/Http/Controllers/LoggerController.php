@@ -17,7 +17,7 @@ class LoggerController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $loggers = $this->service->get($request);
+        $loggers = $this->service->index($request);
 
         return $this->responseWith(['loggers' => $loggers]);
     }

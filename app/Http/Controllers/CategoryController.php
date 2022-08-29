@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
-use App\Http\Requests\CategoryCreateRequest;
-use App\Http\Requests\CategoryUpdateRequest;
+use App\Http\Requests\{CategoryCreateRequest, CategoryUpdateRequest};
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +19,7 @@ class CategoryController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $categories = $this->service->get($request);
+        $categories = $this->service->index($request);
 
         return $this->responseWith(compact('categories'));
     }
@@ -55,7 +54,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function destroy(Category $category): JsonResponse
+    public function destroy($category): JsonResponse
     {
         $this->service->delete($category);
 

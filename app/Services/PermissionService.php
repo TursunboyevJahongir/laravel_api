@@ -17,11 +17,6 @@ class PermissionService extends CoreService
         parent::__construct($repository);
     }
 
-    public function appends(Builder $query)
-    {
-        $this->repository->role($query, request()->get('role'));
-    }
-
     /**
      * @param CheckPermissionsRequest $request
      * @param User|null $user

@@ -16,36 +16,18 @@ abstract class CoreService implements CoreServiceContract
     {
     }
 
-    public function get(
+    public function index(
         GetAllFilteredRecordsRequest $request,
         Builder|Relation|null $query = null
     ): Collection|LengthAwarePaginator {
-        return $this->repository
-            ->query(query: $query)
-            ->filters()
-            ->orFilters()
-            ->notFilters()
-            ->search()
-            ->searchBy()
-            ->isActive()
-            ->closure($this, 'appends')
-            ->sortBy()
-            ->paginationOrCollection();
+        return $this->repository->index(query: $query);
     }
 
-    public function getByDb(
+    public function indexDb(
         GetAllFilteredRecordsRequest $request,
         QueryBuilder $query
     ): Collection|LengthAwarePaginator {
-        return $this->repository
-            ->dbQuery(query: $query)
-            ->filters()
-            ->orFilters()
-            ->notFilters()
-            ->searchBy()
-            ->isActive()
-            ->sortBy()
-            ->paginationOrCollection();
+        return $this->repository->indexDb(query: $query);
     }
 
     public function dbFirstBy(
@@ -54,10 +36,6 @@ abstract class CoreService implements CoreServiceContract
         string $column = 'id',
     ) {
         return $this->repository->dbFirstBy($query, $value, $column);
-    }
-
-    public function appends(Builder $query)
-    {
     }
 
     /**
@@ -113,6 +91,7 @@ abstract class CoreService implements CoreServiceContract
      */
     public function update(Model|int $model, FormRequest $request): bool
     {
+        $model = $this->repository->show($model);
         $this->updating($model, $request);
         $this->repository->update($model, $request->validated());
         $this->updated($model, $request);
@@ -140,10 +119,11 @@ abstract class CoreService implements CoreServiceContract
      *
      * @param Model|int $model
      *
-     * @return mixed
+     * @return bool
      */
-    public function delete(Model|int $model): mixed
+    public function delete(Model|int $model): bool
     {
+        $model = $this->repository->show($model);
         $this->deleting($model);
 
         return $this->repository->delete($model);

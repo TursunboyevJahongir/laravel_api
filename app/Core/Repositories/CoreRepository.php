@@ -3,8 +3,10 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
+use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 abstract class CoreRepository implements CoreRepositoryContract
 {
@@ -18,42 +20,49 @@ abstract class CoreRepository implements CoreRepositoryContract
         $this->model = $model;
     }
 
+    public function index(EloquentBuilder|Relation|null $query = null): Collection|LengthAwarePaginator
+    {
+        return $this->model->query()
+            ->eloquentQuery($query)
+            ->filters()
+            ->orFilters()
+            ->notFilters()
+            ->closure($this, 'availability')
+            ->search()
+            ->searchBy()
+            ->isActive()
+            ->closure($this, 'appends')
+            ->sortBy()
+            ->paginationOrCollection();
+    }
+
     /**
      * for any checks
      *
-     * @param Builder|Model $query
+     * @param EloquentBuilder|Model $query
      *
      * @return void
      */
     public function availability(
-        Builder|Model $query
+        EloquentBuilder|Model $query
     ): void {
     }
 
-    public function query(
-        array $columns = null,
-        array $relations = null,
-        bool $trashed = null,
-        Builder|Relation|null $query = null
-    ): Builder|Relation {
-        $columns   = $columns ?? request()->get('columns', ['*']);
-        $relations = $relations ?? request()->get('relations', []);
-        $trashed   = $trashed ?? request()->get('only_deleted', false);
-
-        return ($query ?? $this->model)
-            ->select($columns)
-            ->closure($this, 'availability')
-            ->when($trashed, fn($query) => $query->onlyTrashed())
-            ->with($relations);
+    public function appends(EloquentBuilder $query): void
+    {
     }
 
-    public function dbQuery(
-        QueryBuilder $query,
-        array $columns = null,
-    ): QueryBuilder {
-        $columns = $columns ?? request()->get('columns', ['*']);
-
-        return $query->select($columns);
+    public function indexDb(QueryBuilder $query): Collection|LengthAwarePaginator
+    {
+        return \DB::query()
+            ->dbQuery($query)
+            ->filters()
+            ->orFilters()
+            ->notFilters()
+            ->searchBy()
+            ->isActive()
+            ->sortBy()
+            ->paginationOrCollection();
     }
 
     /**
@@ -61,13 +70,14 @@ abstract class CoreRepository implements CoreRepositoryContract
      *
      * @param mixed $value
      * @param string|null $column
+     * @param EloquentBuilder|Relation|null $query
      *
      * @return Model|null
      */
     public function show(
         mixed $value,
         string $column = null,
-        Builder|Relation $query = null
+        EloquentBuilder|Relation $query = null
     ): ?Model {
         if ($value instanceof Model) {
             $column = $value->getKeyName();
@@ -75,7 +85,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         }
         $column = $column ?? $this->model->getKeyName();
 
-        return $this->firstBy($value, $column,$query);
+        return $this->firstBy($value, $column, $query);
     }
 
     /**
@@ -126,9 +136,10 @@ abstract class CoreRepository implements CoreRepositoryContract
     public function firstBy(
         mixed $value,
         string $column = 'id',
-        Builder|Relation $query = null
+        EloquentBuilder|Relation $query = null
     ): ?Model {
-        return $this->query(query: $query)
+        return $this->model->eloquentQuery(query: $query)
+            ->closure($this, 'availability')
             ->where($column, $value)
             ->firstOrFail()
             ->append(request()->get('appends', []));
@@ -139,9 +150,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         mixed $value,
         string $column = 'id',
     ) {
-        if (!is_null($query = $this->dbQuery($query)
-            ->where($column, $value)
-            ->first())) {
+        if ($query = \DB::query()->dbQuery($query)->where($column, $value)->first()) {
             return $query;
         }
 

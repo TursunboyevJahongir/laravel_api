@@ -11,12 +11,12 @@ use Illuminate\Support\Collection;
 
 interface CoreServiceContract
 {
-    public function get(
+    public function index(
         GetAllFilteredRecordsRequest $request,
         Builder|Relation|null $query = null
     ): Collection|LengthAwarePaginator;
 
-    public function getByDb(
+    public function indexDb(
         GetAllFilteredRecordsRequest $request,
         QueryBuilder $query
     ): Collection|LengthAwarePaginator;
@@ -76,9 +76,9 @@ interface CoreServiceContract
     /**
      * Delete entity
      *
-     * @param Model $model
+     * @param Model|int $model
      *
      * @return mixed
      */
-    public function delete(Model $model): mixed;
+    public function delete(Model|int $model): bool;
 }

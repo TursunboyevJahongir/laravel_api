@@ -16,6 +16,13 @@ class UserRepository extends CoreRepository
         parent::__construct($model);
     }
 
+    public function appends(Builder $query): void
+    {
+        $this->selfExclude($query, request()->get('self_exclude', false));
+
+        $this->filterByRole($query, request()->get('role'));
+    }
+
     public function selfExclude(
         Builder $query,
         bool $selfExclude = false
@@ -34,7 +41,8 @@ class UserRepository extends CoreRepository
 
     public function firstByPhone($phone): ?User
     {
-        return $this->query()
+        return $this->model->eloquentQuery()
+            ->closure($this, 'availability')
             ->wherePhone($phone)
             ->first()
             ?->append(\request()->get('appends', []));

@@ -39,7 +39,7 @@ class UserController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $users = $this->service->get($request);
+        $users = $this->service->index($request);
 
         return $this->responseWith(compact('users'));
     }

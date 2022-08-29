@@ -17,13 +17,6 @@ class UserService extends CoreService
         parent::__construct($repository);
     }
 
-    public function appends(Builder $query)
-    {
-        $this->repository->selfExclude($query, request()->get('self_exclude', false));
-
-        $this->repository->filterByRole($query, request()->get('role'));
-    }
-
     public function created(Model $model, FormRequest $request): void
     {
         ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?

@@ -23,7 +23,7 @@ class RoleController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $roles = $this->service->get($request);
+        $roles = $this->service->index($request);
 
         return $this->responseWith(compact('roles'));
     }

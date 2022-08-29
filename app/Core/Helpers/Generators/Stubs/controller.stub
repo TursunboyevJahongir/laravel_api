@@ -3,8 +3,7 @@
 namespace #controllerPath;
 
 use #servicePath\#ClassNameService;
-use #requestsPath\#ClassNameCreateRequest;
-use #requestsPath\#ClassNameUpdateRequest;
+use #requestsPath\{#ClassNameCreateRequest, #ClassNameUpdateRequest};
 use App\Core\Http\Requests\GetAllFilteredRecordsRequest as RequestFilter;
 use #modelPath\#ModelName;
 use Illuminate\Http\JsonResponse;

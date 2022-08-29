@@ -2,30 +2,26 @@
 
 namespace App\Core\Contracts;
 
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
+use Illuminate\Database\Eloquent\{Builder,
+    Builder as EloquentBuilder,
+    Model,
+    Relations\Relation
+};
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 interface CoreRepositoryContract
 {
-    /**
-     * @param array|string[] $columns
-     * @param array|null $relations
-     * @param bool $trashed
-     * @param Builder|Relation|null $query
-     *
-     * @return Builder|Relation
-     */
-    public function query(
-        array|null $columns = null,
-        array|null $relations = null,
-        bool|null $trashed = null,
-        Builder|Relation|null $query = null
-    ): Builder|Relation;
+    public function index(EloquentBuilder|Relation|null $query = null): Collection|LengthAwarePaginator;
 
-    public function dbQuery(
-        QueryBuilder $query,
-        array $columns = null,
-    ): QueryBuilder;
+    public function availability(
+        EloquentBuilder|Model $query
+    ): void;
+
+    public function appends(EloquentBuilder $query): void;
+
+    public function indexDb(QueryBuilder $query): Collection|LengthAwarePaginator;
 
     /**
      * Show entity

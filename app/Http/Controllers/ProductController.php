@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function index(GetAllFilteredRecordsRequest $request): JsonResponse
     {
-        $products = $this->service->get($request);
+        $products = $this->service->index($request);
 
         return $this->responseWith(compact('products'));
     }

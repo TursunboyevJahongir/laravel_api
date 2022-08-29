@@ -23,6 +23,11 @@ class PermissionRepository extends CoreRepository
             });
     }
 
+    public function appends(Builder $query): void
+    {
+        $this->role($query, request()->get('role'));
+    }
+
     /**
      * Find permissions by given ids
      *
