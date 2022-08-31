@@ -27,11 +27,12 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->filters()
             ->orFilters()
             ->notFilters()
-            ->closure($this, 'availability')
+            ->when(!$query, function ($query) {
+                $query->closure($this, 'availability')->closure($this, 'appends');
+            })
             ->search()
             ->searchBy()
             ->isActive()
-            ->closure($this, 'appends')
             ->sortBy()
             ->paginationOrCollection();
     }
@@ -139,7 +140,9 @@ abstract class CoreRepository implements CoreRepositoryContract
         EloquentBuilder|Relation $query = null
     ): ?Model {
         return $this->model->eloquentQuery(query: $query)
-            ->closure($this, 'availability')
+            ->when(!$query, function ($query) {
+                $query->closure($this, 'availability');
+            })
             ->where($column, $value)
             ->firstOrFail()
             ->append(request()->get('appends', []));
