@@ -2,7 +2,6 @@
 
 namespace App\Core\Contracts;
 
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,12 +11,10 @@ use Illuminate\Support\Collection;
 interface CoreServiceContract
 {
     public function index(
-        GetAllFilteredRecordsRequest $request,
         Builder|Relation|null $query = null
     ): Collection|LengthAwarePaginator;
 
     public function indexDb(
-        GetAllFilteredRecordsRequest $request,
         QueryBuilder $query
     ): Collection|LengthAwarePaginator;
 
@@ -31,11 +28,10 @@ interface CoreServiceContract
      * Show entity
      *
      * @param Model|int $model
-     * @param FormRequest $request
      *
      * @return mixed
      */
-    public function show(Model|int $model, FormRequest $request): mixed;
+    public function show(Model|int $model): mixed;
 
     public function creating(FormRequest &$request): void;
 

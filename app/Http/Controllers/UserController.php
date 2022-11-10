@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
@@ -19,9 +18,9 @@ class UserController extends Controller
         $this->authorizeResource(User::class, 'user');
     }
 
-    public function profile(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function profile(): JsonResponse
     {
-        $user = $this->service->show(auth()->user(), $request);
+        $user = $this->service->show(auth()->user());
 
         return $this->responseWith(compact('user'));
     }
@@ -37,16 +36,16 @@ class UserController extends Controller
         }
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $users = $this->service->index($request);
+        $users = $this->service->index();
 
         return $this->responseWith(compact('users'));
     }
 
-    public function show(User $user, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(User $user): JsonResponse
     {
-        $user = $this->service->show($user, $request);
+        $user = $this->service->show($user);
 
         return $this->responseWith(compact('user'));
     }

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 EloquentBuilder::macro('search', function (string|null $search = null) {
     $search = $search ?? request()->get('search');
     $this->when($search, function (Builder $query) use ($search) {
+        if ($search && !is_string($search)) {
+            throw new \Exception(__('validation.string', ['attribute' => 'search']));
+        }
         $query->where(function (Builder $query) use ($search) {
             $search = rtrim($search, " \t.");
             foreach ($query->getSearchable() as $key => $field) {

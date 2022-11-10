@@ -4,7 +4,6 @@ namespace #controllerPath;
 
 use #servicePath\#ClassNameService;
 use #requestsPath\{#ClassNameCreateRequest, #ClassNameUpdateRequest};
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest as RequestFilter;
 use #modelPath\#ModelName;
 use Illuminate\Http\JsonResponse;
 use #CoreController as Controller;
@@ -17,16 +16,16 @@ class #ClassNameController extends Controller
         $this->authorizeResource(#ModelName::class);
     }
 
-    public function index(RequestFilter $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $#namePlural = $this->service->get($request);
+        $#namePlural = $this->service->get();
 
         return $this->responseWith(compact('#namePlural'));
     }
 
-    public function show(#ModelName $#nameSingular, RequestFilter $request): JsonResponse
+    public function show(#ModelName $#nameSingular): JsonResponse
     {
-        $#nameSingular = $this->service->show($#nameSingular, $request);
+        $#nameSingular = $this->service->show($#nameSingular);
 
         return $this->responseWith(compact('#nameSingular'));
     }

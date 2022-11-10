@@ -10,6 +10,10 @@ use Illuminate\Database\{
 QueryBuilder::macro('searchBy', function (array|null $searchBy = null) {
     $searchBy = $searchBy ?? request()->get('search_by');
     $this->when($searchBy, function (QueryBuilder $query) use ($searchBy) {
+        dd('d');
+        if (!is_array($searchBy)) {
+            throw new \Exception(__('validation.array', ['attribute' => 'search_by']));
+        }
         $query->where(function (QueryBuilder $query) use ($searchBy) {
             foreach ($searchBy as $column => $search) {
                 $query->orWhereLike($column, $search);
@@ -23,6 +27,9 @@ QueryBuilder::macro('searchBy', function (array|null $searchBy = null) {
 EloquentBuilder::macro('searchBy', function (array|null $searchBy = null) {
     $searchBy = $searchBy ?? request()->get('search_by');
     $this->when($searchBy, function (EloquentBuilder $query) use ($searchBy) {
+        if (!is_array($searchBy)) {
+            throw new \Exception(__('validation.array', ['attribute' => 'search_by']));
+        }
         $query->where(function (EloquentBuilder $query) use ($searchBy) {
             foreach ($searchBy as $column => $search) {
                 $search = rtrim($search, " \t.");

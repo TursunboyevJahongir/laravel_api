@@ -24,6 +24,9 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return $this->model->query()
             ->eloquentQuery($query)
+            ->between()
+            ->notBetween()
+            ->filters()
             ->filters()
             ->orFilters()
             ->notFilters()
@@ -57,6 +60,8 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return \DB::query()
             ->dbQuery($query)
+            ->between()
+            ->notBetween()
             ->filters()
             ->orFilters()
             ->notFilters()

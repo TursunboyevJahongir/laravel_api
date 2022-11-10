@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Role\CheckPermissionsRequest;
 use App\Http\Requests\Role\PermissionCreateRequest;
 use App\Http\Requests\Role\PermissionUpdateRequest;
@@ -20,9 +19,9 @@ class PermissionController extends Controller
         $this->authorizeResource(Permission::class, 'permission');
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $result = $this->service->index($request);
+        $result = $this->service->index();
 
         return $this->responseWith(compact('result'));
     }
@@ -34,9 +33,9 @@ class PermissionController extends Controller
         return $this->responseWith(compact('permission'), 201);
     }
 
-    public function show(Permission $permission, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Permission $permission): JsonResponse
     {
-        $permission = $this->service->show($permission, $request);
+        $permission = $this->service->show($permission);
 
         return $this->responseWith(compact('permission'));
     }

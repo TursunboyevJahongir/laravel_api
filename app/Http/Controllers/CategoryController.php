@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\{CategoryCreateRequest, CategoryUpdateRequest};
 use App\Models\Category;
 use App\Services\CategoryService;
@@ -17,16 +16,16 @@ class CategoryController extends Controller
         $this->authorizeResource(Category::class, 'category');
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $categories = $this->service->index($request);
+        $categories = $this->service->index();
 
         return $this->responseWith(compact('categories'));
     }
 
-    public function show(Category $category, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Category $category): JsonResponse
     {
-        $category = $this->service->show($category, $request);
+        $category = $this->service->show($category);
 
         return $this->responseWith(compact('category'));
     }

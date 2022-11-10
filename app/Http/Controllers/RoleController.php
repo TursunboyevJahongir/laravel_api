@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\Role\PermissionRequest;
 use App\Http\Requests\Role\RoleCreateRequest;
 use App\Http\Requests\Role\RoleUpdateRequest;
@@ -21,16 +20,16 @@ class RoleController extends Controller
         $this->authorizeResource(Role::class, 'role');
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $roles = $this->service->index($request);
+        $roles = $this->service->index();
 
         return $this->responseWith(compact('roles'));
     }
 
-    public function show(Role $role, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Role $role): JsonResponse
     {
-        $role = $this->service->show($role, $request);
+        $role = $this->service->show($role);
 
         return $this->responseWith(compact('role'));
     }

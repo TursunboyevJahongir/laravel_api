@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\LoggerService;
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Models\Logger;
 use Illuminate\Http\JsonResponse;
 
@@ -15,16 +14,16 @@ class LoggerController extends Controller
         parent::__construct($service);
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $loggers = $this->service->index($request);
+        $loggers = $this->service->index();
 
         return $this->responseWith(['loggers' => $loggers]);
     }
 
-    public function show(Logger $logger, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Logger $logger): JsonResponse
     {
-        $logger = $this->service->show($logger, $request);
+        $logger = $this->service->show($logger);
 
         return $this->responseWith(compact('logger'));
     }

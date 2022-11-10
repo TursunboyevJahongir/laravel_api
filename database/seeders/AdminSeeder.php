@@ -15,13 +15,12 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'first_name' => 'Super',
-            'last_name' => 'Admin',
-            'phone' => '998999999999',
-            'password' => Hash::make('111111'),
-            'phone_confirmed' => 1,
-            'is_active' => 1,
-        ])->assignRole('superadmin');
+        User::create(['first_name'      => 'Super',
+                      'last_name'       => 'Admin',
+                      'phone'           => '998999999999',
+                      'password'        => '111111',
+                      'phone_confirmed' => 1,
+                      'is_active'       => 1,
+                     ])->assignRole('superadmin');
     }
 }

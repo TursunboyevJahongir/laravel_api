@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Core\Http\Controllers\CoreController as Controller;
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use App\Http\Requests\{ProductCreateRequest, ProductUpdateRequest};
 use App\Models\Product;
 use App\Services\ProductService;
@@ -17,16 +16,16 @@ class ProductController extends Controller
         $this->authorizeResource(Product::class, 'product');
     }
 
-    public function index(GetAllFilteredRecordsRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $products = $this->service->index($request);
+        $products = $this->service->index();
 
         return $this->responseWith(compact('products'));
     }
 
-    public function show(Product $product, GetAllFilteredRecordsRequest $request): JsonResponse
+    public function show(Product $product): JsonResponse
     {
-        $product = $this->service->show($product, $request);
+        $product = $this->service->show($product);
 
         return $this->responseWith(compact('product'));
     }

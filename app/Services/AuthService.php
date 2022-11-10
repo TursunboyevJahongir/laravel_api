@@ -32,7 +32,7 @@ class AuthService extends CoreService
     public function login(FormRequest $request)
     {
         $user = $this->repository->firstByPhone($request['phone']);
-        if (!$user && !Hash::check($request['password'], $user->password)) {
+        if (!$user || !Hash::check($request['password'], $user->password)) {
             throw new \Exception(__('auth.failed'), 401);
         }
 

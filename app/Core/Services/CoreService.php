@@ -2,7 +2,6 @@
 
 namespace App\Core\Services;
 
-use App\Core\Http\Requests\GetAllFilteredRecordsRequest;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,14 +16,12 @@ abstract class CoreService implements CoreServiceContract
     }
 
     public function index(
-        GetAllFilteredRecordsRequest $request,
         Builder|Relation|null $query = null
     ): Collection|LengthAwarePaginator {
         return $this->repository->index(query: $query);
     }
 
     public function indexDb(
-        GetAllFilteredRecordsRequest $request,
         QueryBuilder $query
     ): Collection|LengthAwarePaginator {
         return $this->repository->indexDb(query: $query);
@@ -42,12 +39,11 @@ abstract class CoreService implements CoreServiceContract
      * Show entity
      *
      * @param Model|int $model
-     * @param FormRequest $request
      * @param Builder|Relation|null $query
      *
      * @return Model|null
      */
-    public function show(Model|int $model, FormRequest $request, Builder|Relation $query = null): ?Model
+    public function show(Model|int $model, Builder|Relation $query = null): ?Model
     {
         return $this->repository->show($model, query: $query);
     }

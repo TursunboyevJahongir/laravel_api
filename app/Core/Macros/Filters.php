@@ -51,6 +51,9 @@ use Illuminate\Database\{
 EloquentBuilder::macro('filters', function ($filters = null, string $boolean = 'and') {
     $filters = $filters ?? request()->get('filters');
     $this->when($filters, function (EloquentBuilder $query) use ($filters, $boolean) {
+        if (!(is_array($filters) || $filters === 0)) {
+            throw new \Exception(__('validation.array', ['attribute' => 'filters']));
+        }
         $filters = $filters[array_key_first($filters)];
         foreach ($filters as $key => $filter) {
             if ($this->isSearchable($key)) {
@@ -86,7 +89,11 @@ EloquentBuilder::macro('filters', function ($filters = null, string $boolean = '
 });
 
 QueryBuilder::macro('filters', function ($filters = null, string $boolean = 'and') {
-    $filters = $filters ?? request()->get('filters');
+    $filters = $filters ?? request('filters', 0);
+    if (!(is_array($filters) || $filters === 0)) {
+        throw new \Exception(__('validation.array', ['attribute' => 'filters']));
+    }
+
     $this->when($filters, function (EloquentBuilder|QueryBuilder $query) use ($filters, $boolean) {
         $filters = $filters[array_key_first($filters)];
         foreach ($filters as $key => $filter) {
@@ -103,7 +110,11 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      * not filter not_filters[0][status]=activated
      */
     $builder::macro('orFilters', function () {
-        $this->filters(request('or_filters', 0), 'or');
+        $val = request('or_filters', 0);
+        if (!(is_array($val) || $val === 0)) {
+            throw new \Exception(__('validation.array', ['attribute' => 'or_filters']));
+        }
+        $this->filters($val, 'or');
 
         return $this;
     });
@@ -113,7 +124,11 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      * or_filters[0][first_name]=Jahongir&or_filters[0][last_name]=Jahongir&or_filters[0][middle_name]=Jahongir
      */
     $builder::macro('notFilters', function () {
-        $this->whereNot(fn($q) => $q->filters(request('not_filters', 0)));
+        $val = request('not_filters', 0);
+        if (!(is_array($val) || $val === 0)) {
+            throw new \Exception(__('validation.array', ['attribute' => 'not_filters']));
+        }
+        $this->whereNot(fn($q) => $q->filters());
 
         return $this;
     });

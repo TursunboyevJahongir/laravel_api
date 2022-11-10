@@ -7,6 +7,12 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
         $orderBy = request()->get('order', $orderBy);
         $sort    = request()->get('sort', $sort);
+        if (!is_string($orderBy)) {
+            throw new \Exception(__('validation.string', ['attribute' => 'order']));
+        }
+        if (!in_array($sort, ['desc', 'asc', 'DESC', 'ASC'])) {
+            throw new \Exception(__('validation.in', ['attribute' => 'sort']));
+        }
 
         if (str_contains($orderBy, ',')) {
             $fields = explode(',', $orderBy);
