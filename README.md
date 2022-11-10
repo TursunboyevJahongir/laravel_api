@@ -40,6 +40,12 @@
     *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
 * `not_filters`\->**not_filters** reverse **filters**
 * `or_filters`->**or_filters** from request, if any of them are equal it will work
+* `between`\->array default null
+    *   array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
+        **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*) is given, it takes all the data inside **from to**
+    *   **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
+        =::200**
+* `not_between`\->**not_between** reverse **between**
 * `only_deleted`\->boolean\[0,1\] default 0(*false*)
 
 
