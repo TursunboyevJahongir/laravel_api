@@ -6,8 +6,6 @@ return [
     'debug'           => (bool)env('APP_DEBUG', false),
     'url'             => env('APP_URL', 'http://localhost'),
     'asset_url'       => env('ASSET_URL', null),
-    "page_size"       => 30,
-    "pagination_size" => 30,
     'timezone'        => 'Asia/Tashkent',
     'main_locale'     => 'ru',
     'locale'          => 'ru',

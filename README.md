@@ -13,6 +13,7 @@
 ### Global postman documentation [](https://documenter.getpostman.com/view/9990014/UVCCdiSN)
 
 [//]: # (> <a href="public/kesh_app.postman_collection.json" download>Postman Collection</a>)
+
 ## Possible params for `get` method
 
 ###### params are not required
@@ -21,41 +22,94 @@
 * `columns`\->array default all columns
 * `relations`\->array default null
 * `limit`\->integer default 30
-    *   **working with colection**
+    * **working with colection**
 * `per_page`\->integer default 30
-    *   **working with pagination**
+    * **working with pagination**
 * `is_active`\->boolean\[or 0,1\] default all
-    *   or `filters[][is_active]=0` \[0,1\]
+    * or `filters[][is_active]=0` \[0,1\]
 * `pluck`->string | array default null
-  * working with collection
-    * if string need send column name
-  * if array pluck[column] required
-    * pluck[key] optional default null
-* `order`\->string default id
-* `sort`\-> string\[asc,desc\] default desc
+    * working with collection
+        * if string need send column name
+    * if array pluck[column] required
+        * pluck[key] optional default null
+* `orderBy`\->string default id
+* `sortBy`\-> string\[asc,desc\] default desc
 * `search`\->string default null
 * `search_by`\->array default null
 * `filters`\->array default null
-    *   array accessive key=column value=searching text
-    *   **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
+    * array accessive key=column value=searching text
+    * **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
 * `not_filters`\->**not_filters** reverse **filters**
 * `or_filters`->**or_filters** from request, if any of them are equal it will work
 * `between`\->array default null
-    *   array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
-        **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*) is given, it takes all the data inside **from to**
-    *   **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
-        =::200**
+    * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
+      **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)
+      is given, it takes all the data inside **from to**
+    * **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
+      =::200**
 * `not_between`\->**not_between** reverse **between**
 * `only_deleted`\->boolean\[0,1\] default 0(*false*)
 
+Sort, OrderBy
+
+*host.com/directory?orderBy=column*
+
+`https://host.com/products?orderBy=name&sortBy=ASC`
+
+```json
+[
+    {
+        "id": 3,
+        "category_id": 3,
+        "name": "Apple"
+    },
+    {
+        "id": 1,
+        "name": "Grape"
+    },
+    {
+        "id": 2,
+        "name": "Kiwi"
+    }
+]
+```
+
+Sorting through relation's column *only works with belongsTo relation.Does not work multi-depth dot notation.Only works
+with one dot(one relation)*
+
+*host.com/directory?orderBy=relation.column*
+
+`https://host.com/products?orderBy=category.name&sortedBy=desc`
+
+Query will have something like this
+
+```sql
+...
+LEFT JOIN categories ON products.category_id = categories.id
+...
+ORDER BY categories.name
+...
+```
+
+Multi orderBy
+
+*host.com/directory?orderBy=column;relation.column;relation2.column2...*
+
+`https://host.com/products?orderBy=name;category.name&sortedBy=desc`
+
+```php
+Product::leftJoin("categories", "products.category_id", "categories.id")->orderBy('name','desc')->orderBy('categories.name','desc');
+
+Model::leftJoin("relationTable", "selfTable.foreignKey", "relationTable.ownerKey")->orderBy('column')->orderBy('relationTable.column')...;
+
+```
 
 * * *
 
 ## `Headers`
 
-*   `Accept-Language`:ru \[ru,uz,en\] default ru
-*   `Accept`:application/json `required`
-
+* `Accept-Language`:ru \[ru,uz,en\] default ru
+* `Accept`:application/json `required`
 
 * * *
 
@@ -87,10 +141,10 @@
 
 ```
 
-*   `code`\->**int** \[200,201,204,401,403,404,422,500\]
-*   `message`\->**string** default ''
-    *   *the language of the message will be changed by the header Accept-Language*
-*   `data`\->**array|Collection** default \[\]
+* `code`\->**int** \[200,201,204,401,403,404,422,500\]
+* `message`\->**string** default ''
+    * *the language of the message will be changed by the header Accept-Language*
+* `data`\->**array|Collection** default \[\]
 
 <details><summary><b style="color:#355C7D;font-size:20px">User</b></summary>
 

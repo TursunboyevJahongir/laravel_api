@@ -8,7 +8,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('pagination', function (): LengthAwarePaginator {
-        (int)$per_page = request()->get('per_page', config('app.pagination_size'));
+        (int)$per_page = request(config('laravel_api.params.per_page', 'per_page'), config('laravel_api.default.pagination_size'));
 
         return $this->paginate($per_page);
     });

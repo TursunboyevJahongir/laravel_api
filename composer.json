@@ -11,6 +11,7 @@
         "intervention/image": "^2.7",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.11",
+        "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.5",
         "picqer/php-barcode-generator": "^2.2",
         "spatie/laravel-permission": "^5.3"
@@ -19,7 +20,6 @@
         "fakerphp/faker": "^1.9.1",
         "laravel-lang/lang": "^10.4",
         "laravel/sail": "^1.0.1",
-        "laravel/telescope": "^4.8",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",

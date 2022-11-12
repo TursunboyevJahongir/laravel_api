@@ -18,9 +18,9 @@ class UserRepository extends CoreRepository
 
     public function appends(Builder $query): void
     {
-        $this->selfExclude($query, request()->get('self_exclude', false));
+        $this->selfExclude($query, request('self_exclude', false));
 
-        $this->filterByRole($query, request()->get('role'));
+        $this->filterByRole($query, request('role'));
     }
 
     public function selfExclude(
@@ -45,7 +45,7 @@ class UserRepository extends CoreRepository
             ->closure($this, 'availability')
             ->wherePhone($phone)
             ->first()
-            ?->append(\request()->get('appends', []));
+            ?->append(\request('appends', []));
     }
 
     public function syncRoleToUser(

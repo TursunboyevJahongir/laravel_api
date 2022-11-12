@@ -150,7 +150,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             })
             ->where($column, $value)
             ->firstOrFail()
-            ->append(request()->get('appends', []));
+            ->append(request('appends', []));
     }
 
     public function dbFirstBy(

@@ -8,10 +8,10 @@ use Illuminate\Database\{Eloquent\Builder as EloquentBuilder, Eloquent\Builder, 
  * between[0][amount]=200::400&between[0][price]=200&between[0][price]=::400
  */
 EloquentBuilder::macro('between', function (array $between = null) {
-    $between = $between ?? request()->get('between');
+    $between = $between ?? request(config('laravel_api.params.between', 'between'));
     $this->when($between, function ($query) use ($between) {
         if (!is_array($between)) {
-            throw new \Exception(__('validation.array', ['attribute' => 'between']));
+            throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.between', 'between')]));
         }
         $query->where(function (Builder $query) use ($between) {
             $items = $between[array_key_first($between)];
@@ -41,9 +41,9 @@ EloquentBuilder::macro('between', function (array $between = null) {
 });
 
 QueryBuilder::macro('between', function (array $between = null) {
-    $between = $between ?? request()->get('between');
+    $between = $between ?? request(config('laravel_api.params.between', 'between'));
     if (!is_array($between)) {
-        throw new \Exception(__('validation.array', ['attribute' => 'between']));
+        throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.between', 'between')]));
     }
 
     $this->where(function (Builder $query) use ($between) {
@@ -64,11 +64,11 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      * not_between[0][amount]=200::400&not_between[0][price]=200&not_between[0][price]=::400
      */
     $builder::macro('notBetween', function (array $notBetween = null) {
-        $notBetween = $notBetween ?? request()->get('not_between');
+        $notBetween = $notBetween ?? request(config('laravel_api.params.not_between', 'not_between'));
 
         $this->when($notBetween, function ($query) use ($notBetween) {
             if (!is_array($notBetween)) {
-                throw new \Exception(__('validation.array', ['attribute' => 'not_between']));
+                throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.not_between', 'not_between')]));
             }
             $query->whereNot(fn($q) => $q->filters($notBetween));
         });

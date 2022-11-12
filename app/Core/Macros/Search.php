@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 EloquentBuilder::macro('search', function (string|null $search = null) {
-    $search = $search ?? request()->get('search');
+    $search = $search ?? request(config('laravel_api.params.search', 'search'));
     $this->when($search, function (Builder $query) use ($search) {
         if ($search && !is_string($search)) {
-            throw new \Exception(__('validation.string', ['attribute' => 'search']));
+            throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.params.search', 'search')]));
         }
         $query->where(function (Builder $query) use ($search) {
             $search = rtrim($search, " \t.");

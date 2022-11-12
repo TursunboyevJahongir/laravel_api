@@ -11,23 +11,23 @@ EloquentBuilder::macro('eloquentQuery', function (
     bool $trashed = null,
 ): EloquentBuilder|Relation {
     $validator = validator()->make(request()->all(), [
-        'columns'      => 'array',
-        'relations'    => 'array',
-        'only_deleted' => ['bool',
-                           function ($attribute, $value, $fail) {
-                               if (!hasPermission('system')) {
-                                   $fail(__('messages.you_havnt_permission'));
-                               }
-                           }],
+        config('laravel_api.params.columns', 'columns')           => 'array',
+        config('laravel_api.params.relations', 'relations')       => 'array',
+        config('laravel_api.params.only_deleted', 'only_deleted') => ['bool',
+                                                                      function ($attribute, $value, $fail) {
+                                                                          if (!hasPermission('system')) {
+                                                                              $fail(__('messages.you_havnt_permission'));
+                                                                          }
+                                                                      }],
     ]);
 
     if ($validator->fails()) {
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
 
-    $columns   = $columns ?? request()->get('columns', ['*']);
-    $relations = $relations ?? request()->get('relations', []);
-    $trashed   = $trashed ?? request()->get('only_deleted', false);
+    $columns   = $columns ?? request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $relations = $relations ?? request(config('laravel_api.params.relations', 'relations'), []);
+    $trashed   = $trashed ?? request(config('laravel_api.params.only_deleted', 'only_deleted'), false);
 
     return ($query ?? $this)
         ->select($columns)
