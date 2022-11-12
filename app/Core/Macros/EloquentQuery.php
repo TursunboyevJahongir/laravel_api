@@ -11,7 +11,7 @@ EloquentBuilder::macro('eloquentQuery', function (
     bool $trashed = null,
 ): EloquentBuilder|Relation {
     $validator = validator()->make(request()->all(), [
-        config('laravel_api.params.columns', 'columns')           => 'array',
+        config('laravel_api.params.columns', 'columns')           => 'string',
         config('laravel_api.params.relations', 'relations')       => 'array',
         config('laravel_api.params.only_deleted', 'only_deleted') => ['bool',
                                                                       function ($attribute, $value, $fail) {
@@ -25,7 +25,12 @@ EloquentBuilder::macro('eloquentQuery', function (
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
 
-    $columns   = $columns ?? request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $requestColumns = request(config('laravel_api.params.columns', 'columns'), ['*']);
+
+    if ($requestColumns !== ['*']) {
+        $requestColumns = explode(',', $requestColumns);
+    }
+    $columns   = $columns ?? $requestColumns;
     $relations = $relations ?? request(config('laravel_api.params.relations', 'relations'), []);
     $trashed   = $trashed ?? request(config('laravel_api.params.only_deleted', 'only_deleted'), false);
 

@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo};
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
     $orderBy = request(config('laravel_api.params.order_by', 'orderBy'), config('laravel_api.default.order_by', $orderBy));
@@ -13,6 +13,19 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
     }
     if (!in_array($sort, ['desc', 'asc', 'DESC', 'ASC'])) {
         throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.params.sort_by', 'sortBy')]));
+    }
+
+    $validator = validator()->make(request()->all(), [
+        config('laravel_api.params.columns', 'columns') => 'string',
+    ]);
+
+    if ($validator->fails()) {
+        throw ValidationException::withMessages($validator->messages()->toArray());
+    }
+    $columns = request(config('laravel_api.params.columns', 'columns'), ['*']);
+
+    if ($columns !== ['*']) {
+        $columns = explode(',', $columns);
     }
 
     $fields = explode(';', $orderBy);
@@ -39,7 +52,8 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
                 $tableAs   = "$table-$index-postfix";
                 $selfTable = $model->getTable();
                 $this->leftJoin("$table as $tableAs", "$selfTable.$foreignKey", "$tableAs.$ownerKey")
-                    ->when($columns = request(config('laravel_api.params.columns', 'columns'), ['*']) !== ['*'],
+                    //todo has error with json translatable column
+                    ->when($columns !== ['*'],
                         function ($query) use ($columns, $selfTable) {
                             $columns = array_map(function ($column) use ($selfTable) {
                                 return "$selfTable.$column";
@@ -75,31 +89,6 @@ QueryBuilder::macro('sortBy', function (string $orderBy = "id", string $sort = '
     } else {
         $this->orderBy($orderBy, $sort);
     }
-
-    //foreach ($fields as $field) {
-    //    if (str_contains($field, ';')) {
-    //        $table  = explode(';', $field)[0];
-    //        $key    = Str::singular($table) . "_id";
-    //        $column = explode(':', $field)[1];
-    //        if ((($table == 'products' || $table == 'categories' || $table == 'attributes') && $column == 'name') ||
-    //            (($table == 'products' || $table == 'categories') && $column == 'description')) {
-    //            $column = "$column->" . app()->getLocale();
-    //        }
-    //        $selfTable = $this->getTable();
-    //        $this->leftJoin($table, "$selfTable.$key", "$table.id")
-    //            ->when($columns = request(config('laravel_api.params.columns', 'columns'), ['*']) !== ['*'],
-    //                function ($query) use ($columns, $selfTable) {
-    //                    $columns = array_map(function ($column) use ($selfTable) {
-    //                        return "$selfTable.$column";
-    //                    }, (array)$columns);
-    //                    $query->select($columns);
-    //                },
-    //                fn($query) => $query->select(["$selfTable.*"]))
-    //            ->orderBy("$table.$column", $sort);
-    //    } else {
-    //        $this->orderBy($this->jsonLang($field), $sort);
-    //    }
-    //}
 
     return $this;
 });

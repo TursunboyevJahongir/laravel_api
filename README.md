@@ -19,7 +19,8 @@
 ###### params are not required
 
 * `list_type`\->string\[pagination,collection\] default pagination
-* `columns`\->array default all columns
+* `columns`\->string default all columns *separated from each other by a comma(,)*
+  *  **host.com/products?columns=id,name,description,...**
 * `relations`\->array default null
 * `limit`\->integer default 30
     * **working with colection**
@@ -99,7 +100,7 @@ Multi orderBy
 
 ```php
 Product::leftJoin("categories", "products.category_id", "categories.id")->orderBy('name','desc')->orderBy('categories.name','desc');
-
+...
 Model::leftJoin("relationTable", "selfTable.foreignKey", "relationTable.ownerKey")->orderBy('column')->orderBy('relationTable.column')...;
 
 ```
