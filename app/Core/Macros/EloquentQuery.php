@@ -12,7 +12,7 @@ EloquentBuilder::macro('eloquentQuery', function (
 ): EloquentBuilder|Relation {
     $validator = validator()->make(request()->all(), [
         config('laravel_api.params.columns', 'columns')           => 'string',
-        config('laravel_api.params.relations', 'relations')       => 'array',
+        config('laravel_api.params.relations', 'relations')       => 'string',
         config('laravel_api.params.only_deleted', 'only_deleted') => ['bool',
                                                                       function ($attribute, $value, $fail) {
                                                                           if (!hasPermission('system')) {
@@ -25,13 +25,17 @@ EloquentBuilder::macro('eloquentQuery', function (
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
 
-    $requestColumns = request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $requestColumns   = request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $requestRelations = request(config('laravel_api.params.relations', 'relations'), []);
 
-    if ($requestColumns !== ['*']) {
+    if (is_string($requestColumns)) {
         $requestColumns = explode(',', $requestColumns);
     }
+    if (is_string($requestRelations)) {
+        $requestRelations = explode(';', $requestRelations);
+    }
     $columns   = $columns ?? $requestColumns;
-    $relations = $relations ?? request(config('laravel_api.params.relations', 'relations'), []);
+    $relations = $relations ?? $requestRelations;
     $trashed   = $trashed ?? request(config('laravel_api.params.only_deleted', 'only_deleted'), false);
 
     return ($query ?? $this)

@@ -20,8 +20,9 @@
 
 * `list_type`\->string\[pagination,collection\] default pagination
 * `columns`\->string default all columns. *separated from each other by a comma(,)*
-  *  **host.com/products?columns=id,name,description,...**
-* `relations`\->array default null
+  *  **host.com/products?columns=id,name,description,...** *add more with* `,`
+* `relations`\->string default null
+  * multi relations=parent;author;... *add more with* `;`
 * `limit`\->integer default 30
     * **working with colection**
 * `per_page`\->integer default 30
@@ -35,9 +36,7 @@
         * pluck[key] optional default null
 * `appends`->string default null
     * working with collection
-    * multi appends=full_name;appends2;... *is different with* `;`
-    * if array pluck[column] required
-        * pluck[key] optional default null
+    * multi appends=full_name;appends2;...  *add more with* `;` 
 * `orderBy`\->string default id
 * `sortBy`\-> string\[asc,desc\] default desc
 * `search`\->string default null
