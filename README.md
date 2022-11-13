@@ -23,6 +23,7 @@
   *  **host.com/products?columns=id,name,description,...** *add more with* `,`
 * `relations`\->string default null
   * multi relations=parent;author;... *add more with* `;`
+  * And you can multi relationship with dot notation relations=products.mainImage;author;...
 * `limit`\->integer default 30
     * **working with colection**
 * `per_page`\->integer default 30
