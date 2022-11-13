@@ -38,7 +38,7 @@ class UserController extends Controller
 
     public function index(): JsonResponse
     {
-        $users = $this->service->index();
+        $users = $this->service->indexDb(\DB::table('users'));
 
         return $this->responseWith(compact('users'));
     }

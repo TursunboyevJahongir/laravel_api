@@ -45,7 +45,7 @@ class UserRepository extends CoreRepository
             ->closure($this, 'availability')
             ->wherePhone($phone)
             ->first()
-            ?->append(\request('appends', []));
+            ?->appends();
     }
 
     public function syncRoleToUser(

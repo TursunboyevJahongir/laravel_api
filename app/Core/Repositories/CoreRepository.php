@@ -3,6 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -150,7 +151,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             })
             ->where($column, $value)
             ->firstOrFail()
-            ->append(request('appends', []));
+            ?->appends();
     }
 
     public function dbFirstBy(

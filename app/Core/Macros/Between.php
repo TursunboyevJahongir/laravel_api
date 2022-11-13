@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\{Eloquent\Builder as EloquentBuilder, Eloquent\Builder, Query\Builder as QueryBuilder};
+use Illuminate\Database\{Eloquent\Builder as EloquentBuilder, Query\Builder as QueryBuilder};
 
 /**
  * between
@@ -13,7 +13,7 @@ EloquentBuilder::macro('between', function (array $between = null) {
         if (!is_array($between)) {
             throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.between', 'between')]));
         }
-        $query->where(function (Builder $query) use ($between) {
+        $query->where(function (EloquentBuilder $query) use ($between) {
             $items = $between[array_key_first($between)];
             foreach ($items as $column => $value) {
                 $value .= str_contains($value, '::') ? '' : '::';
@@ -42,17 +42,20 @@ EloquentBuilder::macro('between', function (array $between = null) {
 
 QueryBuilder::macro('between', function (array $between = null) {
     $between = $between ?? request(config('laravel_api.params.between', 'between'));
-    if (!is_array($between)) {
-        throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.between', 'between')]));
-    }
-
-    $this->where(function (Builder $query) use ($between) {
-        $items = $between[array_key_first($between)];
-        foreach ($items as $column => $value) {
-            $value .= str_contains($value, '::') ? '' : '::';
-            [$from, $to] = explode("::", $value);
-            $this->whereBetween($query, $column, $from, $to);
+    $this->when($between, function ($query) use ($between) {
+        if (!is_array($between)) {
+            throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.between', 'between')]));
         }
+        $query->where(function (QueryBuilder $query) use ($between) {
+            $items = $between[array_key_first($between)];
+            foreach ($items as $column => $value) {
+                $value .= str_contains($value, '::') ? '' : '::';
+                [$from, $to] = explode("::", $value);
+                //$this->whereBetween($query, $column, $from, $to);
+                $query->where($column, '>=', $from)
+                    ->when($to, fn($q) => $q->where($column, '<=', $to));
+            }
+        });
     });
 
     return $this;
@@ -65,12 +68,13 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      */
     $builder::macro('notBetween', function (array $notBetween = null) {
         $notBetween = $notBetween ?? request(config('laravel_api.params.not_between', 'not_between'));
+        //dd($notBetween,request(config('laravel_api.params.not_between', 'not_between')));
 
         $this->when($notBetween, function ($query) use ($notBetween) {
             if (!is_array($notBetween)) {
                 throw new \Exception(__('validation.array', ['attribute' => config('laravel_api.params.not_between', 'not_between')]));
             }
-            $query->whereNot(fn($q) => $q->filters($notBetween));
+            $query->whereNot(fn($q) => $q->between($notBetween));
         });
 
         return $this;

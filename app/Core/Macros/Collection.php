@@ -9,19 +9,18 @@ use Illuminate\Validation\ValidationException;
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('collection', function (): Collection {
         $validator = validator()->make(request()->all(), [
-            config('laravel_api.params.limit', 'limit')     => [function ($attribute, $value, $fail) {
+            config('laravel_api.params.limit', 'limit') => [function ($attribute, $value, $fail) {
                 is_numeric($value) || $value === 'all' ? : $fail("$attribute must be numeric or 'all'");
             }],
-            config('laravel_api.params.appends', 'appends') => 'array',
-            config('laravel_api.params.pluck', 'pluck')     => !is_array(request(config('laravel_api.params.pluck', 'pluck'))) ? 'string' : "array|required_array_keys:column",
+            config('laravel_api.params.pluck', 'pluck') => !is_array(request(config('laravel_api.params.pluck', 'pluck'))) ? 'string' : "array|required_array_keys:column",
         ]);
 
         if ($validator->fails()) {
             throw ValidationException::withMessages($validator->messages()->toArray());
         }
-        $limit   = request(config('laravel_api.params.limit', 'limit'), config('laravel_api.default.page_size'));
-        $appends = request(config('laravel_api.params.appends', 'appends'), []);
-        $pluck   = request(config('laravel_api.params.pluck', 'pluck'));
+        $limit = request(config('laravel_api.params.limit', 'limit'), config('laravel_api.default.page_size'));
+
+        $pluck = request(config('laravel_api.params.pluck', 'pluck'));
 
         return $this->when($limit !== 'all', fn($q) => $q->limit($limit))
             ->when($pluck, function ($query) use ($pluck) {
@@ -34,8 +33,8 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
                 }
 
                 return $query->pluck($column, $key);
-            }, function ($query) use ($appends) {
-                return $query->get()->when(isEloquentModel($query), fn($q) => $q->append($appends));
+            }, function ($query) {
+                return $query->get()->appends();
             });
     });
 }

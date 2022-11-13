@@ -19,7 +19,7 @@
 ###### params are not required
 
 * `list_type`\->string\[pagination,collection\] default pagination
-* `columns`\->string default all columns *separated from each other by a comma(,)*
+* `columns`\->string default all columns. *separated from each other by a comma(,)*
   *  **host.com/products?columns=id,name,description,...**
 * `relations`\->array default null
 * `limit`\->integer default 30
@@ -31,6 +31,11 @@
 * `pluck`->string | array default null
     * working with collection
         * if string need send column name
+    * if array pluck[column] required
+        * pluck[key] optional default null
+* `appends`->string default null
+    * working with collection
+    * multi appends=full_name;appends2;... *is different with* `;`
     * if array pluck[column] required
         * pluck[key] optional default null
 * `orderBy`\->string default id

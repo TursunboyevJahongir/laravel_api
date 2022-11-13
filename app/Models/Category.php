@@ -66,6 +66,14 @@ class Category extends Model
             });
     }
 
+    public function getAbAttribute(){
+        return "ab";
+    }
+
+    public function getBcAttribute(){
+        return "Bc";
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
