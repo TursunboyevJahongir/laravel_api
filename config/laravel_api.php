@@ -1,27 +1,29 @@
 <?php
 
 return [
-    'params'  => [
-        'order_by'     => 'orderBy',
-        'sort_by'      => 'sortBy',
-        'filters'      => 'filters',
-        'or_filters'   => 'or_filters',
-        'not_filters'  => 'not_filters',
-        'between'      => 'between',
-        'not_between'  => 'not_between',
-        'columns'      => 'columns',
-        'limit'        => 'limit',
-        'appends'      => 'appends',
-        'pluck'        => 'pluck',
-        'relations'    => 'relations',
-        'only_deleted' => 'only_deleted',
-        'is_active'    => 'is_active',
-        'per_page'     => 'per_page',
-        'list_type'    => 'list_type',
-        'search'       => 'search',
-        'search_by'    => 'search_by',
+    'main_locale'          => 'ru',
+    'available_locales' => ['ru', 'uz', 'en'],
+    'params'               => [
+        'order_by'       => 'orderBy',
+        'sort_by'        => 'sortBy',
+        'conditions'     => 'conditions',
+        'or_conditions'  => 'or_conditions',
+        'not_conditions' => 'not_conditions',
+        'between'        => 'between',
+        'not_between'    => 'not_between',
+        'columns'        => 'columns',
+        'limit'          => 'limit',
+        'appends'        => 'appends',
+        'pluck'          => 'pluck',
+        'relations'      => 'relations',
+        'only_deleted'   => 'only_deleted',
+        'is_active'      => 'is_active',
+        'per_page'       => 'per_page',
+        'list_type'      => 'list_type',
+        'search'         => 'search',
+        'search_by'      => 'search_by',
     ],
-    'default' =>//request default value
+    'default'              =>//request default value
         [
             "list_type"       => 'pagination',//pagination,collection
             "page_size"       => 30,
@@ -29,7 +31,7 @@ return [
             "order_by"        => 'id',
             "sort_by"         => 'DESC',
         ],
-    'check'   => //checking column
+    'check'                => //checking column
         [
             'is_active' => 'is_active',
         ],

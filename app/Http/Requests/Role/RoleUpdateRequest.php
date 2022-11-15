@@ -15,7 +15,7 @@ class RoleUpdateRequest extends FormRequest
     public function rules(): array
     {
         return ['title'                              => 'filled|array',
-                'title.' . config('app.main_locale') => 'required_with:title|string',
+                'title.' . config('laravel_api.main_locale') => 'required_with:title|string',
                 'title.*'                            => 'nullable|string',
                 'name'                               => 'required|string|unique:roles,name,' . $this->route('role')->id,
                 'guard_name'                         => 'string',

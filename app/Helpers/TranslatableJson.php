@@ -23,6 +23,6 @@ class TranslatableJson implements CastsAttributes
             return $arr;
         }
 
-        return $arr[$key] ?? $arr[config('app.main_locale')];
+        return $arr[$key] ?? $arr[config('laravel_api.main_locale')];
     }
 }

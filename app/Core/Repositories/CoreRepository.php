@@ -25,18 +25,17 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return $this->model->query()
             ->eloquentQuery($query)
+            ->conditions()
+            ->orConditions()
+            ->notConditions()
+            ->search()
             ->between()
             ->notBetween()
-            ->filters()
-            ->filters()
-            ->orFilters()
-            ->notFilters()
-            ->when(!$query, function ($query) {
+            ->isActive()
+            ->when(!$query, function (EloquentBuilder $query) {
                 $query->closure($this, 'availability')->closure($this, 'appends');
             })
-            ->search()
             ->searchBy()
-            ->isActive()
             ->sortBy()
             ->paginationOrCollection();
     }
@@ -61,11 +60,12 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return \DB::query()
             ->dbQuery($query)
-            ->between()
+            ->conditions()
             ->notBetween()
-            ->filters()
-            ->orFilters()
-            ->notFilters()
+            ->between()
+            ->orConditions()
+            ->notConditions()
+            ->search()
             ->searchBy()
             ->isActive()
             ->sortBy()
@@ -145,7 +145,9 @@ abstract class CoreRepository implements CoreRepositoryContract
         string $column = 'id',
         EloquentBuilder|Relation $query = null
     ): ?Model {
-        return $this->model->eloquentQuery(query: $query)
+        return $this->model
+            ->query()
+            ->eloquentQuery($query)
             ->when(!$query, function ($query) {
                 $query->closure($this, 'availability');
             })

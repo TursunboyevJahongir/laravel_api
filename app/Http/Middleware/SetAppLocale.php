@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\AvailableLocalesEnum;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -18,9 +17,9 @@ class SetAppLocale
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $locale = config('app.main_locale');
+        $locale = config('laravel_api.main_locale');
         if ($request->hasHeader('accept-language') &&
-            in_array($request->header('accept-language'), AvailableLocalesEnum::toArray(), true)) {
+            in_array($request->header('accept-language'), config('laravel_api.available_locales',[]), true)) {
             $locale = $request->header('accept-language');
         }
         app()->setLocale($locale);

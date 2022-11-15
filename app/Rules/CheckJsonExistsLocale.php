@@ -17,7 +17,7 @@ class CheckJsonExistsLocale implements Rule
      */
     public function passes($attribute, $value)
     {
-        return array_key_exists(config('app.main_locale'), $value);
+        return array_key_exists(config('laravel_api.main_locale'), $value);
     }
 
     /**
@@ -27,6 +27,6 @@ class CheckJsonExistsLocale implements Rule
      */
     public function message()
     {
-        return __('messages.check_json_exists_locale', ['attribute' => config('app.main_locale')]);
+        return __('messages.check_json_exists_locale', ['attribute' => config('laravel_api.main_locale')]);
     }
 }

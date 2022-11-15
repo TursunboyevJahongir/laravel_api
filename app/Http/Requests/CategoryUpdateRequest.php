@@ -11,7 +11,7 @@ class CategoryUpdateRequest extends FormRequest
     public function rules()
     {
         return ['name'                                     => 'filled|array',
-                'name.' . config('app.main_locale')        => ['required_with:name',
+                'name.' . config('laravel_api.main_locale')        => ['required_with:name',
                                                                'string',
                                                                new UniqueJsonRule('categories',
                                                                                   'name', $this->route()
@@ -22,7 +22,7 @@ class CategoryUpdateRequest extends FormRequest
                                                                                   'name', $this->route()
                                                                                       ->originalParameter('category'))],
                 'description'                              => 'nullable|array',
-                'description.' . config('app.main_locale') => 'required_with:description|string',
+                'description.' . config('laravel_api.main_locale') => 'required_with:description|string',
                 'description.*'                            => 'nullable|string',
                 'position'                                 => 'nullable|numeric',
                 'ico'                                      => 'nullable|image',

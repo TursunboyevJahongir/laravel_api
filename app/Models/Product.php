@@ -46,7 +46,6 @@ class Product extends Model
 
     protected $appends = ['sub_description'];
 
-    protected array  $json     = ['name', 'description'];
     protected string $filePath = 'products';
 
     protected array $searchable = ['name',

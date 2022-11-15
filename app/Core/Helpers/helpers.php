@@ -162,3 +162,19 @@ if (!function_exists('like')) {
         return \DB::connection()->getDriverName() === 'postgresql' ? 'ilike' : 'like';
     }
 }
+
+if (!function_exists('macrosConditions')) {
+    function macrosConditions($conditions)
+    {
+        if (is_string($conditions)) {
+            $array      = explode(';', $conditions);
+            $conditions = [];
+            array_map(function ($array) use (&$conditions) {
+                [$column, $value] = explode(':', $array, 2);
+                $conditions[$column] = $value;
+            }, $array);
+        }
+
+        return $conditions;
+    }
+}

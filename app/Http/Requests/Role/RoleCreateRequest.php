@@ -15,7 +15,7 @@ class RoleCreateRequest extends FormRequest
     public function rules(): array
     {
         return ['title'                              => 'required|array',
-                'title.' . config('app.main_locale') => 'required|string',
+                'title.' . config('laravel_api.main_locale') => 'required|string',
                 'title.*'                            => 'nullable|string',
                 'name'                               => 'required|string|unique:roles,name',
                 'guard_name'                         => 'string'];

@@ -29,7 +29,7 @@
 * `per_page`\->integer default 30
     * **working with pagination**
 * `is_active`\->boolean\[or 0,1\] default all
-    * or `filters[][is_active]=0` \[0,1\]
+    * or `conditions[is_active]=0` \[0,1\]
 * `pluck`->string | array default null
     * working with collection
         * if string need send column name
@@ -42,11 +42,18 @@
 * `sortBy`\-> string\[asc,desc\] default desc
 * `search`\->string default null
 * `search_by`\->array default null
-* `filters`\->array default null
-    * array accessive key=column value=searching text
-    * **{{host}}/admin/users?filters\[0\]\[first_name\]=Owner&filters\[0\]\[last_name\]=Of**
-* `not_filters`\->**not_filters** reverse **filters**
-* `or_filters`->**or_filters** from request, if any of them are equal it will work
+* `conditions`\->string|array default null
+    * the conditions are **and** with each other
+    * string condition=column:value;column2:value2
+    * array condition[column]=value&column[column2]=value2
+      * `https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir`
+      * or you can use it on one variable `https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe`
+* `not_conditions`\-> array default null
+  * **conditions and with each other. and the result will be reversed**
+  * **not_conditions** reverse **conditions**
+* `or_conditions`-> array default null
+  * the conditions are **or** with each other 
+  * **or_conditions** from request, if any of them are equal it will work
 * `between`\->array default null
     * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
       **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)

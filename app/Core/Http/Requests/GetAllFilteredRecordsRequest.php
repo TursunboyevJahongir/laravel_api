@@ -24,9 +24,9 @@ class GetAllFilteredRecordsRequest extends FormRequest
                 'is_active'    => 'boolean',
                 'search'       => 'nullable|string',
                 'search_by'    => 'nullable|array',
-                'filters'      => 'array',
-                'not_filters'  => 'array',
-                'or_filters'   => 'array',
+                'conditions'      => 'array',
+                'not_conditions'  => 'array',
+                'or_conditions'   => 'array',
                 'pluck'        => !is_array($this->get('pluck')) ? 'string' : "array|required_array_keys:column",
                 'only_deleted' => ['bool',
                                    function ($attribute, $value, $fail) {

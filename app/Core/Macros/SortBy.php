@@ -64,7 +64,7 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
                     ->orderBy("$tableAs.$column", $sort);
             }
         } else {
-            $this->orderBy($this->jsonLang($field), $sort);
+            $this->orderBy($this->jsonTranslate($field), $sort);
         }
     }
 

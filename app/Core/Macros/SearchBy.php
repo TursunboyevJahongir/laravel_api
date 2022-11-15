@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\AvailableLocalesEnum;
 use Carbon\Carbon;
 use Illuminate\Database\{
     Eloquent\Builder as EloquentBuilder,
@@ -32,8 +31,8 @@ EloquentBuilder::macro('searchBy', function (array|null $searchBy = null) {
         $query->where(function (EloquentBuilder $query) use ($searchBy) {
             foreach ($searchBy as $column => $search) {
                 $search = rtrim($search, " \t.");
-                if ($query->isJson($column)) {
-                    foreach (AvailableLocalesEnum::toArray() as $lang) {
+                if ($query->isTranslatable($column)) {
+                    foreach (config('laravel_api.available_locales',[]) as $lang) {
                         $query->orWhereLike("$column->$lang", $search);
                     }
                 } elseif ($query->inDates($column)) {

@@ -3,7 +3,6 @@
 namespace App\Core\Traits;
 
 use App\Helpers\DateCasts;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Support\Facades\Cache;
 
 trait CoreModel
@@ -18,13 +17,23 @@ trait CoreModel
     }
 
     /**
-     * Get the json attributes for the model.
-     * @method getJsonColumns()
+     * Get the Translatable json attributes for the model.
+     * @method getTranslatableColumns()
      * @return array
      */
-    public function getJsonColumns()
+    public function getTranslatableColumns(): array
     {
-        return $this->json ?? [];
+        return Cache::remember($this->getModel()->getTable() . 'getTranslatableColumns', 86400, function (
+        ) {//60 * 60 * 24=day
+            $keys = collect($this->getModel()->getCasts())
+                ->filter(function ($value, $key) {
+                    if (str_contains($value, 'TranslatableJson')) {
+                        return $key;
+                    }
+                });
+
+            return $keys->keys()->toArray();
+        });
     }
 
     /**

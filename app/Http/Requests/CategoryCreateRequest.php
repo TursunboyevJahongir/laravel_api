@@ -16,7 +16,7 @@ class CategoryCreateRequest extends FormRequest
     public function rules()
     {
         return ['name'                                     => 'required|array',
-                'name.' . config('app.main_locale')        => ['required',
+                'name.' . config('laravel_api.main_locale')        => ['required',
                                                                'string',
                                                                new UniqueJsonRule('categories',
                                                                                   'name')],
@@ -25,7 +25,7 @@ class CategoryCreateRequest extends FormRequest
                                                                new UniqueJsonRule('categories',
                                                                                   'name')],
                 'description'                              => 'nullable|array',
-                'description.' . config('app.main_locale') => 'required_with:description|string',
+                'description.' . config('laravel_api.main_locale') => 'required_with:description|string',
                 'description.*'                            => 'nullable|string',
                 'position'                                 => 'nullable|numeric',
                 'ico'                                      => 'nullable|image',

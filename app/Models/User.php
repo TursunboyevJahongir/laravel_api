@@ -7,9 +7,8 @@ use App\Traits\IsActive;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Helpers\DateCasts;
 use App\Traits\Author;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Factories\{HasFactory};
+use Illuminate\Database\Eloquent\Relations\{MorphMany, MorphOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -49,11 +48,9 @@ class User extends Authenticatable
     public function avatar(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource')
-            ->withDefault([
-                              'path_original' => 'images/default/avatar_original.png',
-                              'path_1024'     => 'images/default/avatar_1024.png',
-                              'path_512'      => 'images/default/avatar_512.png',
-                          ]);
+            ->withDefault(['path_original' => 'images/default/avatar_original.png',
+                           'path_1024'     => 'images/default/avatar_1024.png',
+                           'path_512'      => 'images/default/avatar_512.png']);
     }
 
     public function setPasswordAttribute($password)

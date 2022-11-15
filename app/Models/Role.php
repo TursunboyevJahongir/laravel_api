@@ -11,7 +11,6 @@ class Role extends SpatieRole
     use CoreModel;
 
     protected       $fillable   = ['title', 'name', 'guard_name'];
-    protected array $json       = ['title'];
     protected array $searchable = ['name'];
 
     protected $casts = [

@@ -43,8 +43,6 @@ class Category extends Model
                                    'author.first_name',//relation with dot .
                                    ['author', ['last_name', 'phone']]];//relation in array
 
-    protected array $json = ['name', 'description'];
-
     public function ico(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource');
@@ -64,14 +62,6 @@ class Category extends Model
             ->when(notSystem(), function ($query) {
                 $query->whereNull('deleted_at')->active();
             });
-    }
-
-    public function getAbAttribute(){
-        return "ab";
-    }
-
-    public function getBcAttribute(){
-        return "Bc";
     }
 
     public function parent(): BelongsTo
