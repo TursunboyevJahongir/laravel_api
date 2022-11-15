@@ -20,10 +20,10 @@
 
 * `list_type`\->string\[pagination,collection\] default pagination
 * `columns`\->string default all columns. *separated from each other by a comma(,)*
-  *  **host.com/products?columns=id,name,description,...** *add more with* `,`
+    * **host.com/products?columns=id,name,description,...** *add more with* `,`
 * `relations`\->string default null
-  * multi relations=parent;author;... *add more with* `;`
-  * And you can multi relationship with dot notation relations=products.mainImage;author;...
+    * multi relations=parent;author;... *add more with* `;`
+    * And you can multi relationship with dot notation relations=products.mainImage;author;...
 * `limit`\->integer default 30
     * **working with colection**
 * `per_page`\->integer default 30
@@ -37,7 +37,7 @@
         * pluck[key] optional default null
 * `appends`->string default null
     * working with collection
-    * multi appends=full_name;appends2;...  *add more with* `;` 
+    * multi appends=full_name;appends2;...  *add more with* `;`
 * `orderBy`\->string default id
 * `sortBy`\-> string\[asc,desc\] default desc
 * `search`\->string default null
@@ -46,14 +46,20 @@
     * the conditions are **and** with each other
     * string condition=column:value;column2:value2
     * array condition[column]=value&column[column2]=value2
-      * `https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir`
-      * or you can use it on one variable `https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe`
+      ```http request 
+      https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir
+      ```
+
+      or you can use this on one variable
+      ```http request 
+      https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe
+      ```
 * `not_conditions`\-> array default null
-  * **conditions and with each other. and the result will be reversed**
-  * **not_conditions** reverse **conditions**
+    * **conditions and with each other. and the result will be reversed**
+    * **not_conditions** reverse **conditions**
 * `or_conditions`-> array default null
-  * the conditions are **or** with each other 
-  * **or_conditions** from request, if any of them are equal it will work
+    * the conditions are **or** with each other
+    * **or_conditions** from request, if any of them are equal it will work
 * `between`\->array default null
     * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
       **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)
