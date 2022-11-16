@@ -41,7 +41,16 @@
 * `orderBy`\->string default id
 * `sortBy`\-> string\[asc,desc\] default desc
 * `search`\->string default null
-* `search_by`\->array default null
+* `searchFilds`->string array default null.
+    * string
+      ```http request
+      https://host.com/users?search=John&searchFilds=first_name,last_name,author.first_name
+      ```
+      array
+      ```http request
+      https://host.com/users?search=John&searchFields[]=first_name&searchFields[]=last_name&searchFields[]=author.first_name
+      ```
+      
 * `conditions`\->string|array default null
     * the conditions are **and** with each other
     * string condition=column:value;column2:value2

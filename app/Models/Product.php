@@ -49,8 +49,8 @@ class Product extends Model
     protected string $filePath = 'products';
 
     protected array $searchable = ['name',
-                                   'description',
-                                   'barcode'];
+                                   'category.name',
+                                   'created_at'];
 
     public function mainImage(): MorphOne
     {

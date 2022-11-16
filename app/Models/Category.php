@@ -6,7 +6,7 @@ use App\Core\Traits\CoreModel;
 use App\Helpers\TranslatableJson;
 use App\Traits\{Author, IsActive};
 use Illuminate\Database\Eloquent\{
-    Builder,
+        Builder,
     Model,
     SoftDeletes,
     Factories\HasFactory,
@@ -40,8 +40,7 @@ class Category extends Model
 
     protected array $searchable = ['name',
                                    'description',
-                                   'author.first_name',//relation with dot .
-                                   ['author', ['last_name', 'phone']]];//relation in array
+                                   'author.first_name'];//relation with dot . relation1.relation2.column
 
     public function ico(): MorphOne
     {

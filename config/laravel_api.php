@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'main_locale'          => 'ru',
+    'main_locale'       => 'ru',
     'available_locales' => ['ru', 'uz', 'en'],
-    'params'               => [
+    'params'            => [
         'order_by'       => 'orderBy',
         'sort_by'        => 'sortBy',
         'conditions'     => 'conditions',
@@ -21,9 +21,9 @@ return [
         'per_page'       => 'per_page',
         'list_type'      => 'list_type',
         'search'         => 'search',
-        'search_by'      => 'search_by',
+        'searchFields'   => 'searchFields',
     ],
-    'default'              =>//request default value
+    'default'           =>//request default value
         [
             "list_type"       => 'pagination',//pagination,collection
             "page_size"       => 30,
@@ -31,7 +31,7 @@ return [
             "order_by"        => 'id',
             "sort_by"         => 'DESC',
         ],
-    'check'                => //checking column
+    'check'             => //checking column
         [
             'is_active' => 'is_active',
         ],

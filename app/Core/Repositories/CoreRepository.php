@@ -3,7 +3,6 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -35,7 +34,6 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->when(!$query, function (EloquentBuilder $query) {
                 $query->closure($this, 'availability')->closure($this, 'appends');
             })
-            ->searchBy()
             ->sortBy()
             ->paginationOrCollection();
     }
@@ -66,7 +64,6 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->orConditions()
             ->notConditions()
             ->search()
-            ->searchBy()
             ->isActive()
             ->sortBy()
             ->paginationOrCollection();
