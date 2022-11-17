@@ -28,8 +28,49 @@
     * **working with colection**
 * `per_page`\->integer default 30
     * **working with pagination**
+* `conditions`\->string|array default null
+    * the conditions are **and** with each other
+    * string condition=column:value;column2:value2
+    * array condition[column]=value&column[column2]=value2
+      ```http request 
+      https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir
+      ```
+
+      or you can use this on one variable
+      ```http request 
+      https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe
+      ```
+* `not_conditions`\-> array default null
+    * **conditions and with each other. and the result will be reversed**
+    * **not_conditions** reverse **conditions**
+* `or_conditions`-> array default null
+    * the conditions are **or** with each other
+    * **or_conditions** from request, if any of them are equal it will work
+* `between`\->array default null
+    * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
+      **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)
+      is given, it takes all the data inside **from to**
+    * **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
+      =::200**
+* `not_between`\->**not_between** reverse **between**
 * `is_active`\->boolean\[or 0,1\] default all
-    * or `conditions[is_active]=0` \[0,1\]
+    * or `conditions[is_active]=0` \[0,1\]\
+
+* `search`\->string default null
+* `searchFilds`->string array default null.
+    * string
+    ```http request
+    https://host.com/users?search=John&searchFilds=first_name,last_name,author.first_name
+    ```
+   * array
+    ```http request
+    https://host.com/users?search=John&searchFields[]=first_name&searchFields[]=last_name&searchFields[]=author.first_name
+    ```
+* `orderBy`\->string default id
+* `sortBy`\-> string\[asc,desc\] default desc
+* `appends`->string default null
+    * working with collection
+    * multi appends=full_name;appends2;...  *add more with* `;`
 * `pluck`->string default null
   * The pluck method retrieves all of the values for a given key:
   * https://host.com/products?list_type=collection
@@ -84,48 +125,6 @@
         }
     ```
     * note : object keys unique
-
-* `appends`->string default null
-    * working with collection
-    * multi appends=full_name;appends2;...  *add more with* `;`
-* `orderBy`\->string default id
-* `sortBy`\-> string\[asc,desc\] default desc
-* `search`\->string default null
-* `searchFilds`->string array default null.
-    * string
-      ```http request
-      https://host.com/users?search=John&searchFilds=first_name,last_name,author.first_name
-      ```
-      array
-      ```http request
-      https://host.com/users?search=John&searchFields[]=first_name&searchFields[]=last_name&searchFields[]=author.first_name
-      ```
-
-* `conditions`\->string|array default null
-    * the conditions are **and** with each other
-    * string condition=column:value;column2:value2
-    * array condition[column]=value&column[column2]=value2
-      ```http request 
-      https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir
-      ```
-
-      or you can use this on one variable
-      ```http request 
-      https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe
-      ```
-* `not_conditions`\-> array default null
-    * **conditions and with each other. and the result will be reversed**
-    * **not_conditions** reverse **conditions**
-* `or_conditions`-> array default null
-    * the conditions are **or** with each other
-    * **or_conditions** from request, if any of them are equal it will work
-* `between`\->array default null
-    * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
-      **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)
-      is given, it takes all the data inside **from to**
-    * **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
-      =::200**
-* `not_between`\->**not_between** reverse **between**
 * `only_deleted`\->boolean\[0,1\] default 0(*false*)
 
 Sort, OrderBy
@@ -224,7 +223,7 @@ Model::leftJoin("relationTable", "selfTable.foreignKey", "relationTable.ownerKey
     * *the language of the message will be changed by the header Accept-Language*
 * `data`\->**array|Collection** default \[\]
 
-<details><summary><b style="color:#355C7D;font-size:20px">User</b></summary>
+<details><summary><b style="color:#355C7D;font-size:20px">Example</b></summary>
 
 ```
 - Profile RU
