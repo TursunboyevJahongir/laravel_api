@@ -11,9 +11,9 @@ EloquentBuilder::macro('eloquentQuery', function (
     bool $trashed = null,
 ): EloquentBuilder|Relation {
     $validator = validator()->make(request()->all(), [
-        config('laravel_api.params.columns', 'columns')           => 'string',
-        config('laravel_api.params.relations', 'relations')       => 'string',
-        config('laravel_api.params.only_deleted', 'only_deleted') => ['bool',
+        config('laravel_api.request.columns', 'columns')           => 'string',
+        config('laravel_api.request.relations', 'relations')       => 'string',
+        config('laravel_api.request.only_deleted', 'only_deleted') => ['bool',
                                                                       function ($attribute, $value, $fail) {
                                                                           if (!hasPermission('system')) {
                                                                               $fail(__('messages.you_havnt_permission'));
@@ -25,8 +25,8 @@ EloquentBuilder::macro('eloquentQuery', function (
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
 
-    $requestColumns   = request(config('laravel_api.params.columns', 'columns'), ['*']);
-    $requestRelations = request(config('laravel_api.params.relations', 'relations'), []);
+    $requestColumns   = request(config('laravel_api.request.columns', 'columns'), ['*']);
+    $requestRelations = request(config('laravel_api.request.relations', 'relations'), []);
 
     if (is_string($requestColumns)) {
         $requestColumns = explode(',', $requestColumns);
@@ -36,7 +36,7 @@ EloquentBuilder::macro('eloquentQuery', function (
     }
     $columns   = $columns ?? $requestColumns;
     $relations = $relations ?? $requestRelations;
-    $trashed   = $trashed ?? request(config('laravel_api.params.only_deleted', 'only_deleted'), false);
+    $trashed   = $trashed ?? request(config('laravel_api.request.only_deleted', 'only_deleted'), false);
 
     return ($query ?? $this)
         ->select($columns)

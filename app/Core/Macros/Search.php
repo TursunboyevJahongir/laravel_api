@@ -5,8 +5,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
 Builder::macro('search', function (string|null $search = null, string|array $searchFields = null) {
-    $search       = $search ?? request(config('laravel_api.params.search', 'search'));
-    $searchFields = $searchFields ?? request(config('laravel_api.params.searchFields', 'searchFields'));
+    $search       = $search ?? request(config('laravel_api.request.search', 'search'));
+    $searchFields = $searchFields ?? request(config('laravel_api.request.searchFields', 'searchFields'));
 
     if (is_string($searchFields)) {
         $searchFields = explode(',', $searchFields);
@@ -14,7 +14,7 @@ Builder::macro('search', function (string|null $search = null, string|array $sea
 
     $this->when($search, function (Builder $query) use ($search, $searchFields) {
         if ($search && !is_string($search)) {
-            throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.params.search', 'search')]));
+            throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.request.search', 'search')]));
         }
         $query->where(function (Builder $query) use ($search, $searchFields) {
             $search = rtrim($search, " \t.");
@@ -52,8 +52,8 @@ Builder::macro('search', function (string|null $search = null, string|array $sea
 });
 
 QueryBuilder::macro('search', function (string|null $search = null, string|array $searchFields = null) {
-    $search       = $search ?? request(config('laravel_api.params.search', 'search'));
-    $searchFields = $searchFields ?? request(config('laravel_api.params.searchFields', 'searchFields'));
+    $search       = $search ?? request(config('laravel_api.request.search', 'search'));
+    $searchFields = $searchFields ?? request(config('laravel_api.request.searchFields', 'searchFields'));
 
     if (is_string($searchFields)) {
         $searchFields = explode(',', $searchFields);

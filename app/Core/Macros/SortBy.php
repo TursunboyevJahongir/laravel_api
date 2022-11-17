@@ -6,23 +6,23 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Validation\ValidationException;
 
 EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
-    $orderBy = request(config('laravel_api.params.order_by', 'orderBy'), config('laravel_api.default.order_by', $orderBy));
-    $sort    = request(config('laravel_api.params.sort_by', 'sortBy'), config('laravel_api.default.sort_by', $sort));
+    $orderBy = request(config('laravel_api.request.order_by', 'orderBy'), config('laravel_api.default.order_by', $orderBy));
+    $sort    = request(config('laravel_api.request.sort_by', 'sortBy'), config('laravel_api.default.sort_by', $sort));
     if (!is_string($orderBy)) {
-        throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.params.order_by', 'orderBy')]));
+        throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.request.order_by', 'orderBy')]));
     }
     if (!in_array($sort, ['desc', 'asc', 'DESC', 'ASC'])) {
-        throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.params.sort_by', 'sortBy')]));
+        throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.request.sort_by', 'sortBy')]));
     }
 
     $validator = validator()->make(request()->all(), [
-        config('laravel_api.params.columns', 'columns') => 'string',
+        config('laravel_api.request.columns', 'columns') => 'string',
     ]);
 
     if ($validator->fails()) {
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
-    $columns = request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $columns = request(config('laravel_api.request.columns', 'columns'), ['*']);
 
     if ($columns !== ['*']) {
         $columns = explode(',', $columns);
@@ -72,13 +72,13 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
 });
 
 QueryBuilder::macro('sortBy', function (string $orderBy = "id", string $sort = 'DESC') {
-    $orderBy = request(config('laravel_api.params.order_by', 'orderBy'), config('laravel_api.default.order_by', $orderBy));
-    $sort    = request(config('laravel_api.params.sort_by', 'sortBy'), config('laravel_api.default.sort_by', $sort));
+    $orderBy = request(config('laravel_api.request.order_by', 'orderBy'), config('laravel_api.default.order_by', $orderBy));
+    $sort    = request(config('laravel_api.request.sort_by', 'sortBy'), config('laravel_api.default.sort_by', $sort));
     if (!is_string($orderBy)) {
-        throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.params.order_by', 'orderBy')]));
+        throw new \Exception(__('validation.string', ['attribute' => config('laravel_api.request.order_by', 'orderBy')]));
     }
     if (!in_array($sort, ['desc', 'asc', 'DESC', 'ASC'])) {
-        throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.params.sort_by', 'sortBy')]));
+        throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.request.sort_by', 'sortBy')]));
     }
 
     if (str_contains($orderBy, ';')) {

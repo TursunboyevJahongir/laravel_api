@@ -30,11 +30,61 @@
     * **working with pagination**
 * `is_active`\->boolean\[or 0,1\] default all
     * or `conditions[is_active]=0` \[0,1\]
-* `pluck`->string | array default null
-    * working with collection
-        * if string need send column name
-    * if array pluck[column] required
-        * pluck[key] optional default null
+* `pluck`->string default null
+  * The pluck method retrieves all of the values for a given key:
+  * https://host.com/products?list_type=collection
+    ```json
+          {
+            "products": [
+                    {
+                        "id": 150,
+                        "category_id": 5,
+                        "name": "suscipit"
+                    },
+                    {
+                        "id": 149,
+                        "category_id": 11,
+                        "name": "aspernatur"
+                    },
+                    {
+                        "id": 148,
+                        "category_id": 5,
+                        "name": "occaecati"
+                    }
+            ]
+          }
+    ```
+  * https://host.com/products?list_type=collection&pluck=name
+      ```json
+          {
+            "products": [
+                "suscipit",
+                "aspernatur",
+                "occaecati",
+                "iure"
+            ]
+          }
+      ```
+  * working with collection
+  * The pluck method also supports retrieving nested values using "dot" notation
+  * https://host.com/products?relations=category.author&list_type=collection&pluck=id:category.author.first_name
+    ```json
+        {
+          "products": [
+              "150": "Isaias",
+              "149": "Rubye",
+              "148": "Rubye",
+              "147": "Urban",
+              "146": "Caden",
+              "145": "Alexandre",
+              "144": "Super",
+              "143": "Emerald",
+              "142": "Jamison"
+          ]
+        }
+    ```
+    * note : object keys unique
+
 * `appends`->string default null
     * working with collection
     * multi appends=full_name;appends2;...  *add more with* `;`
@@ -50,7 +100,7 @@
       ```http request
       https://host.com/users?search=John&searchFields[]=first_name&searchFields[]=last_name&searchFields[]=author.first_name
       ```
-      
+
 * `conditions`\->string|array default null
     * the conditions are **and** with each other
     * string condition=column:value;column2:value2

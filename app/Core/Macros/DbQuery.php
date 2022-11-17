@@ -8,13 +8,13 @@ QueryBuilder::macro('dbQuery', function (
     array $columns = null,
 ): QueryBuilder {
     $validator = validator()->make(request()->all(), [
-        config('laravel_api.params.columns', 'columns') => 'string',
+        config('laravel_api.request.columns', 'columns') => 'string',
     ]);
 
     if ($validator->fails()) {
         throw ValidationException::withMessages($validator->messages()->toArray());
     }
-    $requestColumns = request(config('laravel_api.params.columns', 'columns'), ['*']);
+    $requestColumns = request(config('laravel_api.request.columns', 'columns'), ['*']);
 
     if ($requestColumns !== ['*']) {
         $requestColumns = explode(',', $requestColumns);

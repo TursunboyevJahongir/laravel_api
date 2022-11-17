@@ -65,7 +65,7 @@ trait CoreModel
      */
     public function appends($attributes = [])
     {
-        $attributes = request(config('laravel_api.params.appends', 'appends'), $attributes);
+        $attributes = request(config('laravel_api.request.appends', 'appends'), $attributes);
 
         if (!is_array($attributes) && !is_string($attributes)) {
             throw new \Exception('appends must be an array or a string');

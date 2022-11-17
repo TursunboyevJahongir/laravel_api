@@ -3,7 +3,7 @@
 return [
     'main_locale'       => 'ru',
     'available_locales' => ['ru', 'uz', 'en'],
-    'params'            => [
+    'request'           => [
         'order_by'       => 'orderBy',
         'sort_by'        => 'sortBy',
         'conditions'     => 'conditions',

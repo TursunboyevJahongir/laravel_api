@@ -9,30 +9,31 @@ use Illuminate\Validation\ValidationException;
 foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
     $builder::macro('collection', function (): Collection {
         $validator = validator()->make(request()->all(), [
-            config('laravel_api.params.limit', 'limit') => [function ($attribute, $value, $fail) {
+            config('laravel_api.request.limit', 'limit') => [function ($attribute, $value, $fail) {
                 is_numeric($value) || $value === 'all' ? : $fail("$attribute must be numeric or 'all'");
             }],
-            config('laravel_api.params.pluck', 'pluck') => !is_array(request(config('laravel_api.params.pluck', 'pluck'))) ? 'string' : "array|required_array_keys:column",
+            config('laravel_api.request.pluck', 'pluck') => 'string',
         ]);
 
         if ($validator->fails()) {
             throw ValidationException::withMessages($validator->messages()->toArray());
         }
-        $limit = request(config('laravel_api.params.limit', 'limit'), config('laravel_api.default.page_size'));
+        $limit = request(config('laravel_api.request.limit', 'limit'), config('laravel_api.default.page_size'));
 
-        $pluck = request(config('laravel_api.params.pluck', 'pluck'));
+        $pluck = request(config('laravel_api.request.pluck', 'pluck'));
 
         return $this->when($limit !== 'all', fn($q) => $q->limit($limit))
-            ->when($pluck, function ($query) use ($pluck) {
-                if (is_array($pluck)) {
-                    $column = $pluck['column'];
-                    $key    = $pluck['key'] ?? null;
-                } else {
-                    $column = $pluck;
-                    $key    = null;
-                }
+            ->when($pluck, function (EloquentBuilder|QueryBuilder $query) use ($pluck) {
+                [$key, $column] = str_contains($pluck, ':') ? explode(':', $pluck) : [null, $pluck];;
 
-                return $query->pluck($column, $key);
+                if (str_contains($column, '.')) {
+                    return $query->get()->pluck($column, $key);
+                } else {
+                    /**
+                     * this is faster than $query->get()->pluck($column, $key); but The pluck method does not support extracting nested values using "dot" notation
+                     */
+                    return $query->pluck($column, $key);
+                }
             }, function ($query) {
                 return $query->get()->appends();
             });

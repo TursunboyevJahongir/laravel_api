@@ -4,7 +4,7 @@
 use Illuminate\Database\Eloquent\Collection;
 
 Collection::macro('appends', function (array $appends = []) {
-    $appends = request(config('laravel_api.params.appends', 'appends'), $appends);
+    $appends = request(config('laravel_api.request.appends', 'appends'), $appends);
 
     if (!is_array($appends) && !is_string($appends)) {
         throw new \Exception('appends must be an array or a string');

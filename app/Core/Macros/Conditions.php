@@ -116,7 +116,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      */
 
     $builder::macro('conditions', function (array $conditions = null, string $boolean = 'and') {
-        $conditions = $conditions ?? macrosConditions(request(config('laravel_api.params.conditions', 'conditions')));
+        $conditions = $conditions ?? macrosConditions(request(config('laravel_api.request.conditions', 'conditions')));
 
         return $this->whereConditions($conditions, $boolean);
     });
@@ -128,7 +128,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      * or you can use it on one variable or_condition=first_name:Jahongir;last_name:Jahongir;author.middle_name=Jahongir
      */
     $builder::macro('orConditions', function (array $orConditions = null) {
-        $orConditions = $orConditions ?? macrosConditions(request(config('laravel_api.params.or_conditions', 'or_conditions')));
+        $orConditions = $orConditions ?? macrosConditions(request(config('laravel_api.request.or_conditions', 'or_conditions')));
 
         return $this->whereConditions($orConditions, 'or');
     });
@@ -140,7 +140,7 @@ foreach ([EloquentBuilder::class, QueryBuilder::class] as $builder) {
      * .middle_name=Jahongir
      */
     $builder::macro('notConditions', function (array $notConditions = null) {
-        $notConditions = $notConditions ?? macrosConditions(request(config('laravel_api.params.not_conditions', 'not_conditions')));
+        $notConditions = $notConditions ?? macrosConditions(request(config('laravel_api.request.not_conditions', 'not_conditions')));
 
         return $this->whereNot(fn($q) => $q->whereConditions($notConditions));
     });
