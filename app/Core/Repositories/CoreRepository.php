@@ -28,6 +28,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->orConditions()
             ->notConditions()
             ->search()
+            //->between(['position'=>'100to200','column2'=>',to200','column3'=>'300'])
             ->between()
             ->notBetween()
             ->isActive()

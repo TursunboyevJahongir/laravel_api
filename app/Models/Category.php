@@ -34,7 +34,7 @@ class Category extends Model
 
     protected $casts = [
         'parent_id'   => 'int',
-        'name'        => 'array',
+        'name'        => TranslatableJson::class,
         'description' => TranslatableJson::class,
     ];
 

@@ -35,7 +35,6 @@
       ```http request 
       https://host.com/users?conditions[first_name]=Jahongir&conditions[last_name]=Jahongir&conditions[author.middle_name]=Jahongir
       ```
-
       or you can use this on one variable
       ```http request 
       https://host.com/users?condition=first_name:Jahongir;last_name:Tursunboyev;author.middle_name=doe
@@ -47,15 +46,13 @@
     * the conditions are **or** with each other
     * **or_conditions** from request, if any of them are equal it will work
 * `between`\->array default null
-    * array accessive key=column value=int or date between from::to,if only **from** is given, it is taken from
-      **from** to the end. if only **to**(*::to*) is given, it takes from start to **to** . if **between**(*from::to*)
-      is given, it takes all the data inside **from to**
-    * **{{host}}/users?between\[0\]\[price\]=100:200&between\[0\]\[created_at\]=2022-11-10::&between\[0\]\[amount\]
-      =::200**
+    * array accessive key=column value=int or date between FROMtoTO,if only **FROM** is given, it is taken from
+      **FROM** to the end. if only **TO**(*toTO*) is given, it takes from start to **TO** . if **between**(*FROMtoTO*)
+      is given, it takes all the data inside **FROMtoTO**
+    * **{{host}}/users?between[price]=100to200&between[created_at]=2022-11-10&between[amount\]=to200**
 * `not_between`\->**not_between** reverse **between**
 * `is_active`\->boolean\[or 0,1\] default all
     * or `conditions[is_active]=0` \[0,1\]\
-
 * `search`\->string default null
 * `searchFilds`->string array default null.
     * string
