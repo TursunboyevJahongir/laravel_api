@@ -6,13 +6,13 @@ use Illuminate\Validation\ValidationException;
 
 EloquentBuilder::macro('eloquentQuery', function (
     EloquentBuilder|Relation|null $query = null,
-    array $columns = null,
-    array $relations = null,
+    array|string $columns = null,
+    array|string $relations = null,
     bool $trashed = null,
 ): EloquentBuilder|Relation {
     $validator = validator()->make(request()->all(), [
         config('laravel_api.request.columns', 'columns')           => 'string',
-        config('laravel_api.request.relations', 'relations')       => 'string',
+        //config('laravel_api.request.relations', 'relations')       => 'string',
         config('laravel_api.request.only_deleted', 'only_deleted') => ['bool',
                                                                       function ($attribute, $value, $fail) {
                                                                           if (!hasPermission('system')) {

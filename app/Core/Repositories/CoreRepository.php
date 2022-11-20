@@ -23,7 +23,10 @@ abstract class CoreRepository implements CoreRepositoryContract
     public function index(EloquentBuilder|Relation|null $query = null): Collection|LengthAwarePaginator
     {
         return $this->model->query()
-            ->eloquentQuery($query)
+            ->eloquentQuery($query)//todo need change Nizomiddin
+            //->columns()
+            //->relations()
+            //->trashed()
             ->conditions()
             ->orConditions()
             ->notConditions()

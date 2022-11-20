@@ -40,7 +40,7 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
             $relation     = $relation[0];
             $relationData = $this->getModel()->{$relation}();
 
-            if ($relationData instanceof BelongsTo) {
+            if ($relationData instanceof BelongsTo) {//todo Nizomiddin need realization with hasOne table
                 $model        = $this->getModel();
                 $relationData = (array)$relationData;
                 array_pop($relationData);

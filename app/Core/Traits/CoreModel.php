@@ -23,17 +23,17 @@ trait CoreModel
      */
     public function getTranslatableColumns(): array
     {
-        return Cache::remember($this->getModel()->getTable() . 'getTranslatableColumns', 86400, function (
-        ) {//60 * 60 * 24=day
-            $keys = collect($this->getModel()->getCasts())
-                ->filter(function ($value, $key) {
-                    if (str_contains($value, 'TranslatableJson')) {
-                        return $key;
-                    }
-                });
+        return Cache::remember($this->getModel()->getTable() . 'getTranslatableColumns', 86400,
+            function () {//60 * 60 * 24=day
+                $keys = collect($this->getModel()->getCasts())
+                    ->filter(function ($value, $key) {
+                        if (str_contains($value, 'TranslatableJson')) {
+                            return $key;
+                        }
+                    });
 
-            return $keys->keys()->toArray();
-        });
+                return $keys->keys()->toArray();
+            });
     }
 
     /**

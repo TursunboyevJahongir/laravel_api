@@ -22,25 +22,28 @@ Builder::macro('search', function (string|null $search = null, string|array $sea
                 if (str_contains($column, '.')) {//todo error with date if has relation column
                     $relation = explode('.', $column);
                     $column   = array_pop($relation);
-                    $query->orWhereHas(implode('.', $relation), function (Builder $query) use ($search, $column) {
-                        if ($query->isTranslatable($column)) {
-                            foreach (config('laravel_api.available_locales', []) as $lang) {
-                                $query->orWhereLike("$column->$lang", $search);
-                            }
-                        } elseif ($query->inDates($column)) {
-                            $time = Carbon::createFromTimestamp(strtotime($search));
-                            $query->orWhereDate($column, $time);
-                        } else {
-                            $query->orWhereLike($column, $search);
-                        }
-                    });
+                    $query->orWhereHas(implode('.', $relation),
+                        function (Builder $query) use ($search, $column) {
+                            $query->where(function (Builder $query) use ($search, $column) {
+                                if ($query->isTranslatable($column)) {
+                                    foreach (config('laravel_api.available_locales', []) as $lang) {
+                                        $query->orWhereLike("$column->$lang", $search);
+                                    }
+                                } elseif (strtotime($search) && $query->inDates($column)) {
+                                    $time = Carbon::createFromTimestamp(strtotime($search));
+                                    $query->orWhereDate($column, like(), $time);
+                                } else {
+                                    $query->orWhereLike($column, $search);
+                                }
+                            });
+                        });
                 } elseif ($this->isTranslatable($column)) {
                     foreach (config('laravel_api.available_locales', []) as $lang) {
                         $query->orWhereLike("$column->$lang", $search);
                     }
-                } elseif ($this->inDates($column)) {
+                } elseif (strtotime($search) && $this->inDates($column)) {
                     $time = Carbon::createFromTimestamp(strtotime($search));
-                    $query->orWhereDate($column, $time);
+                    $query->orWhereDate($column, like(), $time);
                 } else {
                     $query->orWhereLike($column, $search);
                 }

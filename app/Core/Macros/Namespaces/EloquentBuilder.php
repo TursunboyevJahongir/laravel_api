@@ -14,7 +14,7 @@ namespace Illuminate\Database\Eloquent {
      * @method $this orConditions(array $orConditions = null)
      * @method $this notConditions(array $notConditions = null)
      * @method $this isActive(boolen $status = null)
-     * @method Builder|Relation eloquentQuery(Builder|Relation|null $query = null, array $columns = null, array $relations = null, bool $trashed = null)
+     * @method Builder|Relation eloquentQuery(Builder|Relation|null $query = null, array|string $columns = null,array|string $relations = null, bool $trashed = null)
      * @method closure($class, string $status)
      * @method bool inDates(string $field)
      * @method bool isSearchable(string $field)
@@ -41,7 +41,7 @@ namespace Illuminate\Database\Eloquent {
     }
 
     /**
-     * @method mixed appends(array $appends = [])
+     * @method mixed appends(array|string $appends = [])
      */
     class Collection
     {

@@ -51,48 +51,50 @@ use Illuminate\Database\{
 
 EloquentBuilder::macro('whereConditions', function (array $conditions = null, string $boolean = 'and') {
     $this->when($conditions, function (EloquentBuilder $query) use ($conditions, $boolean) {
-        foreach ($conditions as $column => $value) {
-            //if ($this->isSearchable($column)) {  condition like disabled
-            //    if (str_contains($column, '.')) {
-            //        $relation = explode('.', $column);
-            //        $column   = array_pop($relation);
-            //        $query->whereHas(implode('.', $relation), function (EloquentBuilder $query) use ($column, $value) {
-            //            $query->where($column, like(), $value);
-            //        });
-            //        //$query->whereInRelation(, $column, Arr::wrap($value), $boolean);
-            //    } elseif ($this->isTranslatable($column)) {
-            //        $query->where(function ($query) use ($column, $value) {
-            //            foreach (config('laravel_api.available_locales', []) as $lang) {
-            //                $query->orWhereLike("$column->$lang", $value);
-            //            }
-            //        }, boolean: $boolean);
-            //    } elseif ($this->inDates($column)) {
-            //        $time = Carbon::createFromTimestamp(strtotime($value));
-            //        $query->whereDate($column, $time, $boolean);
-            //    } else {
-            //        $query->orWhereLike($column, $value);
-            //    }
-            //} else
-            if ($this->isTranslatable($column)) {
-                $query->where(function ($query) use ($column, $value) {
-                    foreach (config('laravel_api.available_locales', []) as $lang) {
-                        $query->orWhere("$column->$lang", $value);
-                    }
-                }, boolean: $boolean);
-            } elseif ($this->inDates($column)) {
-                $time = Carbon::createFromTimestamp(strtotime($value));
-                $query->whereDate($column, $time, $boolean);
-            } elseif ($column === "id" || is_array($value)) {
-                $value = is_array($value) ? $value : explode(',', $value);
-                $query->whereIn($column, $value, boolean: $boolean);
-            } elseif (str_contains($column, '.')) {
-                $relation = explode('.', $column);
-                $column   = array_pop($relation);
-                $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($value), $boolean);
-            } else {
-                $query->where($column, '=', $value, boolean: $boolean);
+        $query->where(function (EloquentBuilder $query) use ($conditions, $boolean) {
+            foreach ($conditions as $column => $value) {
+                //if ($this->isSearchable($column)) {  condition like disabled
+                //    if (str_contains($column, '.')) {
+                //        $relation = explode('.', $column);
+                //        $column   = array_pop($relation);
+                //        $query->whereHas(implode('.', $relation), function (EloquentBuilder $query) use ($column, $value) {
+                //            $query->where($column, like(), $value);
+                //        });
+                //        //$query->whereInRelation(, $column, Arr::wrap($value), $boolean);
+                //    } elseif ($this->isTranslatable($column)) {
+                //        $query->where(function ($query) use ($column, $value) {
+                //            foreach (config('laravel_api.available_locales', []) as $lang) {
+                //                $query->orWhereLike("$column->$lang", $value);
+                //            }
+                //        }, boolean: $boolean);
+                //    } elseif ($this->inDates($column)) {
+                //        $time = Carbon::createFromTimestamp(strtotime($value));
+                //        $query->whereDate($column, $time, $boolean);
+                //    } else {
+                //        $query->orWhereLike($column, $value);
+                //    }
+                //} else
+                if ($this->isTranslatable($column)) {
+                    $query->where(function ($query) use ($column, $value) {
+                        foreach (config('laravel_api.available_locales', []) as $lang) {
+                            $query->orWhere("$column->$lang", $value);
+                        }
+                    }, boolean: $boolean);
+                } elseif ($this->inDates($column)) {
+                    $time = Carbon::createFromTimestamp(strtotime($value));
+                    $query->whereDate($column, $time, $boolean);
+                } elseif ($column === "id" || is_array($value)) {
+                    $value = is_array($value) ? $value : explode(',', $value);
+                    $query->whereIn($column, $value, boolean: $boolean);
+                } elseif (str_contains($column, '.')) {
+                    $relation = explode('.', $column);
+                    $column   = array_pop($relation);
+                    $query->whereInRelation(implode('.', $relation), $column, Arr::wrap($value), $boolean);
+                } else {
+                    $query->where($column, '=', $value, boolean: $boolean);
+                }
             }
-        }
+        });
     });
 
     return $this;
@@ -100,9 +102,11 @@ EloquentBuilder::macro('whereConditions', function (array $conditions = null, st
 
 QueryBuilder::macro('whereConditions', function (array $conditions = null, string $boolean = 'and') {
     $this->when($conditions, function (QueryBuilder $query) use ($conditions, $boolean) {
-        foreach ($conditions as $key => $filter) {
-            $query->where($key, '=', $filter, boolean: $boolean);
-        }
+        $query->where(function (EloquentBuilder $query) use ($conditions, $boolean) {
+            foreach ($conditions as $key => $filter) {
+                $query->where($key, '=', $filter, boolean: $boolean);
+            }
+        });
     });
 
     return $this;
