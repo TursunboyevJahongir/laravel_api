@@ -5,18 +5,16 @@ namespace App\Core\Contracts;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 interface CoreServiceContract
 {
     public function index(
         Builder|Relation|null $query = null
-    ): Collection|LengthAwarePaginator;
+    ): mixed;
 
     public function indexDb(
         QueryBuilder $query
-    ): Collection|LengthAwarePaginator;
+    ): mixed;
 
     public function dbFirstBy(
         QueryBuilder $query,

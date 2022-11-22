@@ -3,7 +3,7 @@
 
 use Illuminate\Database\Eloquent\Collection;
 
-Collection::macro('appends', function (array|string $appends = []) {
+Collection::macro('appends', function (array|string $appends = []): Collection {
     $appends = $appends ?? request(config('laravel_api.request.appends', 'appends'), []);
 
     if (!is_array($appends) && !is_string($appends)) {

@@ -178,3 +178,17 @@ if (!function_exists('macrosConditions')) {
         return $conditions;
     }
 }
+
+if (!function_exists('withAggregateFormatter')) {
+    function withAggregateFormatter(&$with): void
+    {
+        if (is_string($with)) {
+            $with = explode(';', $with);
+        }
+        $with = array_map(function ($with) {
+            [$rel, $column] = explode(':', $with);
+
+            return ['column' => $column, 'relation' => $rel];
+        }, $with);
+    }
+}

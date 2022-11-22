@@ -15,16 +15,16 @@ EloquentBuilder::macro('sortBy', function (string $orderBy = "id", string $sort 
         throw new \Exception(__('validation.in', ['attribute' => config('laravel_api.request.sort_by', 'sortBy')]));
     }
 
-    $validator = validator()->make(request()->all(), [
-        config('laravel_api.request.columns', 'columns') => 'string',
-    ]);
-
-    if ($validator->fails()) {
-        throw ValidationException::withMessages($validator->messages()->toArray());
-    }
+    //$validator = validator()->make(request()->all(), [
+    //    config('laravel_api.request.columns', 'columns') => 'string',
+    //]);
+    //
+    //if ($validator->fails()) {
+    //    throw ValidationException::withMessages($validator->messages()->toArray());
+    //}
     $columns = request(config('laravel_api.request.columns', 'columns'), ['*']);
 
-    if ($columns !== ['*']) {
+    if (is_string($columns)) {
         $columns = explode(',', $columns);
     }
 

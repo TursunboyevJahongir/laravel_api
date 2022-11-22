@@ -17,13 +17,13 @@ abstract class CoreService implements CoreServiceContract
 
     public function index(
         Builder|Relation|null $query = null
-    ): Collection|LengthAwarePaginator {
+    ): mixed {
         return $this->repository->index(query: $query);
     }
 
     public function indexDb(
         QueryBuilder $query
-    ): Collection|LengthAwarePaginator {
+    ): mixed {
         return $this->repository->indexDb(query: $query);
     }
 

@@ -9,7 +9,7 @@ namespace Illuminate\Database\Query {
 
     /**
      * @method $this between(array $between = null)
-     * @method Builder dbQuery(\Illuminate\Database\Query\Builder $query, array $columns = null)
+     * @method $this dbQuery(\Illuminate\Database\Query\Builder $query, array $columns = null)
      * @method $this notBetween(array $notBetween = null)
      * @method $this conditions(array $conditions = null, string $boolean = 'and')
      * @method $this orConditions(array $orConditions = null)
@@ -19,6 +19,7 @@ namespace Illuminate\Database\Query {
      * @method LengthAwarePaginator|Collection paginationOrCollection()
      * @method LengthAwarePaginator pagination()
      * @method Collection collection(): Collection
+     * @method mixed getBy(string $type = null)
      * @method int restore()
      * @method $this search(string|null $search = null, string|array $searchFields = null)
      * @method $this sortBy(string $orderBy = "id", string $sort = 'DESC')

@@ -20,13 +20,13 @@ abstract class CoreRepository implements CoreRepositoryContract
         $this->model = $model;
     }
 
-    public function index(EloquentBuilder|Relation|null $query = null): Collection|LengthAwarePaginator
+    public function index(EloquentBuilder|Relation|null $query = null): mixed
     {
         return $this->model->query()
             ->eloquentQuery($query)//todo need change Nizomiddin
-            //->columns()
-            //->relations()
-            //->trashed()
+                                   //->columns()
+            ->withRelations()
+            ->withRelationsAggregates()
             ->conditions()
             ->orConditions()
             ->notConditions()
@@ -39,7 +39,7 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $query->closure($this, 'availability')->closure($this, 'appends');
             })
             ->sortBy()
-            ->paginationOrCollection();
+            ->getBy();
     }
 
     /**
@@ -58,7 +58,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
     }
 
-    public function indexDb(QueryBuilder $query): Collection|LengthAwarePaginator
+    public function indexDb(QueryBuilder $query): mixed
     {
         return \DB::query()
             ->dbQuery($query)
@@ -70,7 +70,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->search()
             ->isActive()
             ->sortBy()
-            ->paginationOrCollection();
+            ->getBy();
     }
 
     /**
@@ -149,6 +149,8 @@ abstract class CoreRepository implements CoreRepositoryContract
         return $this->model
             ->query()
             ->eloquentQuery($query)
+            ->withRelations()
+            ->withRelationsAggregates()
             ->when(!$query, function ($query) {
                 $query->closure($this, 'availability');
             })

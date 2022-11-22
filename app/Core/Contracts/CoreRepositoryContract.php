@@ -8,12 +8,10 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\Relation
 };
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 interface CoreRepositoryContract
 {
-    public function index(EloquentBuilder|Relation|null $query = null): Collection|LengthAwarePaginator;
+    public function index(EloquentBuilder|Relation|null $query = null): mixed;
 
     public function availability(
         EloquentBuilder|Model $query
@@ -21,7 +19,7 @@ interface CoreRepositoryContract
 
     public function appends(EloquentBuilder $query): void;
 
-    public function indexDb(QueryBuilder $query): Collection|LengthAwarePaginator;
+    public function indexDb(QueryBuilder $query): mixed;
 
     /**
      * Show entity
