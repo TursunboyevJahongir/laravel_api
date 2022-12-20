@@ -26,8 +26,8 @@ class Product extends Model
     }
 
     public const MAIN_IMAGE = 'MAIN_IMAGE';
-    public const VIDEO      = 'VIDEO';
-    public const IMAGES     = 'IMAGES';
+    public const VIDEO = 'VIDEO';
+    public const IMAGES = 'IMAGES';
 
     protected $fillable = [
         'category_id',
@@ -40,7 +40,7 @@ class Product extends Model
 
     protected $casts = [
         'category_id' => 'int',
-        'name'        => TranslatableJson::class,
+        'name' => TranslatableJson::class,
         'description' => TranslatableJson::class,
     ];
 
@@ -48,19 +48,17 @@ class Product extends Model
 
     protected string $filePath = 'products';
 
-    protected array $searchable = ['name',
-                                   'category.name',
-                                   'created_at'];
+    protected array $searchable = ['name', 'category.name', 'created_at'];
 
     public function mainImage(): MorphOne
     {
         return $this->morphOne(Resource::class, 'resource')
             ->where('additional_identifier', self::MAIN_IMAGE)
             ->withDefault([
-                              'path_original' => 'images/default/no_image_original.png',
-                              'path_1024'     => 'images/default/no_image_1024.png',
-                              'path_512'      => 'images/default/no_image_512.png',
-                          ]);
+                'path_original' => 'images/default/no_image_original.png',
+                'path_1024' => 'images/default/no_image_1024.png',
+                'path_512' => 'images/default/no_image_512.png',
+            ]);
     }
 
     public function video(): MorphOne

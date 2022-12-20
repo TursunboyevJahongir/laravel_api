@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Contracts\LoggerRepositoryContract;
+use App\Repositories\LoggerRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,7 +25,7 @@ class LoggerJob implements ShouldQueue
     ) {
     }
 
-    public function handle(LoggerRepositoryContract $repository)
+    public function handle(LoggerRepository $repository)
     {
         $repository->log($this->response, $this->status, $this->message);
     }

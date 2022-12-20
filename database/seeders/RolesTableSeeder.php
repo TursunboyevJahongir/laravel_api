@@ -50,7 +50,7 @@ class RolesTableSeeder extends Seeder
             try {
                 $commonPermissions = ['create', 'read', 'update', 'delete'];
                 foreach ($commonPermissions as $key => $permission) {
-                    $permissions[$key] = ['name'       => mb_strtolower($permission . '-' . $name),
+                    $permissions[$key] = ['name'       => mb_strtolower($permission . '-' . Str::snake($name)),
                                           'guard_name' => 'api',
                                           'created_at' => now(),
                                           'updated_at' => now()];
