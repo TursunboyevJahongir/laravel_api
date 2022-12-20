@@ -17,8 +17,8 @@ class ApiResourceController extends CoreController
     protected string         $requestParam;
     private FormRequest|null $createRequest = null;
     private FormRequest|null $updateRequest = null;
-    private string           $modelPlural;
-    private string           $modelSingular;
+    private string           $index;
+    private string           $show;
 
     public function __construct(
         CoreService $service,
@@ -61,8 +61,8 @@ class ApiResourceController extends CoreController
                                 (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "UpdateRequest")());
                         }
 
-                        $this->modelPlural   = Str::plural(Str::camel(class_basename($this->model)));
-                        $this->modelSingular = Str::singular(Str::camel(class_basename($this->model)));
+                        $this->index   = Str::plural(Str::camel(class_basename($this->model)));
+                        $this->show = Str::singular(Str::camel(class_basename($this->model)));
                     });
         } catch (Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
@@ -74,7 +74,7 @@ class ApiResourceController extends CoreController
         try {
             $result = $this->service->index();
 
-            return $this->responseWith([$this->modelPlural => $result]);
+            return $this->responseWith([$this->index => $result]);
         } catch (Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }
@@ -85,7 +85,7 @@ class ApiResourceController extends CoreController
         try {
             $result = $this->service->show((int)request()->route($this->requestParam));
 
-            return $this->responseWith([$this->modelSingular => $result]);
+            return $this->responseWith([$this->show => $result]);
         } catch (ModelNotFoundException $e) {
             return $this->responseWith(code: 404, message: __('messages.entity_not_found_exception'));
         } catch (Exception $e) {
@@ -102,7 +102,7 @@ class ApiResourceController extends CoreController
             }
             $result = $this->service->create($validator);
 
-            return $this->responseWith([$this->modelSingular => $result], 201);
+            return $this->responseWith([$this->show => $result], 201);
         } catch (ValidationException $e) {
             return $this->responseWith(['errors' => $e->errors()], 422, __('messages.validation_exception'));
         } catch (\Exception $e) {
