@@ -24,13 +24,13 @@ class ApiResourceController extends CoreController
         CoreService $service,
         FormRequest|null $createRequest = null,
         FormRequest|null $updateRequest = null,
-        string|bool $permission = true,
+        string|bool $checkPermission = true,
     ) {
         try {
             parent::__construct($service);
             cache()
                 ->remember(class_basename(static::class) . '_cache', 604800,//week
-                    function () use ($permission, $createRequest, $updateRequest) {
+                    function () use ($checkPermission, $createRequest, $updateRequest) {
                         if (!$this->model) {
                             $namePart    = explode('Controller', class_basename(static::class))[0];
                             $this->model = 'App\Models\\' . $namePart;
@@ -45,8 +45,8 @@ class ApiResourceController extends CoreController
                         $this->requestParam = request()->route()?->parameterNames[0] ?? $name;
                         [$route] = explode('.', \Route::currentRouteName() ?? '');
 
-                        if ($permission) {
-                            $permission = is_bool($permission) ? $category : $permission;
+                        if ($checkPermission) {
+                            $permission = is_bool($checkPermission) ? $category : $checkPermission;
                             $this->middleware("permission:read-{$permission}")->only(['index', 'show']);
                             $this->middleware("permission:create-{$permission}")->only(['store']);
                             $this->middleware("permission:update-{$permission}")->only(['update']);
@@ -54,11 +54,11 @@ class ApiResourceController extends CoreController
                         }
                         if (\Route::has("$route.store")) {
                             $this->createRequest = $createRequest ??
-                                (new (config('modulegenerator.web.request_path') .'\\'. class_basename($this->model) . "CreateRequest")());
+                                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "CreateRequest")());
                         }
                         if (\Route::has("$route.update")) {
                             $this->updateRequest = $updateRequest ??
-                                (new (config('modulegenerator.web.request_path') .'\\'. class_basename($this->model) . "UpdateRequest")());
+                                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "UpdateRequest")());
                         }
 
                         $this->modelPlural   = Str::plural(Str::camel(class_basename($this->model)));
