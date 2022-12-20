@@ -34,7 +34,7 @@ class ApiResourceController extends CoreController
         }
     }
 
-    private function constructFormatter($checkPermission, $createRequest, $updateRequest)
+    function constructFormatter($checkPermission, $createRequest, $updateRequest)
     {
         [$checkPermission, $route, $this->index, $this->show, $this->model] = cache()
             ->remember(class_basename(static::class) . '_cache', 604800,//week
