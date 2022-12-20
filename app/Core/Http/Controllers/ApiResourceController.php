@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class ApiResourceController extends CoreController
+abstract class ApiResourceController extends CoreController
 {
     protected string|null    $model         = null;
     protected string         $requestParam;
