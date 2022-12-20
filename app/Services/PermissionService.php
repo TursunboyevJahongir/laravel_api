@@ -6,9 +6,9 @@ use App\Core\Services\CoreService;
 use App\Http\Requests\Role\CheckPermissionsRequest;
 use App\Models\User;
 use App\Repositories\PermissionRepository;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class PermissionService extends CoreService
 {
@@ -31,7 +31,7 @@ class PermissionService extends CoreService
         return $user->hasAllPermissions($request->permission);
     }
 
-    public function created(Model $model, FormRequest $request): void
+    public function created(Model $model, array $data): void
     {
         $this->repository->attachToAdmin($model);
     }

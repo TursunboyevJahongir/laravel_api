@@ -6,9 +6,9 @@ namespace App\Services;
 use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use App\Events\UpdateImage;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UserService extends CoreService
 {
@@ -17,28 +17,28 @@ class UserService extends CoreService
         parent::__construct($repository);
     }
 
-    public function created(Model $model, FormRequest $request): void
+    public function created(Model $model, array $data): void
     {
-        ($request->except('roles') && !in_array('superadmin', $request['roles'])) ?
-            $this->repository->syncRoleToUser($model, $request['roles']) :
+        (data_get($data, 'roles') && !in_array('superadmin', $data['roles'])) ?
+            $this->repository->syncRoleToUser($model, $data['roles']) :
             $this->repository->syncRoleToUser($model, ['customer']);
 
-        if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $model->avatar());
+        if (is_file($data['avatar'])) {
+            UpdateImage::dispatch($data['avatar'], $model->avatar());
         }
     }
 
-    public function updating(Model $model, FormRequest &$request): void
+    public function updating(Model $model, array &$data): void
     {
-        if ($request->exists('roles')) {
-            $this->repository->syncRoleToUser($model, $request['roles']);
+        if (data_get($data, 'roles')) {
+            $this->repository->syncRoleToUser($model, $data['roles']);
         }
     }
 
-    public function updated(Model $model, FormRequest $request): void
+    public function updated(Model $model, array $data): void
     {
-        if ($request->hasFile('avatar')) {
-            UpdateImage::dispatch($request['avatar'], $model->avatar());
+        if (is_file(data_get($data, 'avatar'))) {
+            UpdateImage::dispatch($data['avatar'], $model->avatar());
         }
     }
 

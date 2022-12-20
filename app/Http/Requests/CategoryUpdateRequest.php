@@ -10,25 +10,23 @@ class CategoryUpdateRequest extends FormRequest
 {
     public function rules()
     {
-        return ['name'                                     => 'filled|array',
+        return ['name'                                             => 'filled|array',
                 'name.' . config('laravel_api.main_locale')        => ['required_with:name',
-                                                               'string',
-                                                               new UniqueJsonRule('categories',
-                                                                                  'name', $this->route()
-                                                                                      ->originalParameter('category'))],
-                'name.*'                                   => ['nullable',
-                                                               'string',
-                                                               new UniqueJsonRule('categories',
-                                                                                  'name', $this->route()
-                                                                                      ->originalParameter('category'))],
-                'description'                              => 'nullable|array',
+                                                                       'string',
+                                                                       new UniqueJsonRule('categories',
+                                                                                          'name', request('category'))],
+                'name.*'                                           => ['nullable',
+                                                                       'string',
+                                                                       new UniqueJsonRule('categories',
+                                                                                          'name', request('category'))],
+                'description'                                      => 'nullable|array',
                 'description.' . config('laravel_api.main_locale') => 'required_with:description|string',
-                'description.*'                            => 'nullable|string',
-                'position'                                 => 'nullable|numeric',
-                'ico'                                      => 'nullable|image',
-                'is_active'                                => 'filled|bool',
-                'parent_id'                                => ['nullable',
-                                                               new checkActiveRule('categories', $this->parent_id, 'category')],
+                'description.*'                                    => 'nullable|string',
+                'position'                                         => 'nullable|numeric',
+                'ico'                                              => 'nullable|image',
+                'is_active'                                        => 'filled|bool',
+                'parent_id'                                        => ['nullable',
+                                                                       new checkActiveRule('categories', request('parent_id'), 'category')],
         ];
     }
 

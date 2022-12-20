@@ -5,6 +5,7 @@ namespace App\Core\Contracts;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 interface CoreServiceContract
 {
@@ -31,20 +32,20 @@ interface CoreServiceContract
      */
     public function show(Model|int $model): mixed;
 
-    public function creating(FormRequest &$request): void;
+    public function creating(array &$data): void;
 
     /**
      * Create entity
      *
-     * @param FormRequest $request
+     * @param FormRequest|Validator $request
      *
      * @return mixed
      */
-    public function create(FormRequest $request): mixed;
+    public function create(FormRequest|Validator $request): mixed;
 
-    public function created(Model $model, FormRequest $request): void;
+    public function created(Model $model, array $data): void;
 
-    public function updating(Model $model, FormRequest &$request): void;
+    public function updating(Model $model, array &$data): void;
 
     /**
      * Update entity
@@ -54,9 +55,9 @@ interface CoreServiceContract
      *
      * @return bool
      */
-    public function update(Model $model, FormRequest $request): bool;
+    public function update(Model $model, FormRequest|Validator $request): bool;
 
-    public function updated(Model $model, FormRequest $request): void;
+    public function updated(Model $model, array $data): void;
 
     /**
      * you can use Observer or this

@@ -5,10 +5,8 @@ namespace App\Services;
 
 use App\Repositories\CategoryRepository;
 use App\Core\Services\CoreService;
-use App\Events\DestroyFiles;
-use App\Events\UpdateImage;
+use App\Events\{DestroyFiles, UpdateImage};
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryService extends CoreService
 {
@@ -17,22 +15,25 @@ class CategoryService extends CoreService
         parent::__construct($repository);
     }
 
-    public function created(Model $model, FormRequest $request): void
+    private function checkFile(Model $model, array $data)
     {
-        if ($request->hasFile('ico')) {
-            UpdateImage::dispatch($request['ico'], $model->ico());
+        if (is_file(data_get($data, 'ico'))) {
+            UpdateImage::dispatch($data['ico'], $model->ico());
         }
     }
 
-    public function updated(Model $model, FormRequest $request): void
+    public function created(Model $model, array $data): void
     {
-        if ($request->hasFile('ico')) {
-            UpdateImage::dispatch($request['ico'], $model->ico());
-        }
+        $this->checkFile($model, $data);
+    }
+
+    public function updated(Model $model, array $data): void
+    {
+        $this->checkFile($model, $data);
     }
 
     public function deleting(Model $model)//you can use Observer or this
     {
-        DestroyFiles::dispatch($model->ico->id);
+        DestroyFiles::dispatch($model->ico?->id);
     }
 }

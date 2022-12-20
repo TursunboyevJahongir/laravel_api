@@ -103,7 +103,7 @@ abstract class CoreRepository implements CoreRepositoryContract
      *
      * @return mixed
      */
-    public function create(array $payload): mixed
+    public function create(array|Collection $payload): mixed
     {
         return $this->model->create($payload);
     }
@@ -138,6 +138,7 @@ abstract class CoreRepository implements CoreRepositoryContract
      *
      * @param mixed $value
      * @param string $column
+     * @param EloquentBuilder|Relation|null $query
      *
      * @return Model|null
      */

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use App\Core\Contracts\{CoreRepositoryContract, CoreServiceContract};
+use Illuminate\Validation\Validator;
 
 abstract class CoreService implements CoreServiceContract
 {
@@ -48,32 +49,33 @@ abstract class CoreService implements CoreServiceContract
         return $this->repository->show($model, query: $query);
     }
 
-    public function creating(FormRequest &$request): void
+    public function creating(array &$request): void
     {
     }
 
     /**
      * Create entity
      *
-     * @param FormRequest $request
+     * @param FormRequest|Validator $request
      *
      * @return mixed
      */
-    public function create(FormRequest $request): mixed
+    public function create(FormRequest|Validator $request): mixed
     {
-        $this->creating($request);
+        $validated = $request->validated();
+        $this->creating($validated);
 
-        $model = $this->repository->create($request->validated());
-        $this->created($model, $request);
+        $model = $this->repository->create($validated);
+        $this->created($model, $validated);
 
         return $model;
     }
 
-    public function created(Model $model, FormRequest $request): void
+    public function created(Model $model, array $data): void
     {
     }
 
-    public function updating(Model $model, FormRequest &$request): void
+    public function updating(Model $model, array &$data): void
     {
     }
 
@@ -85,17 +87,18 @@ abstract class CoreService implements CoreServiceContract
      *
      * @return bool
      */
-    public function update(Model|int $model, FormRequest $request): bool
+    public function update(Model|int $model, FormRequest|Validator $request): bool
     {
-        $model = $this->repository->show($model);
-        $this->updating($model, $request);
-        $this->repository->update($model, $request->validated());
-        $this->updated($model, $request);
+        $model     = $this->repository->show($model);
+        $validated = $request->validated();
+        $this->updating($model, $validated);
+        $this->repository->update($model, $validated);
+        $this->updated($model, $validated);
 
         return true;
     }
 
-    public function updated(Model $model, FormRequest $request): void
+    public function updated(Model $model, array $data): void
     {
     }
 

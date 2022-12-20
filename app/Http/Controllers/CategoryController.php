@@ -2,61 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Http\Controllers\CoreController as Controller;
+use App\Core\Http\Controllers\ApiResourceController as Controller;
 use App\Http\Requests\{CategoryCreateRequest, CategoryUpdateRequest};
-use App\Models\Category;
 use App\Services\CategoryService;
-use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
     public function __construct(CategoryService $service)
     {
-        parent::__construct($service);
-        $this->authorizeResource(Category::class, 'category');
-    }
-
-    public function index(): JsonResponse
-    {
-        $categories = $this->service->index();
-
-        return $this->responseWith(compact('categories'));
-    }
-
-    public function show(Category $category): JsonResponse
-    {
-        $category = $this->service->show($category);
-
-        return $this->responseWith(compact('category'));
-    }
-
-
-    public function store(CategoryCreateRequest $request): JsonResponse
-    {
-        try {
-            $category = $this->service->create($request)->loadMissing('ico');
-
-            return $this->responseWith(compact('category'), 201);
-        } catch (\Exception $e) {
-            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
-        }
-    }
-
-    public function update(Category $category, CategoryUpdateRequest $request): JsonResponse
-    {
-        try {
-            $this->service->update($category, $request);
-
-            return $this->responseWith(code: 204);
-        } catch (\Exception $e) {
-            return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
-        }
-    }
-
-    public function destroy($category): JsonResponse
-    {
-        $this->service->delete($category);
-
-        return $this->responseWith(code: 204);
+        parent::__construct($service,new CategoryCreateRequest());
     }
 }
