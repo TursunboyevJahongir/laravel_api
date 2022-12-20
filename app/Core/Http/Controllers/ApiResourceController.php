@@ -28,44 +28,57 @@ class ApiResourceController extends CoreController
     ) {
         try {
             parent::__construct($service);
-            cache()
-                ->remember(class_basename(static::class) . '_cache', 604800,//week
-                    function () use ($checkPermission, $createRequest, $updateRequest) {
-                        if (!$this->model) {
-                            $namePart    = explode('Controller', class_basename(static::class))[0];
-                            $this->model = 'App\Models\\' . $namePart;
-                            if (!class_exists($this->model)) {
-                                $this->model = 'App\Core\Models\\' . $namePart;
-                            }
-                        }
-                        $category           = Str::snake(Str::singular(
-                            str_replace('Controller', '', class_basename(static::class)
-                            )));
-                        $name               = strtolower(class_basename($this->model));
-                        $this->requestParam = request()->route()?->parameterNames[0] ?? $name;
-                        [$route] = explode('.', \Route::currentRouteName() ?? '');
-
-                        if ($checkPermission) {
-                            $permission = is_bool($checkPermission) ? $category : $checkPermission;
-                            $this->middleware("permission:read-{$permission}")->only(['index', 'show']);
-                            $this->middleware("permission:create-{$permission}")->only(['store']);
-                            $this->middleware("permission:update-{$permission}")->only(['update']);
-                            $this->middleware("permission:delete-{$permission}")->only(['destroy']);
-                        }
-                        if (\Route::has("$route.store")) {
-                            $this->createRequest = $createRequest ??
-                                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "CreateRequest")());
-                        }
-                        if (\Route::has("$route.update")) {
-                            $this->updateRequest = $updateRequest ??
-                                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "UpdateRequest")());
-                        }
-
-                        $this->index   = Str::plural(Str::camel(class_basename($this->model)));
-                        $this->show = Str::singular(Str::camel(class_basename($this->model)));
-                    });
+            $this->constructFormatter($checkPermission, $createRequest, $updateRequest);
         } catch (Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
+        }
+    }
+
+    private function constructFormatter($checkPermission, $createRequest, $updateRequest)
+    {
+        [$checkPermission, $route, $this->index, $this->show, $this->model] = cache()
+            ->remember(class_basename(static::class) . '_cache', 604800,//week
+                function () use ($checkPermission, $createRequest, $updateRequest) {
+                    if (!$this->model) {
+                        $namePart    = explode('Controller', class_basename(static::class))[0];
+                        $this->model = 'App\Models\\' . $namePart;
+                        if (!class_exists($this->model)) {
+                            $this->model = 'App\Core\Models\\' . $namePart;
+                        }
+                    }
+                    $category = Str::snake(Str::singular(
+                        str_replace('Controller', '', class_basename(static::class)
+                        )));
+                    $name     = strtolower(class_basename($this->model));
+
+
+                    $this->requestParam = request()->route()?->parameterNames[0] ?? $name;
+                    [$route] = explode('.', \Route::currentRouteName() ?? '');
+
+                    if ($checkPermission) {
+                        $checkPermission = is_bool($checkPermission) ? $category : $checkPermission;
+                    }
+
+                    $index = Str::plural(Str::camel(class_basename($this->model)));
+                    $show  = Str::singular(Str::camel(class_basename($this->model)));
+
+                    return [$checkPermission, $route, $index, $show, $this->model];
+                });
+
+        if ($checkPermission) {
+            $this->middleware("permission:read-{$checkPermission}")->only(['index', 'show']);
+            $this->middleware("permission:create-{$checkPermission}")->only(['store']);
+            $this->middleware("permission:update-{$checkPermission}")->only(['update']);
+            $this->middleware("permission:delete-{$checkPermission}")->only(['destroy']);
+        }
+
+        if (\Route::has("$route.store")) {
+            $this->createRequest = $createRequest ??
+                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "CreateRequest")());
+        }
+        if (\Route::has("$route.update")) {
+            $this->updateRequest = $updateRequest ??
+                (new (config('modulegenerator.web.request_path') . '\\' . class_basename($this->model) . "UpdateRequest")());
         }
     }
 
