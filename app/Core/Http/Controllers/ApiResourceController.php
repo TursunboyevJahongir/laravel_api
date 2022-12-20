@@ -36,7 +36,7 @@ class ApiResourceController extends CoreController
 
     function constructFormatter($checkPermission, $createRequest, $updateRequest)
     {
-        [$checkPermission, $route, $this->index, $this->show, $this->model] = cache()
+        [$checkPermission, $route, $this->index, $this->show, $this->model,$classBasename] = cache()
             ->remember(class_basename(static::class) . '_cache', 604800,//week
                 function () use ($checkPermission, $createRequest, $updateRequest) {
                     if (!$this->model) {
@@ -46,13 +46,11 @@ class ApiResourceController extends CoreController
                             $this->model = 'App\Core\Models\\' . $namePart;
                         }
                     }
-                    $category = Str::snake(Str::singular(
+                    $category           = Str::snake(Str::singular(
                         str_replace('Controller', '', class_basename(static::class)
                         )));
-                    $name     = strtolower(class_basename($this->model));
+                    $classBasename     = strtolower(class_basename($this->model));
 
-
-                    $this->requestParam = request()->route()?->parameterNames[0] ?? $name;
                     [$route] = explode('.', \Route::currentRouteName() ?? '');
 
                     if ($checkPermission) {
@@ -62,8 +60,9 @@ class ApiResourceController extends CoreController
                     $index = Str::plural(Str::camel(class_basename($this->model)));
                     $show  = Str::singular(Str::camel(class_basename($this->model)));
 
-                    return [$checkPermission, $route, $index, $show, $this->model];
+                    return [$checkPermission, $route, $index, $show, $this->model, $classBasename];
                 });
+        $this->requestParam = request()->route()?->parameterNames[0] ?? $classBasename;
 
         if ($checkPermission) {
             $this->middleware("permission:read-{$checkPermission}")->only(['index', 'show']);
