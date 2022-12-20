@@ -41,7 +41,7 @@ class ApiResourceController extends CoreController
                 function () use ($checkPermission, $createRequest, $updateRequest) {
                     if (!$this->model) {
                         $namePart    = explode('Controller', class_basename(static::class))[0];
-                        $this->model = 'App\Models\\' . $namePart;
+                        $this->model = config('modulegenerator.model_path') . '\\' . $namePart;
                         if (!class_exists($this->model)) {
                             $this->model = 'App\Core\Models\\' . $namePart;
                         }
