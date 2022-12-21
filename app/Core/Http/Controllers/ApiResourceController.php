@@ -28,15 +28,15 @@ abstract class ApiResourceController extends CoreController
     ) {
         try {
             parent::__construct($service);
-            $this->constructFormatter($checkPermission, $createRequest, $updateRequest);
+            self::constructFormatter($checkPermission, $createRequest, $updateRequest);
         } catch (Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }
     }
 
-    function constructFormatter($checkPermission, $createRequest, $updateRequest)
+    private function constructFormatter($checkPermission, $createRequest, $updateRequest)
     {
-        [$checkPermission, $route, $this->index, $this->show, $this->model,$classBasename] = cache()
+        [$checkPermission, $route, $this->index, $this->show, $this->model, $classBasename] = cache()
             ->remember(class_basename(static::class) . '_cache', 604800,//week
                 function () use ($checkPermission, $createRequest, $updateRequest) {
                     if (!$this->model) {
@@ -46,10 +46,10 @@ abstract class ApiResourceController extends CoreController
                             $this->model = 'App\Core\Models\\' . $namePart;
                         }
                     }
-                    $category           = Str::snake(Str::singular(
+                    $category      = Str::snake(Str::singular(
                         str_replace('Controller', '', class_basename(static::class)
                         )));
-                    $classBasename     = strtolower(class_basename($this->model));
+                    $classBasename = strtolower(class_basename($this->model));
 
                     [$route] = explode('.', \Route::currentRouteName() ?? '');
 
