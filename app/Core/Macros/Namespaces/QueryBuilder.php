@@ -24,8 +24,6 @@ namespace Illuminate\Database\Query {
      * @method $this search(string|null $search = null, string|array $searchFields = null)
      * @method $this sortBy(string $orderBy = "id", string $sort = 'DESC')
      * @method $this whereConditions(array $conditions = null, string $boolean = 'and')
-     * @method $this withTrashed($withTrashed = true)
-     * @method $this withoutTrashed()
      * @method $this whereLike(array|string $columns, string $search)
      * @method $this orWhereLike(array|string $columns, string $search)
      */
