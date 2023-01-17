@@ -1,0 +1,73 @@
+version: '3.8'
+services:
+  web:
+    container_name: laravel-api-web
+    restart: always
+    build:
+      context: .
+      dockerfile: ./.docker/web.loc/Dockerfile
+    environment:
+      TZ: 'Asia/Tashkent'
+      PHP_IDE_CONFIG: "serverName=localhost"
+      PHP_MEMORY_LIMIT: "2048M"
+    volumes:
+        - '.:/var/www/'
+        - './.docker/web.loc/supervisord.conf:/etc/supervisord.conf'
+        - './.docker/web.loc/nginx.conf:/etc/nginx/nginx.conf'
+        - './.docker/web.loc/app.conf:/etc/nginx/conf.d/default.conf'
+        - './.docker/web.loc/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf'
+        - '/etc/docker/laravel-api/uploads:/var/www/storage/app/public/uploads'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT:-80}:80'
+    networks:
+      - 'laravel-api-network'
+    depends_on:
+      - mariadb
+      - redis
+  mariadb:
+    container_name: laravel-api-database
+    restart: always
+    image: 'mariadb:10'
+    ports:
+      - '${FORWARD_DB_PORT:-3307}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      TZ: 'Asia/Tashkent'
+    volumes:
+      - '${DATABASE_PATH:-/etc/docker/laravel-api/laravel-api-database:/var/lib/mysql}'
+    networks:
+      - 'laravel-api-network'
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+  redis:
+    container_name: laravel-api-redis
+    restart: always
+    image: 'redis:alpine'
+    ports:
+      - '${FORWARD_REDIS_PORT:-6380}:6379'
+    environment:
+      TZ: 'Asia/Tashkent'
+    volumes:
+      - '/etc/docker/laravel-api/laravel-api-redis:/data'
+    networks:
+      - 'laravel-api-network'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      retries: 3
+      timeout: 5s
+networks:
+  laravel-api-network:
+    driver: bridge
+volumes:
+  laravel-api-database:
+    driver: local
+  laravel-api-redis:
+    driver: local
