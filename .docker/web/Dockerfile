@@ -64,3 +64,6 @@ RUN php artisan optimize
 EXPOSE 443
 
 ENTRYPOINT ["container-start"]
+
+RUN docker-php-ext-install opcache
+COPY ./.docker/web/opcache.ini /usr/local/etc/php/conf.d/opcache.ini

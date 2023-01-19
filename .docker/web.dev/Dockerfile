@@ -64,3 +64,6 @@ RUN chmod +x /usr/local/bin/container-start
 EXPOSE 80
 
 ENTRYPOINT ["container-start"]
+
+RUN docker-php-ext-install opcache
+COPY ./.docker/web.dev/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
