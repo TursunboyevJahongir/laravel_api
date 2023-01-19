@@ -39,15 +39,6 @@ class UserRepository extends CoreRepository
         });
     }
 
-    public function firstByPhone($phone): ?User
-    {
-        return $this->model->eloquentQuery()
-            ->closure($this, 'availability')
-            ->wherePhone($phone)
-            ->first()
-            ?->appends();
-    }
-
     public function syncRoleToUser(
         Model|int $user,
         array|int|string $roles

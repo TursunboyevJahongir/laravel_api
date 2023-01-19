@@ -71,12 +71,14 @@ interface CoreRepositoryContract
     public function firstBy(
         mixed $value,
         string $column = 'id',
-        Builder|Relation $query = null
+        Builder|Relation $query = null,
+        bool $fail = true
     ): ?Model;
 
     public function dbFirstBy(
         QueryBuilder $query,
         mixed $value,
-        string $column = 'id'
+        string $column = 'id',
+        bool $fail = true
     );
 }

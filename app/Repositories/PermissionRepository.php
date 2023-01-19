@@ -4,8 +4,7 @@ namespace App\Repositories;
 
 use App\Core\Repositories\CoreRepository;
 use App\Models\Role;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Spatie\Permission\Models\Permission;
 
 class PermissionRepository extends CoreRepository
@@ -26,18 +25,6 @@ class PermissionRepository extends CoreRepository
     public function appends(Builder $query): void
     {
         $this->role($query, request('role'));
-    }
-
-    /**
-     * Find permissions by given ids
-     *
-     * @param array $permissionIds
-     *
-     * @return mixed
-     */
-    public function findPermissionsByIds(array $permissionIds): mixed
-    {
-        return $this->model->whereIn('id', $permissionIds)->get();
     }
 
     public function attachToAdmin(Permission|int|string $permission)

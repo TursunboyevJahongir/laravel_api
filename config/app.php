@@ -39,10 +39,10 @@ return [
         Illuminate\Queue\QueueServiceProvider::class,
         Illuminate\Redis\RedisServiceProvider::class,
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
-        //Illuminate\Session\SessionServiceProvider::class,
+        Illuminate\Session\SessionServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
-        //Illuminate\View\ViewServiceProvider::class,
+        Illuminate\View\ViewServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
 
         /*
@@ -58,7 +58,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        //\App\Core\Providers\EloquentMacroServiceProvider::class,
         \App\Core\Providers\CoreServiceProvider::class,
     ],
 
@@ -112,7 +111,7 @@ return [
         'Str'          => Illuminate\Support\Str::class,
         'URL'          => Illuminate\Support\Facades\URL::class,
         'Validator'    => Illuminate\Support\Facades\Validator::class,
-        //'View'         => Illuminate\Support\Facades\View::class,
+        'View'         => Illuminate\Support\Facades\View::class,
     ],
 
 ];

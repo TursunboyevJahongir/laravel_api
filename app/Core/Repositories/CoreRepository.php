@@ -5,7 +5,6 @@ namespace App\Core\Repositories;
 use App\Core\Contracts\CoreRepositoryContract;
 use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 abstract class CoreRepository implements CoreRepositoryContract
@@ -23,7 +22,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     public function index(EloquentBuilder|Relation|null $query = null): mixed
     {
         return $this->model->query()
-            ->eloquentQuery($query)//todo need change Nizomiddin
+            ->eloquentQuery($query)
                                    //->columns()
             ->withRelations()
             ->withRelationsAggregates()
@@ -87,12 +86,6 @@ abstract class CoreRepository implements CoreRepositoryContract
         string $column = null,
         EloquentBuilder|Relation $query = null
     ): ?Model {
-        if ($value instanceof Model) {
-            $column = $value->getKeyName();
-            $value  = $value->{$value->getKeyName()};
-        }
-        $column = $column ?? $this->model->getKeyName();
-
         return $this->firstBy($value, $column, $query);
     }
 
@@ -139,14 +132,24 @@ abstract class CoreRepository implements CoreRepositoryContract
      * @param mixed $value
      * @param string $column
      * @param EloquentBuilder|Relation|null $query
+     * @param bool $fail
      *
      * @return Model|null
      */
     public function firstBy(
         mixed $value,
-        string $column = 'id',
-        EloquentBuilder|Relation $query = null
+        string $column = null,
+        EloquentBuilder|Relation $query = null,
+        bool $fail = true
     ): ?Model {
+        if ($value instanceof Model) {
+            //$by   = $find->getKeyName();
+            $column = $column ?? $value->getKeyName();
+            $value  = $value->{$value->getKeyName()};
+        } else {//todo to'g'rimi
+            $column = $column ?? $this->model->getKeyName();
+        }
+
         return $this->model
             ->query()
             ->eloquentQuery($query)
@@ -156,7 +159,9 @@ abstract class CoreRepository implements CoreRepositoryContract
                 $query->closure($this, 'availability');
             })
             ->where($column, $value)
-            ->firstOrFail()
+            ->when($fail,
+                fn($q) => $q->firstOrFail(),
+                fn($q) => $q->first())
             ?->appends();
     }
 
@@ -164,11 +169,16 @@ abstract class CoreRepository implements CoreRepositoryContract
         QueryBuilder $query,
         mixed $value,
         string $column = 'id',
+        bool $fail = true
     ) {
         if ($query = \DB::query()->dbQuery($query)->where($column, $value)->first()) {
             return $query;
         }
 
-        throw new \Exception(__('errors.no_records'), 404);
+        if ($fail) {
+            throw new \Exception(__('errors.no_records'), 404);
+        }
+
+        return null;
     }
 }
