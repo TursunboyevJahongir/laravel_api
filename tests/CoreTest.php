@@ -10,8 +10,27 @@ abstract class CoreTest extends TestCase
 {
     use WithFaker;
 
-    public function createUser(string|array $roles = 'customer')
+    public string       $phone;
+    public string       $pass;
+    public string       $token;
+    public string       $refreshToken;
+    public string|array $roles = 'customer';
+
+    protected function setUp(): void
     {
+        parent::setUp();
+        [$this->phone, $this->token, $this->refreshToken, $this->pass] = $this->createUser();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->deleteUser($this->phone);
+        parent::tearDown();
+    }
+
+    public function createUser(string|array $roles = null)
+    {
+        $roles = $this->roles ?? 'customer';
         //User::factory()->create([
         //                            'phone'    => $phone,
         //                            'password' => $password,
@@ -41,6 +60,8 @@ abstract class CoreTest extends TestCase
 
     public function deleteUser($phone)
     {
-        User::where('phone', $phone)->forceDelete();
+        if ($user = User::firstWhere('phone', $phone)) {
+            $user->forceDelete();
+        }
     }
 }
