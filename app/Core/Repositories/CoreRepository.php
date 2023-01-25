@@ -3,7 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
+use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 
@@ -23,7 +23,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return $this->model->query()
             ->eloquentQuery($query)
-                                   //->columns()
+            //->columns()
             ->withRelations()
             ->withRelationsAggregates()
             ->conditions()
@@ -150,7 +150,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             $column = $column ?? $this->model->getKeyName();
         }
 
-        return $this->model
+        $query = $this->model
             ->query()
             ->eloquentQuery($query)
             ->withRelations()
@@ -158,11 +158,12 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->when(!$query, function ($query) {
                 $query->closure($this, 'availability');
             })
-            ->where($column, $value)
-            ->when($fail,
-                fn($q) => $q->firstOrFail(),
-                fn($q) => $q->first())
-            ?->appends();
+            ->where($column, $value);
+        if ($fail) {
+            return $query->firstOrFail()?->appends();
+        }
+
+        return $query->first()?->appends();
     }
 
     public function dbFirstBy(

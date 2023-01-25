@@ -18,9 +18,9 @@ class AuthController extends Controller
 
     public function register(UserCreateRequest $request): JsonResponse
     {
-        $user = $this->service->register($request);
+        $result = $this->service->register($request);
 
-        return $this->responseWith(compact('user'), 201);
+        return $this->responseWith(compact('result'), 201);
     }
 
     /**
@@ -31,9 +31,9 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            $token = $this->service->login($request);
+            $result = $this->service->login($request);
 
-            return $this->responseWith(compact('token'));
+            return $this->responseWith(compact('result'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -42,9 +42,9 @@ class AuthController extends Controller
     public function refresh(Request $request)
     {
         try {
-            $token = $this->service->refresh($request);
+            $result = $this->service->refresh($request);
 
-            return $this->responseWith(compact('token'));
+            return $this->responseWith(compact('result'));
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }

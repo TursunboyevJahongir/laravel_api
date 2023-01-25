@@ -33,7 +33,7 @@ class AuthService extends CoreService
     {
         $user = $this->repository->firstBy($request['phone'], 'phone', fail: false);
         if (!$user || !Hash::check($request['password'], $user->password)) {
-            throw new \Exception(__('auth.failed'), 401);
+            throw new \Exception(__('auth.password'), 401);
         }
 
         return $this->repository->generateRefreshToken($user);
