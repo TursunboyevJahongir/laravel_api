@@ -45,7 +45,7 @@ class AuthService extends CoreService
         if ($token) {
             if ($token->refresh_expired_at->greaterThan(now())) {
                 $user = $token->user;
-                $this->repository->delete($token);
+                $token->delete();
 
                 return $this->repository->generateRefreshToken($user);
             }

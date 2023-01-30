@@ -64,6 +64,18 @@ final class AuthTest extends CoreTest
             );
     }
 
+    public function test_refresh_token_fail()
+    {
+        $this->withToken($this->refreshToken)->postJson('/auth/refresh');
+
+        $response = $this->withToken($this->refreshToken)->postJson('/auth/refresh');
+        $response->assertStatus(401)
+            ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
+                                                                    'message',
+                                                                    'data'])
+            );
+    }
+
     public function test_logout()
     {
         $response = $this->withToken($this->token)->post('/auth/logout');
