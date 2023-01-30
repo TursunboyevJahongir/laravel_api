@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\CoreTest;
 
 final class AuthTest extends CoreTest
 {
-    use WithFaker;
-
     public function test_register()
     {
         $response = $this->post('/auth/register',
@@ -20,6 +18,7 @@ final class AuthTest extends CoreTest
                                     'password'              => $pass = $this->faker->password(8) . '1a',
                                     'password_confirmation' => $pass,
                                     'roles'                 => ['customer'],
+                                    'avatar'                => UploadedFile::fake()->image('avatar.jpg'),
                                 ]);
 
         $response->assertStatus(201)

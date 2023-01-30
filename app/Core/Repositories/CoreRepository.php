@@ -130,7 +130,7 @@ abstract class CoreRepository implements CoreRepositoryContract
      * Find element by id
      *
      * @param mixed $value
-     * @param string $column
+     * @param string|null $column
      * @param EloquentBuilder|Relation|null $query
      * @param bool $fail
      *
