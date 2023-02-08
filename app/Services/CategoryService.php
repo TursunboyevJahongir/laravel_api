@@ -25,6 +25,7 @@ class CategoryService extends CoreService
     public function created(Model $model, array $data): void
     {
         $this->checkFile($model, $data);
+        $model->loadMissing('ico');
     }
 
     public function updated(Model $model, array $data): void

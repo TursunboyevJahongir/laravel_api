@@ -12,6 +12,7 @@ use Tests\Feature\Core\ResourceTest;
 final class UsersTest extends ResourceTest
 {
     public array $relations = ['roles', 'author', 'avatar'];
+
     public function getRouteName(): string
     {
         return 'users';
