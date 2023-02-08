@@ -10,21 +10,13 @@ use Tests\Feature\Interface\ResourceInterface;
 
 abstract class ResourceTest extends CoreTest implements ResourceInterface
 {
-    public string|array $roles = 'superadmin';
+    public string|array $roles     = 'superadmin';
+    public array        $relations = [];
+    public array        $appends   = [];
 
     abstract public function getRouteName(): string;
 
     abstract public function getModel(): Model;
-
-    public function getRelations(): array
-    {
-        return [];
-    }
-
-    public function getAppends(): array
-    {
-        return [];
-    }
 
     public function testIndexNotAccess()
     {
@@ -44,7 +36,7 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
     public function testIndexPagination()
     {
         $response = $this->be($this->user)
-            ->get("/{$this->getRouteName()}?relations=" . implode(';', $this->getRelations()));
+            ->get("/{$this->getRouteName()}?relations=" . implode(';', $this->relations));
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
@@ -56,8 +48,8 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
     public function testIndexCollection()
     {
         $response = $this->be($this->user)->get("/{$this->getRouteName()}?getBy=collection&relations=" .
-                                                implode(';', $this->getRelations()) .
-                                                '&appends=' . implode(';', $this->getAppends()));
+                                                implode(';', $this->relations) .
+                                                '&appends=' . implode(';', $this->appends));
         $this->assertAuthenticated();
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
@@ -74,8 +66,8 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
 
         $response = $this->actingAs($this->user)
             ->get("/{$this->getRouteName()}/{$model->{$model->getKeyName()}}?relations=" .
-                  implode(';', $this->getRelations()) .
-                  '&appends=' . implode(';', $this->getAppends()));
+                  implode(';', $this->relations) .
+                  '&appends=' . implode(';', $this->appends));
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',

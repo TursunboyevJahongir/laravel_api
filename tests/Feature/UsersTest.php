@@ -11,6 +11,7 @@ use Tests\Feature\Core\ResourceTest;
 
 final class UsersTest extends ResourceTest
 {
+    public array $relations = ['roles', 'author', 'avatar'];
     public function getRouteName(): string
     {
         return 'users';
@@ -19,11 +20,6 @@ final class UsersTest extends ResourceTest
     public function getModel(): Model
     {
         return new User();
-    }
-
-    public function getRelations(): array
-    {
-        return ['roles', 'author', 'avatar'];
     }
 
     public function testStore()
