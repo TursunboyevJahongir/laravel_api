@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\CoreTest;
+use Tests\Feature\Core\CoreTest;
 
 final class AuthTest extends CoreTest
 {
-    public function test_register()
+    public function testRegister()
     {
         $response = $this->post('/auth/register',
                                 [
@@ -29,11 +30,10 @@ final class AuthTest extends CoreTest
                                                                     'data.result.refresh_token',
                                                                     'data.result.user'])
             );
-
-        $this->deleteUser($phone);
+        User::firstWhere('phone', $phone)->delete();
     }
 
-    public function test_login()
+    public function testLogin()
     {
         $response = $this->post('/auth/login',
                                 [
@@ -50,9 +50,15 @@ final class AuthTest extends CoreTest
             );
     }
 
-    public function test_refresh_token()
+    public function testRefreshToken()
     {
-        $response = $this->withToken($this->refreshToken)->postJson('/auth/refresh');
+        $response = $this->post('/auth/login',
+                                [
+                                    'phone'    => $this->phone,
+                                    'password' => $this->pass,
+                                ]);
+
+        $response = $this->withToken($response->getData()->data->result->refresh_token)->postJson('/auth/refresh');
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
@@ -63,11 +69,17 @@ final class AuthTest extends CoreTest
             );
     }
 
-    public function test_refresh_token_fail()
+    public function testRefreshTokenFail()
     {
-        $this->withToken($this->refreshToken)->postJson('/auth/refresh');
+        $response = $this->post('/auth/login',
+                                [
+                                    'phone'    => $this->phone,
+                                    'password' => $this->pass,
+                                ]);
 
-        $response = $this->withToken($this->refreshToken)->postJson('/auth/refresh');
+        $this->withToken($response->getData()->data->result->refresh_token)->postJson('/auth/refresh');
+
+        $response = $this->withToken($response->getData()->data->result->refresh_token)->postJson('/auth/refresh');
         $response->assertStatus(401)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
@@ -75,9 +87,15 @@ final class AuthTest extends CoreTest
             );
     }
 
-    public function test_logout()
+    public function testLogout()
     {
-        $response = $this->withToken($this->token)->post('/auth/logout');
+        $response = $this->post('/auth/login',
+                                [
+                                    'phone'    => $this->phone,
+                                    'password' => $this->pass,
+                                ]);
+
+        $response = $this->withToken($response->getData()->data->result->token)->post('/auth/logout');
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',

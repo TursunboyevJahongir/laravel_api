@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\CoreTest;
+use Tests\Feature\Core\CoreTest;
 
 final class ProfileTest extends CoreTest
 {
-    public function test_profile_get()
+    public function testProfileGet()
     {
-        $response = $this->withToken($this->token)->get('/users/profile');
+        $response = $this->actingAs($this->user)->get('/users/profile');
 
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
@@ -20,9 +20,9 @@ final class ProfileTest extends CoreTest
             );
     }
 
-    public function test_profile_get_with_relations()
+    public function testProfileGetWithRelations()
     {
-        $response = $this->withToken($this->token)->get('/users/profile?relations=avatar;roles:id,name');
+        $response = $this->actingAs($this->user)->get('/users/profile?relations=avatar;roles:id,name');
 
         $response->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
@@ -34,9 +34,9 @@ final class ProfileTest extends CoreTest
             );
     }
 
-    public function test_profile_update()
+    public function testProfileUpdate()
     {
-        $response = $this->withToken($this->token)
+        $response = $this->actingAs($this->user)
             ->patch('/users/profile',
                     [
                         'first_name'            => $this->faker->firstName,
