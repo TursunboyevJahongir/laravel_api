@@ -90,6 +90,7 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
             );
 
         $role->forceDelete();
+        $model->forceDelete();
         $this->deleteUser($user);
     }
 
@@ -108,6 +109,7 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
             );
 
         $this->deleteUser($user);
+        $role->forceDelete();
     }
 
     abstract public function testUpdate();

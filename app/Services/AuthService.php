@@ -7,7 +7,6 @@ use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService extends CoreService
@@ -19,12 +18,7 @@ class AuthService extends CoreService
 
     public function register(FormRequest $request)
     {
-        $user = DB::transaction(function () use ($request) {
-            $user = $this->repository->create($request->validated());
-            $this->repository->syncRoleToUser($user, 'customer');
-
-            return $user;
-        });
+        $user = $this->repository->create($request->validated());
 
         return $this->repository->generateRefreshToken($user);
     }

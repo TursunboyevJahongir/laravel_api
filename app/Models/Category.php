@@ -47,6 +47,14 @@ class Category extends Model
         return $this->morphOne(Resource::class, 'resource');
     }
 
+    //public function ico(): MorphOne
+    //{
+    //    return $this->morphOne(Resource::class, 'resource')
+    //        ->withDefault(['path_original' => 'images/default/no_image_original.png',
+    //                       'path_1024'     => 'images/default/no_image_1024.png',
+    //                       'path_512'      => 'images/default/no_image_512.png']);
+    //}
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class)

@@ -48,6 +48,10 @@ final class UsersTest extends ResourceTest
                                                                     'data.user.avatar'])
             );
 
+        \Storage::disk('public')->assertExists($response->getData()->data->user->avatar->path_original);
+        \Storage::disk('public')->assertExists($response->getData()->data->user->avatar->path_1024);
+        \Storage::disk('public')->assertExists($response->getData()->data->user->avatar->path_512);
+
         $role->forceDelete();
         User::firstWhere('phone', $phone)->forceDelete();
     }

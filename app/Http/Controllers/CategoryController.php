@@ -12,4 +12,6 @@ class CategoryController extends Controller
     {
         parent::__construct($service, new CategoryCreateRequest, new CategoryUpdateRequest);
     }
+
+    protected array|string $storeRelations = 'ico';
 }

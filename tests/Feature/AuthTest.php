@@ -28,9 +28,14 @@ final class AuthTest extends CoreTest
                                                                     'data',
                                                                     'data.result.token',
                                                                     'data.result.refresh_token',
-                                                                    'data.result.user'])
+                                                                    'data.result.user.avatar'])
             );
-        User::firstWhere('phone', $phone)->delete();
+
+        \Storage::disk('public')->assertExists($response->getData()->data->result->user->avatar->path_original);
+        \Storage::disk('public')->assertExists($response->getData()->data->result->user->avatar->path_1024);
+        \Storage::disk('public')->assertExists($response->getData()->data->result->user->avatar->path_512);
+
+        User::firstWhere('phone', $phone)->forceDelete();
     }
 
     public function testLogin()

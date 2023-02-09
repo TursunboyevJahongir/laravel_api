@@ -52,6 +52,10 @@ final class CategoriesTest extends ResourceTest
                                                                     'data.category.ico'])
             );
 
+        \Storage::disk('public')->assertExists($response->getData()->data->category->ico->path_original);
+        \Storage::disk('public')->assertExists($response->getData()->data->category->ico->path_1024);
+        \Storage::disk('public')->assertExists($response->getData()->data->category->ico->path_512);
+
         Category::find($response->getData()->data->category->id)->forceDelete();
     }
 

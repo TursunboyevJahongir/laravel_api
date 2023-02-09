@@ -13,12 +13,13 @@ use Illuminate\Validation\ValidationException;
 
 abstract class ApiResourceController extends CoreController
 {
-    protected string|null    $model         = null;
+    protected string|null    $model          = null;
     protected string         $requestParam;
-    private FormRequest|null $createRequest = null;
-    private FormRequest|null $updateRequest = null;
+    private FormRequest|null $createRequest  = null;
+    private FormRequest|null $updateRequest  = null;
     private string           $index;
     private string           $show;
+    protected array|string   $storeRelations = [];
 
     public function __construct(
         CoreService $service,
@@ -112,7 +113,7 @@ abstract class ApiResourceController extends CoreController
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
-            $result = $this->service->create($validator);
+            $result = $this->service->create($validator)->loadmissing($this->storeRelations);
 
             return $this->responseWith([$this->show => $result], 201);
         } catch (ValidationException $e) {
