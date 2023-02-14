@@ -4,6 +4,9 @@ namespace Tests\Feature\Core;
 
 use App\Models\User;
 use Arr;
+use Database\Seeders\TestSeeder;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
@@ -11,6 +14,7 @@ abstract class CoreTest extends TestCase
 {
     use WithFaker;
 
+    //use RefreshDatabase;
     public User         $user;
     public string       $phone;
     public string       $pass;
@@ -19,6 +23,9 @@ abstract class CoreTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        //dd(\DB::connection()->getDatabaseName());
+        //$this->seed(TestSeeder::class);
+
         [$this->user, $this->phone, $this->pass] = $this->createUser($this->roles);
     }
 

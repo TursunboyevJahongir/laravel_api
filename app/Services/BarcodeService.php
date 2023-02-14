@@ -2,20 +2,11 @@
 
 namespace App\Services;
 
-use Exception;
 use Illuminate\Support\Facades\{DB, Storage};
 use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class BarcodeService
 {
-    /**
-     * @param string $table
-     * @param string $column
-     * @param string $path
-     *
-     * @return array
-     * @throws Exception
-     */
     public static function generate(string $table, string $column, string $path): array
     {
         $random = rand(1000000000, 9999999999);
