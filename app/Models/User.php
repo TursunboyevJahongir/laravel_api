@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\{HasFactory};
 use Illuminate\Database\Eloquent\Relations\{MorphMany, MorphOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -58,7 +57,6 @@ class User extends Authenticatable
     //{
     //    $this->attributes['password'] = Hash::make($password);
     //}
-
     protected function password(): Attribute
     {
         return Attribute::make(set: fn($value) => bcrypt($value),);

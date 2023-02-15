@@ -9,7 +9,7 @@ class BarcodeGenerateTest extends TestCase
 {
     public function testGenerate()
     {
-        $barcode = BarcodeService::generate('products', 'barcode', 'files');
+        $barcode = BarcodeService::generate('products', 'barcode', 'products');
         $this->assertIsArray($barcode);
         $this->assertArrayHasKey('barcode', $barcode);
         $this->assertArrayHasKey('barcode_path', $barcode);

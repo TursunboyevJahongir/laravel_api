@@ -41,14 +41,14 @@ class RefreshAppCommand extends Command
         if ($this->getLaravel()->isProduction() || !$this->getLaravel()->isLocal()) {
             $this->error('This command is not available in production.');
         } elseif ($this->confirm("<bg=yellow>Do you really want to refresh DB ?</><bg=red> All data will lost!</>",
-            true)) {
+                                 true)) {
             $progressBar = $this->output->createProgressBar(10);
             $progressBar->start();
             Artisan::call('migrate:refresh');
             $progressBar->advance(5);
             $this->info("\n" . '<fg=green>Migration refreshed</>');
             $progressBar->advance();
-            File::deleteDirectory(storage_path('/app/public/uploads'));
+            \Storage::disk('public')->deleteDirectory('/uploads');
             $this->info("\n" . '<fg=green>Uploads folder deleted</>');
             Artisan::call('db:seed');
             $output = Artisan::output();
