@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
+        container_name: laravel-api-database
         image: mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: root
@@ -23,6 +24,7 @@ jobs:
         ports:
           - 3306:3306
       redis:
+        container_name: laravel-api-redis
         image: redis:alpine
         ports:
           - 6379:6379
@@ -42,7 +44,7 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
       - name: Run Migrations
-        run: php artisan migrate
+        run: php artisan migrate --force
       - name: Run Seeder
         run: php artisan db:seed
       - name: Run Tests
