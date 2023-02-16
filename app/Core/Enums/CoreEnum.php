@@ -18,7 +18,6 @@ abstract class CoreEnum implements EnumTranslateContract, CastsAttributes
 
     /**
      * Returns class constant values
-     * @return array
      */
     public static function toArray(): array
     {
@@ -27,28 +26,19 @@ abstract class CoreEnum implements EnumTranslateContract, CastsAttributes
 
     /**
      * Returns class constant keys
-     * @return array
      */
     public static function getKeys(): array
     {
         return array_keys(self::reflection()->getConstants());
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return implode(',', static::toArray());
     }
 
     /**
-     *
      * validator enum abilities
-     *
-     * @param string $value
-     *
-     * @return bool
      */
     public static function isValid(string $value): bool
     {

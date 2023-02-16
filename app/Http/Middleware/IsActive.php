@@ -12,16 +12,11 @@ class IsActive
 
     /**
      * Handle an incoming request.
-     *
-     * @param Request $request
-     * @param Closure $next
-     *
-     * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
     {
         if (auth()->check() && !auth()->user()->is_active) {
-            return $this->responseWith(code: 403, message: __("messages.not_access"));
+            return $this->responseWith(code: 403, message: __("messages.account_not_active"));
         }
 
         return $next($request);

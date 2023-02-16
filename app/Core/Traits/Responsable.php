@@ -61,8 +61,6 @@ trait Responsable
 
     /**
      * Send response
-     *
-     * @return JsonResponse
      */
     private function response(): JsonResponse
     {

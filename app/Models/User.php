@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Core\Traits\CoreModel;
 use App\Traits\IsActive;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Helpers\DateCasts;
 use App\Traits\Author;
@@ -11,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\{HasFactory};
 use Illuminate\Database\Eloquent\Relations\{MorphMany, MorphOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -53,9 +53,13 @@ class User extends Authenticatable
                            'path_512'      => 'images/default/avatar_512.png']);
     }
 
-    public function setPasswordAttribute($password)
+    //public function setPasswordAttribute($password)
+    //{
+    //    $this->attributes['password'] = Hash::make($password);
+    //}
+    protected function password(): Attribute
     {
-        $this->attributes['password'] = Hash::make($password);
+        return Attribute::make(set: fn($value) => bcrypt($value),);
     }
 
     public function token(): MorphMany

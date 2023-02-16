@@ -12,4 +12,6 @@ class ProductController extends Controller
     {
         parent::__construct($service);
     }
+
+    protected array|string $storeRelations = ['mainImage', 'video', 'images'];
 }

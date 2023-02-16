@@ -39,9 +39,6 @@ class Resource extends Model
         return $this->attributes['path_512'] ? URL::to($this->attributes['path_512']) : null;
     }
 
-    /**
-     * @return MorphTo
-     */
     public function resource(): MorphTo
     {
         return $this->morphTo();

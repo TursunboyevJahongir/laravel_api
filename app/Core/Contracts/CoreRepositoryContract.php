@@ -21,52 +21,16 @@ interface CoreRepositoryContract
 
     public function indexDb(QueryBuilder $query): mixed;
 
-    /**
-     * Show entity
-     *
-     * @param mixed $value
-     * @param string|null $column
-     * @param Builder|Relation|null $query
-     *
-     * @return Model|null
-     */
     public function show(mixed $value, string $column = null, Builder|Relation $query = null): ?Model;
 
-    /**
-     * Create element
-     *
-     * @param array $payload
-     *
-     * @return mixed
-     */
     public function create(array $payload): mixed;
 
-    /**
-     * Update element
-     *
-     * @param Model|int $model
-     * @param array $payload
-     *
-     * @return bool
-     */
     public function update(Model|int $model, array $payload): bool;
 
-    /**
-     * Delete element
-     *
-     * @param Model|int $model
-     *
-     * @return bool
-     */
     public function delete(Model|int $model): bool;
 
     /**
-     * Find element by id
-     *
-     * @param mixed $value
-     * @param string $column
-     *
-     * @return Model|null
+     * Find element by column
      */
     public function firstBy(
         mixed $value,

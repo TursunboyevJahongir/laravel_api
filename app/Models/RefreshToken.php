@@ -3,14 +3,11 @@
 namespace App\Models;
 
 use App\Helpers\RefreshTokenGenerator;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class RefreshToken extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'token',
         'refresh_token',
@@ -27,10 +24,8 @@ class RefreshToken extends Model
 
     /**
      * to set creator_id
-     *
-     * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
         static::creating(function ($query) {

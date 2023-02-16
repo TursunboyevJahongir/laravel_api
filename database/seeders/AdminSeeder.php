@@ -3,24 +3,23 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
+    //https://laravel.com/docs/seeding#muting-model-events
+    use WithoutModelEvents;
+
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        User::create(['first_name'      => 'Super',
-                      'last_name'       => 'Admin',
-                      'phone'           => '998999999999',
-                      'password'        => '111111',
-                      'phone_confirmed' => 1,
-                      'is_active'       => 1,
+        User::factory()
+            ->activated()
+            ->create(['phone'    => '998999999999',
+                      'password' => '111111',
                      ])->assignRole('superadmin');
     }
 }

@@ -10,11 +10,6 @@ class UpdateImage
 {
     use SerializesModels, Dispatchable;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct(
         public UploadedFile $file,
         public $relation,

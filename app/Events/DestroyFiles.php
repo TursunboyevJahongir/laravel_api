@@ -9,12 +9,7 @@ class DestroyFiles
 {
     use SerializesModels, Dispatchable;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-    public function __construct(public $imageIds)
+    public function __construct(public $imageIds = [])
     {
     }
 }

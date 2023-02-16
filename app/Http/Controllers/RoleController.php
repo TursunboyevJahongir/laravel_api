@@ -70,10 +70,6 @@ class RoleController extends Controller
     /**
      * Add permission to Role
      *
-     * @param Role $role
-     * @param PermissionRequest $request
-     *
-     * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function assignPermission(Role $role, PermissionRequest $request): JsonResponse
@@ -87,10 +83,6 @@ class RoleController extends Controller
     /**
      * Revoke permission from Role
      *
-     * @param Role $role
-     * @param PermissionRequest $request
-     *
-     * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function revokePermission(Role $role, PermissionRequest $request): JsonResponse
@@ -104,10 +96,6 @@ class RoleController extends Controller
     /**
      * Sync Role permissions
      *
-     * @param Role $role
-     * @param SyncPermissionsRequest $request
-     *
-     * @return JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function syncPermissions(Role $role, SyncPermissionsRequest $request): JsonResponse

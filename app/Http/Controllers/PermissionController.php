@@ -60,11 +60,6 @@ class PermissionController extends Controller
 
     /**
      * List all permissions
-     *
-     * @param CheckPermissionsRequest $request
-     * @param User|null $user
-     *
-     * @return JsonResponse
      */
     public function hasAllPermissions(CheckPermissionsRequest $request, User $user = null): JsonResponse
     {
