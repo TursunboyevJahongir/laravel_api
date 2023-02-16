@@ -7,7 +7,6 @@ use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService extends CoreService
@@ -19,12 +18,7 @@ class AuthService extends CoreService
 
     public function register(FormRequest $request)
     {
-        $user = DB::transaction(function () use ($request) {
-            $user = $this->repository->create($request->validated());
-            $this->repository->syncRoleToUser($user, 'customer');
-
-            return $user;
-        });
+        $user = $this->repository->create($request->validated());
 
         return $this->repository->generateRefreshToken($user);
     }
@@ -33,7 +27,7 @@ class AuthService extends CoreService
     {
         $user = $this->repository->firstBy($request['phone'], 'phone', fail: false);
         if (!$user || !Hash::check($request['password'], $user->password)) {
-            throw new \Exception(__('auth.failed'), 401);
+            throw new \Exception(__('auth.password'), 401);
         }
 
         return $this->repository->generateRefreshToken($user);
@@ -45,7 +39,7 @@ class AuthService extends CoreService
         if ($token) {
             if ($token->refresh_expired_at->greaterThan(now())) {
                 $user = $token->user;
-                $this->repository->delete($token);
+                $token->delete();
 
                 return $this->repository->generateRefreshToken($user);
             }

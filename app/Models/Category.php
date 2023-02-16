@@ -5,15 +5,14 @@ namespace App\Models;
 use App\Core\Traits\CoreModel;
 use App\Helpers\TranslatableJson;
 use App\Traits\{Author, IsActive};
-use Illuminate\Database\Eloquent\{
-        Builder,
+use Illuminate\Database\Eloquent\{Builder,
+    Casts\Attribute,
     Model,
     SoftDeletes,
     Factories\HasFactory,
     Relations\BelongsTo,
     Relations\HasMany,
-    Relations\MorphOne
-};
+    Relations\MorphOne};
 
 class Category extends Model
 {
@@ -47,6 +46,14 @@ class Category extends Model
         return $this->morphOne(Resource::class, 'resource');
     }
 
+    //public function ico(): MorphOne
+    //{
+    //    return $this->morphOne(Resource::class, 'resource')
+    //        ->withDefault(['path_original' => 'images/default/no_image_original.png',
+    //                       'path_1024'     => 'images/default/no_image_1024.png',
+    //                       'path_512'      => 'images/default/no_image_512.png']);
+    //}
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class)
@@ -72,4 +79,11 @@ class Category extends Model
     {
         return subText($this->description);
     }
+
+    //protected function subDescription(): Attribute
+    //{
+    //    return Attribute::make(
+    //        get: fn () => subText($this->description),
+    //    );
+    //}
 }

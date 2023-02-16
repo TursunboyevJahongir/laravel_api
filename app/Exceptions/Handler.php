@@ -47,8 +47,6 @@ class Handler extends ExceptionHandler
 
     /**
      * Register the exception handling callbacks for the application.
-     *
-     * @return void
      */
     public function register()
     {
@@ -164,11 +162,6 @@ class Handler extends ExceptionHandler
 
     /**
      * Convert a validation exception into a JSON response.
-     *
-     * @param Request $request
-     * @param ValidationException $exception
-     *
-     * @return JsonResponse
      */
     protected function invalidJson($request, ValidationException $exception): JsonResponse
     {

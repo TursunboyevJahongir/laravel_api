@@ -11,19 +11,12 @@ class CategoryFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
-     *
-     * @var string
      */
     protected $model = Category::class;
 
-    /**
-     * @throws Exception
-     */
     public function configure()
     {
-        $fake = $this->faker;
-
-        return $this->afterCreating(static function (Category $model) use ($fake) {
+        return $this->afterCreating(static function (Category $model) {
             @mkdir(storage_path("/app/public/uploads/" . $model->getFilePath() . "/original"), 0777, true);
             @mkdir(storage_path("/app/public/uploads/" . $model->getFilePath() . "/1024"), 0777, true);
             @mkdir(storage_path("/app/public/uploads/" . $model->getFilePath() . "/512"), 0777, true);
@@ -43,8 +36,6 @@ class CategoryFactory extends Factory
 
     /**
      * Define the model's default state.
-     *
-     * @return array
      */
     public function definition()
     {

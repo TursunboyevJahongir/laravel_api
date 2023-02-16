@@ -9,11 +9,6 @@ class AttachImages
 {
     use SerializesModels, Dispatchable;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct(
         public array $images,
         public $relation,

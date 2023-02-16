@@ -3,7 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
-use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Model, Relations\Relation};
+use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 
@@ -23,7 +23,7 @@ abstract class CoreRepository implements CoreRepositoryContract
     {
         return $this->model->query()
             ->eloquentQuery($query)
-                                   //->columns()
+            //->columns()
             ->withRelations()
             ->withRelationsAggregates()
             ->conditions()
@@ -43,10 +43,6 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     /**
      * for any checks
-     *
-     * @param EloquentBuilder|Model $query
-     *
-     * @return void
      */
     public function availability(
         EloquentBuilder|Model $query
@@ -72,15 +68,6 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->getBy();
     }
 
-    /**
-     * Show entity
-     *
-     * @param mixed $value
-     * @param string|null $column
-     * @param EloquentBuilder|Relation|null $query
-     *
-     * @return Model|null
-     */
     public function show(
         mixed $value,
         string $column = null,
@@ -89,52 +76,23 @@ abstract class CoreRepository implements CoreRepositoryContract
         return $this->firstBy($value, $column, $query);
     }
 
-    /**
-     * Create element
-     *
-     * @param array $payload
-     *
-     * @return mixed
-     */
     public function create(array|Collection $payload): mixed
     {
         return $this->model->create($payload);
     }
 
-    /**
-     * Update element
-     *
-     * @param Model|int $model
-     * @param array $payload
-     *
-     * @return bool
-     */
     public function update(Model|int $model, array $payload): bool
     {
         return $this->show($model)->update($payload);
     }
 
-    /**
-     * Delete element
-     *
-     * @param Model|int $model
-     *
-     * @return bool
-     */
     public function delete(Model|int $model): bool
     {
         return $this->show($model)->delete();
     }
 
     /**
-     * Find element by id
-     *
-     * @param mixed $value
-     * @param string $column
-     * @param EloquentBuilder|Relation|null $query
-     * @param bool $fail
-     *
-     * @return Model|null
+     * Find element by column
      */
     public function firstBy(
         mixed $value,
@@ -150,7 +108,7 @@ abstract class CoreRepository implements CoreRepositoryContract
             $column = $column ?? $this->model->getKeyName();
         }
 
-        return $this->model
+        $query = $this->model
             ->query()
             ->eloquentQuery($query)
             ->withRelations()
@@ -158,11 +116,12 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->when(!$query, function ($query) {
                 $query->closure($this, 'availability');
             })
-            ->where($column, $value)
-            ->when($fail,
-                fn($q) => $q->firstOrFail(),
-                fn($q) => $q->first())
-            ?->appends();
+            ->where($column, $value);
+        if ($fail) {
+            return $query->firstOrFail()?->appends();
+        }
+
+        return $query->first()?->appends();
     }
 
     public function dbFirstBy(

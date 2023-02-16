@@ -14,7 +14,7 @@ return [
     */
 
     'failed'                      => 'These credentials do not match our records.',
-    'password'                    => 'The provided password is incorrect.',
+    'password'                    => 'Wrong phone number or password.',
     'throttle'                    => 'Too many login attempts. Please try again in :seconds seconds.',
     'profile_requires_activation' => 'You are not activated in the system - contact administrator',
 

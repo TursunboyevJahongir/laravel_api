@@ -12,6 +12,7 @@ return [
     'not_found'                   => 'Не найдено',
     'not_access'                  => 'Нет доступа',
     'attribute_not_found'         => ':attribute не найдено',
+    'account_not_active'          => 'Ваш аккаунт не активен',
     'inactive'                    => ':attribute неактивен',
     'position_deleted'            => "':attribute' position removed",
     'employee_deleted'            => "Director ':attribute' removed",

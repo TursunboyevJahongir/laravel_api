@@ -17,9 +17,9 @@ class ResourceRepository
 
     public function removeFile(Model $model)
     {
-        @unlink(public_path($model->path_original));
-        @unlink(public_path($model->path_1024));
-        @unlink(public_path($model->path_512));
+        \Storage::disk('public')->delete($model->path_original);
+        \Storage::disk('public')->delete($model->path_1024);
+        \Storage::disk('public')->delete($model->path_512);
     }
 
     public function create($relation, $type, $identifier, $path_original, $path_1024 = null, $path_512 = null)

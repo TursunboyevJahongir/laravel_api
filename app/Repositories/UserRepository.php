@@ -5,8 +5,7 @@ namespace App\Repositories;
 use App\Core\Repositories\CoreRepository;
 use App\Models\RefreshToken;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Http\Request;
 
 class UserRepository extends CoreRepository
@@ -39,19 +38,11 @@ class UserRepository extends CoreRepository
         });
     }
 
-    public function syncRoleToUser(
-        Model|int $user,
-        array|int|string $roles
-    ) {
-        $this->model = $this->show($user);
-        $this->model->syncRoles($roles);
-    }
-
-    public function generateRefreshToken(Model $user): RefreshToken
+    public function generateRefreshToken(User $user): RefreshToken
     {
         $token = $user->createToken('user_' . $user->phone)->plainTextToken;
 
-        return $user->token()->create(['token' => $token])->load('user');
+        return $user->token()->create(['token' => $token])->load('user.avatar');
     }
 
     public function firstByRefreshToken(Request $request): ?RefreshToken

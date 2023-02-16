@@ -15,10 +15,8 @@ class CoreServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         Collection::make(glob(core_path('Macros/*.php')))
             ->mapWithKeys(function ($path) {
@@ -34,8 +32,6 @@ class CoreServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
     public function boot()
     {

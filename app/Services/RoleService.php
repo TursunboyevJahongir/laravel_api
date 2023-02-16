@@ -17,11 +17,6 @@ class RoleService extends CoreService
 
     /**
      * Give permission to Role
-     *
-     * @param Role $role
-     * @param PermissionRequest $request
-     *
-     * @return Role
      */
     public function givePermissionTo(Role $role, PermissionRequest $request): Role
     {
@@ -30,11 +25,6 @@ class RoleService extends CoreService
 
     /**
      * Revoke permission to
-     *
-     * @param Role $role
-     * @param PermissionRequest $request
-     *
-     * @return mixed
      */
     public function revokePermissionTo(Role $role, PermissionRequest $request): mixed
     {
@@ -42,12 +32,7 @@ class RoleService extends CoreService
     }
 
     /**
-     * Syn Role permissions
-     *
-     * @param Role $role
-     * @param SyncPermissionsRequest $request
-     *
-     * @return mixed
+     * Sync Role permissions
      */
     public function syncPermissions(Role $role, SyncPermissionsRequest $request): mixed
     {

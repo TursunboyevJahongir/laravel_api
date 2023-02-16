@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProductCreateRequest extends FormRequest
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             'category_id'                                      => ['required',

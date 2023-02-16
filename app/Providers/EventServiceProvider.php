@@ -2,21 +2,11 @@
 
 namespace App\Providers;
 
-use App\Events\LoggerEvent;
-use App\Events\UpdateFile;
-use App\Listeners\LoggerListener;
-use App\Listeners\UpdateFileListener;
-use App\Models\Product;
-use App\Models\User;
-use App\Observers\ProductObserver;
-use App\Observers\UserObserver;
+use App\Observers\{CategoryObserver, ProductObserver, UserObserver};
+use App\Models\{Category, Product, User};
+use App\Listeners\{AttachImagesListener, DestroyFilesListener, LoggerListener, UpdateFileListener, UpdateImageListener};
+use App\Events\{AttachImages, DestroyFiles, LoggerEvent, UpdateFile, UpdateImage};
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\AttachImages;
-use App\Events\DestroyFiles;
-use App\Events\UpdateImage;
-use App\Listeners\AttachImagesListener;
-use App\Listeners\DestroyFilesListener;
-use App\Listeners\UpdateImageListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -39,17 +29,13 @@ class EventServiceProvider extends ServiceProvider
     ];
 
     protected $observers = [
-        User::class    => [UserObserver::class],
-        Product::class => [ProductObserver::class],
+        Category::class => [CategoryObserver::class],
+        User::class     => [UserObserver::class],
+        Product::class  => [ProductObserver::class],
     ];
 
     /**
      * Register any events for your application.
-     *
-     * @return void
      */
-    public function boot()
-    {
-        //
-    }
+    public function boot(): void { }
 }
