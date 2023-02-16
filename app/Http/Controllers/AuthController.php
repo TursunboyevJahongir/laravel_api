@@ -23,11 +23,6 @@ class AuthController extends Controller
         return $this->responseWith(compact('result'), 201);
     }
 
-    /**
-     * @param LoginRequest $request
-     *
-     * @return JsonResponse
-     */
     public function login(LoginRequest $request): JsonResponse
     {
         try {

@@ -6,7 +6,7 @@ use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\Feature\Core\ResourceTest;
+use Tests\FeatureCore\Core\ResourceTest;
 
 final class CategoriesTest extends ResourceTest
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature\Core;
+namespace Tests\FeatureCore\Core;
 
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\Feature\Interface\ResourceInterface;
+use Tests\FeatureCore\Interface\ResourceInterface;
 
 abstract class ResourceTest extends CoreTest implements ResourceInterface
 {
@@ -94,8 +94,6 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
         $this->deleteUser($user);
     }
 
-    abstract public function testStore();
-
     public function testStoreNotAccess()
     {
         $role = Role::factory()->create();
@@ -111,8 +109,6 @@ abstract class ResourceTest extends CoreTest implements ResourceInterface
         $this->deleteUser($user);
         $role->forceDelete();
     }
-
-    abstract public function testUpdate();
 
     public function testUpdateNotAccess()
     {

@@ -70,12 +70,6 @@ if (!function_exists('moneyFormatter')) {
 if (!function_exists('hasPermission')) {
     /**
      * Determine if the model may perform the given permission.
-     *
-     * @param string|int|Permission $permission
-     * @param null $user
-     * @param string|null $guardName
-     *
-     * @return bool
      */
     function hasPermission($permission, $user = null, string $guardName = null): bool
     {
@@ -91,12 +85,6 @@ if (!function_exists('hasPermission')) {
 if (!function_exists('hasRole')) {
     /**
      * Determine if the model has (one of) the given role(s).
-     *
-     * @param null $role
-     * @param string|null $guard
-     * @param null $user
-     *
-     * @return bool
      */
     function hasRole($role = null, $user = null, string $guard = null): bool
     {
@@ -131,10 +119,6 @@ if (!function_exists('mine')) {
 if (!function_exists('core_path')) {
     /**
      * Get the path to the application folder.
-     *
-     * @param string $path
-     *
-     * @return string
      */
     function core_path($path = '')
     {

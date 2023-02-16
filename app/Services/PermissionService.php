@@ -16,13 +16,6 @@ class PermissionService extends CoreService
         parent::__construct($repository);
     }
 
-    /**
-     * @param CheckPermissionsRequest $request
-     * @param User|null $user
-     *
-     * @return bool
-     * @throws \Exception
-     */
     public function hasAllPermissions(CheckPermissionsRequest $request, User $user = null): bool
     {
         $user = $user ?? auth()->user();

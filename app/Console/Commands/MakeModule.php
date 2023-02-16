@@ -26,10 +26,8 @@ class MakeModule extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $module  = Str::studly($this->argument('Module'));
         $migrate = $this->option('m') ? '-m' : '';

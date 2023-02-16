@@ -23,40 +23,11 @@ interface CoreServiceContract
         string $column = 'id',
     );
 
-    /**
-     * Show entity
-     *
-     * @param Model|int $model
-     *
-     * @return mixed
-     */
     public function show(Model|int $model): mixed;
 
-    /**
-     * Create entity
-     *
-     * @param FormRequest|Validator $request
-     *
-     * @return mixed
-     */
     public function create(FormRequest|Validator $request): mixed;
 
-    /**
-     * Update entity
-     *
-     * @param Model $model
-     * @param FormRequest|Validator $request
-     *
-     * @return bool
-     */
     public function update(Model $model, FormRequest|Validator $request): bool;
 
-    /**
-     * Delete entity
-     *
-     * @param Model|int $model
-     *
-     * @return mixed
-     */
     public function delete(Model|int $model): bool;
 }

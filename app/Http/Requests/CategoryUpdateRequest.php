@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryUpdateRequest extends FormRequest
 {
-    public function rules()
+    public function rules(): array
     {
         return ['name'                                             => 'filled|array',
                 'name.' . config('laravel_api.main_locale')        => ['required_with:name',
@@ -28,15 +28,5 @@ class CategoryUpdateRequest extends FormRequest
                 'parent_id'                                        => ['nullable',
                                                                        new checkActiveRule('categories', request('parent_id'), 'category')],
         ];
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
     }
 }

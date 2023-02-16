@@ -8,10 +8,8 @@ class LoginRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'phone' => 'required|regex:/^998[0-9]{9}/',

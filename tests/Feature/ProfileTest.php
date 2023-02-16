@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\Feature\Core\CoreTest;
+use Tests\FeatureCore\Core\CoreTest;
 
 final class ProfileTest extends CoreTest
 {

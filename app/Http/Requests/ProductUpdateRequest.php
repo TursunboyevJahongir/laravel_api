@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProductUpdateRequest extends FormRequest
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             'category_id'                                      => ['filled',

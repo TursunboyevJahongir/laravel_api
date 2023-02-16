@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\Feature\Core\ResourceTest;
+use Tests\FeatureCore\Core\ResourceTest;
 
 final class UsersTest extends ResourceTest
 {

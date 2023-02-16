@@ -3,11 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\Feature\Core\CoreTest;
+use Tests\FeatureCore\Core\CoreTest;
 
 final class AuthTest extends CoreTest
 {

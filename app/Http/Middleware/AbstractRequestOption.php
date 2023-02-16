@@ -24,11 +24,6 @@ abstract class AbstractRequestOption
         $this->startDateTime = Carbon::now()->timezone(config('app.timezone'));
     }
 
-    /**
-     * @param callable $handler
-     *
-     * @return callable
-     */
     public function __invoke(callable $handler): callable
     {
         return function (RequestInterface $request, array $options) use ($handler): PromiseInterface {
@@ -46,12 +41,6 @@ abstract class AbstractRequestOption
         };
     }
 
-    /**
-     * @param RequestInterface $request
-     * @param array $options
-     *
-     * @return callable
-     */
     private function handleSuccess(
         RequestInterface $request,
         array $options = []
@@ -64,12 +53,6 @@ abstract class AbstractRequestOption
         };
     }
 
-    /**
-     * @param RequestInterface $request
-     * @param array $options
-     *
-     * @return callable
-     */
     private function handleFailure(
         RequestInterface $request,
         array $options = []
@@ -83,13 +66,6 @@ abstract class AbstractRequestOption
         };
     }
 
-    /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param RequestException|ConnectException|null $reason
-     *
-     * @return void
-     */
     protected abstract function getRequestOptions(
         RequestInterface $request,
         ResponseInterface $response,

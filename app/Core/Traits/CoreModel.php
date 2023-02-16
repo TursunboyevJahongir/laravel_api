@@ -19,7 +19,6 @@ trait CoreModel
     /**
      * Get the Translatable json attributes for the model.
      * @method getTranslatableColumns()
-     * @return array
      */
     public function getTranslatableColumns(): array
     {
@@ -39,7 +38,6 @@ trait CoreModel
     /**
      * Get the searchable attributes for the model.
      * @method getSearchable()
-     * @return array
      */
     public function getSearchable()
     {
@@ -60,8 +58,6 @@ trait CoreModel
      * Append attributes to query when building a query.
      *
      * @param array|string $attributes
-     *
-     * @return $this
      */
     public function appends($attributes = [])
     {

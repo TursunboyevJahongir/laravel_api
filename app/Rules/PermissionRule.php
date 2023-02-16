@@ -10,12 +10,6 @@ class PermissionRule implements Rule
 {
     private $message;
 
-    /**
-     * @param string $attribute
-     * @param mixed $value
-     *
-     * @return bool
-     */
     public function passes($attribute, $value): bool
     {
         if (is_numeric($value)) {
@@ -35,9 +29,6 @@ class PermissionRule implements Rule
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function message(): string
     {
         return $this->message;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Interface;
+namespace Tests\FeatureCore\Interface;
 
 interface ResourceInterface
 {

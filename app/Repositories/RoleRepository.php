@@ -39,11 +39,6 @@ class RoleRepository extends CoreRepository
 
     /**
      * Sync Role permissions
-     *
-     * @param Model $role
-     * @param array $permissions
-     *
-     * @return mixed
      */
     public function syncRolePermissions(Model $role, array $permissions): mixed
     {

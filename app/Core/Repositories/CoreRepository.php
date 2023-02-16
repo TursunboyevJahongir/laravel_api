@@ -43,10 +43,6 @@ abstract class CoreRepository implements CoreRepositoryContract
 
     /**
      * for any checks
-     *
-     * @param EloquentBuilder|Model $query
-     *
-     * @return void
      */
     public function availability(
         EloquentBuilder|Model $query
@@ -72,15 +68,6 @@ abstract class CoreRepository implements CoreRepositoryContract
             ->getBy();
     }
 
-    /**
-     * Show entity
-     *
-     * @param mixed $value
-     * @param string|null $column
-     * @param EloquentBuilder|Relation|null $query
-     *
-     * @return Model|null
-     */
     public function show(
         mixed $value,
         string $column = null,
@@ -89,52 +76,23 @@ abstract class CoreRepository implements CoreRepositoryContract
         return $this->firstBy($value, $column, $query);
     }
 
-    /**
-     * Create element
-     *
-     * @param array $payload
-     *
-     * @return mixed
-     */
     public function create(array|Collection $payload): mixed
     {
         return $this->model->create($payload);
     }
 
-    /**
-     * Update element
-     *
-     * @param Model|int $model
-     * @param array $payload
-     *
-     * @return bool
-     */
     public function update(Model|int $model, array $payload): bool
     {
         return $this->show($model)->update($payload);
     }
 
-    /**
-     * Delete element
-     *
-     * @param Model|int $model
-     *
-     * @return bool
-     */
     public function delete(Model|int $model): bool
     {
         return $this->show($model)->delete();
     }
 
     /**
-     * Find element by id
-     *
-     * @param mixed $value
-     * @param string|null $column
-     * @param EloquentBuilder|Relation|null $query
-     * @param bool $fail
-     *
-     * @return Model|null
+     * Find element by column
      */
     public function firstBy(
         mixed $value,

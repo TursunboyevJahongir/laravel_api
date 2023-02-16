@@ -11,8 +11,6 @@ class UserCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -21,23 +19,21 @@ class UserCreateRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'first_name' => 'required|string',
-            'last_name' => 'nullable|string',
-            'phone' => [
+            'last_name'  => 'nullable|string',
+            'phone'      => [
                 'required',
                 new PhoneRule(),
                 new UniqueRule('users', 'phone'),
             ],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
-            'avatar' => 'image',
-            'roles' => 'array',
-            'roles.*' => 'nullable|exists:roles,name|not_in:superadmin',
+            'password'   => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'avatar'     => 'image',
+            'roles'      => 'array',
+            'roles.*'    => 'nullable|exists:roles,name|not_in:superadmin',
         ];
     }
 }

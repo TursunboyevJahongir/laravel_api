@@ -17,12 +17,6 @@ class checkActiveRule implements Rule
 
     private $message;
 
-    /**
-     * @param string $attribute
-     * @param mixed $value
-     *
-     * @return bool
-     */
     public function passes($attribute, $value): bool
     {
         $user = DB::table($this->table)->where($this->column, $value)->first();
@@ -40,9 +34,6 @@ class checkActiveRule implements Rule
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function message(): string
     {
         return $this->message;

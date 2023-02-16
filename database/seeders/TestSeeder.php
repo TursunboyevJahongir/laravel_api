@@ -8,10 +8,8 @@ class TestSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
-    public function run()
+    public function run():void
     {
         $this->call(RolesTableSeeder::class);
         $this->call(AdminSeeder::class);
