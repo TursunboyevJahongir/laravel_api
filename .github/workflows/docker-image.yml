@@ -37,8 +37,6 @@ jobs:
         run: composer install
       - name: Docker ps
         run: docker ps
-      - name: mysql cat
-        run: docker exec my-mysql-server cat /etc/mysql/my.cnf
       - name: Create Environment File
         run: cp .env.example.docker .env
       - name: Generate Application Key
