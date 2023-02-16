@@ -57,6 +57,6 @@ class AuthService extends CoreService
         }
         auth()->user()->currentAccessToken()?->delete();
 
-        $this->repository->delete($token);
+        $token->delete();
     }
 }

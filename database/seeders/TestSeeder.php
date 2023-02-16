@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class TestSeeder extends Seeder
@@ -13,11 +15,14 @@ class TestSeeder extends Seeder
     {
         $this->call(RolesTableSeeder::class);
         $this->call(AdminSeeder::class);
-        \App\Models\User::factory(2)->create();
-        \App\Models\User::factory(2)->create();
-        \App\Models\User::factory(4)->create();
-        \App\Models\User::factory(4)->create();
-        \App\Models\Category::factory(3)->create();
-        \App\Models\Product::factory(10)->create();
+
+        dump('create active user');
+        User::factory(2)->activated()->create();
+        User::factory(5)->createQuietly();
+
+        dump('create Category with products');
+        Category::factory(2)->hasProducts(random_int(5, 10))->create();
+        Category::factory(5)->hasProducts(random_int(5, 10))->create();
+        Category::factory(5)->hasProducts(random_int(5, 10))->create();
     }
 }

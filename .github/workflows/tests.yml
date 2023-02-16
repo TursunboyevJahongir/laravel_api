@@ -1,9 +1,8 @@
-
 on:
   push:
-    branches: none # [ "master" ]
+    branches: [ "master" ]
   pull_request:
-    branches: none # [ "master" ]
+    branches: [ "master" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -40,7 +39,7 @@ jobs:
       - name: Migrate seed
         run: |
           php artisan migrate --force
-          php artisan db:seed
+          php artisan db:seed --class=TestSeeder
 
       - name: Run Testsuite
         run: php artisan test
