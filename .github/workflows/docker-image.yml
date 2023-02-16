@@ -36,7 +36,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install
       - name: Mysql configure
-        run: mysql -h mysql -test_db -secret -p 3360
+        run: mysql -h mysql -test_db -secret -p 3306
       - name: Docker ps
         run: docker ps
       - name: Create Environment File
