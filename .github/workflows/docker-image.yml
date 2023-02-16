@@ -47,7 +47,7 @@ jobs:
 #        run: vendor/bin/phpunit
         run: php artisan test
         env:
-          DB_HOST: mysql
+          DB_HOST: localhost
           DB_PORT: 3306
           DB_DATABASE: test_db
           DB_USERNAME: test_user
