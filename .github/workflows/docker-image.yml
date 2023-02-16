@@ -15,7 +15,6 @@ jobs:
     services:
       mysql:
         image: mariadb:10
-        container_name: my-mysql-server
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test_db
