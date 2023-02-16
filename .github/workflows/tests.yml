@@ -1,0 +1,52 @@
+name: Tests (PHP)
+
+on: [push]
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql, exif, pcntl
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v1
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Run composer install
+        run: composer install -n --prefer-dist
+        env:
+          APP_ENV: testing
+
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+        uses: actions/cache@v1
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+      - name: Run Seeder
+        run: php artisan db:seed
+      - name: Run Tests
+              #        run: vendor/bin/phpunit
+        run: php artisan test
+
+#      - name: Run tests
+#        run: ./vendor/bin/phpunit
+#        env:
+#          APP_ENV: testing
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        if: failure()
+        with:
+          name: Logs
+          path: ./storage/logs
