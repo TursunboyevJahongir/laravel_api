@@ -40,7 +40,7 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
       - name: Run Migrations
-        run: php artisan migrate:fresh
+        run: php artisan migrate
       - name: Run Seeder
         run: php artisan db:seed
       - name: Run Tests
