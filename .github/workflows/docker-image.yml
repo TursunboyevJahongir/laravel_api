@@ -1,4 +1,4 @@
-name: docker-Container
+name: Docker container
 
 on:
   push:
@@ -10,40 +10,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
+    container:
+      image: lorisleiva/laravel-docker:7.4
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, pdo_mysql, exif, pcntl
-      - name: Install Composer Dependencies
-        run: composer install
-      - name: Docker ps
-        run: docker ps
-      - name: Create Environment File
-        run: cp .env.example .env
-      - name: Generate Application Key
+      - uses: actions/checkout@v2
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Generate key
         run: php artisan key:generate
-      - name: Run Migrations
-        run: php artisan migrate --force
-      - name: Run Seeder
-        run: php artisan db:seed
-      - name: Run Tests
-        #        run: vendor/bin/phpunit
+
+      - name: Migrate seed
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --class=TestSeeder
+
+      - name: Run Testsuite
         run: php artisan test
