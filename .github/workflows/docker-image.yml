@@ -35,8 +35,6 @@ jobs:
           extensions: mbstring, pdo_mysql, exif, pcntl
       - name: Install Composer Dependencies
         run: composer install
-      - name: Mysql configure
-        run: mysql -h mysql -test_db -secret -p 3306
       - name: Docker ps
         run: docker ps
       - name: Create Environment File
@@ -54,7 +52,7 @@ jobs:
           DB_HOST: mysql
           DB_PORT: 3306
           DB_DATABASE: test_db
-          DB_USERNAME: test_db
+          DB_USERNAME: test_user
           DB_PASSWORD: secret
           REDIS_HOST: redis
           REDIS_PORT: 6379
