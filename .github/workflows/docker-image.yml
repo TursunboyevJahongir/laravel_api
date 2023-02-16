@@ -1,5 +1,3 @@
-
-
 name: CI
 
 on:
@@ -17,6 +15,7 @@ jobs:
     services:
       mysql:
         image: mariadb:10
+        container_name: my-mysql-server
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test_db
@@ -39,6 +38,8 @@ jobs:
         run: composer install
       - name: Docker ps
         run: docker ps
+      - name: mysql cat
+         run: docker exec my-mysql-server cat /etc/mysql/my.cnf
       - name: Create Environment File
         run: cp .env.example.docker .env
       - name: Generate Application Key
@@ -48,10 +49,10 @@ jobs:
       - name: Run Seeder
         run: php artisan db:seed
       - name: Run Tests
-#        run: vendor/bin/phpunit
+        #        run: vendor/bin/phpunit
         run: php artisan test
     env:
-      DB_HOST: mariadb
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: test_db
       DB_USERNAME: test_user
