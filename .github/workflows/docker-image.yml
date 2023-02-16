@@ -1,3 +1,5 @@
+
+
 name: CI
 
 on:
@@ -14,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        container_name: laravel-api-database
         image: mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: root
@@ -24,7 +25,6 @@ jobs:
         ports:
           - 3306:3306
       redis:
-        container_name: laravel-api-redis
         image: redis:alpine
         ports:
           - 6379:6379
@@ -50,11 +50,11 @@ jobs:
       - name: Run Tests
 #        run: vendor/bin/phpunit
         run: php artisan test
-        env:
-          DB_HOST: mysql
-          DB_PORT: 3306
-          DB_DATABASE: test_db
-          DB_USERNAME: test_user
-          DB_PASSWORD: secret
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
+    env:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: test_db
+      DB_USERNAME: test_user
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
