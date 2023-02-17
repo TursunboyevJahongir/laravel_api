@@ -1,4 +1,4 @@
-name: Docker container
+name: Tests in Docker
 
 on:
   push:
@@ -7,30 +7,29 @@ on:
     branches: none # [ "master" ]
     schedule:
       - cron: '0 0 * * *'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-
-#  services:
-#    mysql:
-#      image: mysql:8.0
-#      env:
-#        MYSQL_ROOT_PASSWORD: root
-#        MYSQL_DATABASE: test_db
-#        MYSQL_USER: test_user
-#        MYSQL_PASSWORD: secret
-#      ports:
-#        - 3306:3306
-#      options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-#    redis:
-#      image: redis:alpine
-#      ports:
-#        - 6379:6379
-#        -
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: secret
+        ports:
+          - 3306:3306
+        healthcheck:
+          test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+          interval: 10s
+          retries: 3
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
     strategy:
       fail-fast: true
       matrix:
@@ -40,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -57,11 +56,7 @@ jobs:
 
       - name: Generate app key
         run: php artisan key:generate
-      - name: Docker ps
-        run: docker ps
 
-#      - name: Execute tests
-#        run: vendor/bin/phpunit
       - name: Migrate seed
         run: |
           php artisan migrate --force
@@ -71,7 +66,7 @@ jobs:
         run: php artisan test
 
     env:
-      DB_HOST: mysql
+      DB_HOST: localhost
       DB_PORT: 3306
       DB_DATABASE: test_db
       DB_USERNAME: test_user
