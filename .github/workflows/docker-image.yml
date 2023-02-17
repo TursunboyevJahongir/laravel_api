@@ -51,3 +51,12 @@ jobs:
 
       - name: Run Testsuite
         run: php artisan test
+
+    env:
+      DB_HOST: mysqlww
+      DB_PORT: 3306
+      DB_DATABASE: test_db
+      DB_USERNAME: test_user
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
