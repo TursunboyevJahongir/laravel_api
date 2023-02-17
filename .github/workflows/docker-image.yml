@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.1, 8.2]
+        php: [ 8.1, 8.2 ]
 
     name: PHP ${{ matrix.php }}
 
@@ -34,30 +34,30 @@ jobs:
           with:
             host port: 3306 # Optional, default value is 3306. The port of host
             container port: 3306 # Optional, default value is 3306. The port of container
-#            character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-#            collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
+            #            character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
+            #            collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
             mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
             mysql database: 'test_db' # Optional, default value is "test". The specified database which will be create
             mysql root password: 'secret' # Required if "mysql user" is empty, default is empty. The root superuser password
             mysql user: 'test_user' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
             mysql password: 'secret' # Required if "mysql user" exists. The password for the "mysql user"
 
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        - name: Install Composer dependencies
+          run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Copy environment file
-        run: cp .env.example .env
+        - name: Copy environment file
+          run: cp .env.example .env
 
-      - name: Generate app key
-        run: php artisan key:generate
+        - name: Generate app key
+          run: php artisan key:generate
 
-      - name: Migrate seed
-        run: |
-          php artisan migrate --force
-          php artisan db:seed --class=TestSeeder
+        - name: Migrate seed
+          run: |
+            php artisan migrate --force
+            php artisan db:seed --class=TestSeeder
 
-      - name: Run Testsuite
-        run: php artisan test
+        - name: Run Testsuite
+          run: php artisan test
 
     env:
       DB_HOST: localhost
