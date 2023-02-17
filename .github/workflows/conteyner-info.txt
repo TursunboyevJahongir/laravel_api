@@ -1,0 +1,17 @@
+The ${{matrix.php}} is a reference to a value in the matrix strategy, which specifies a list of values for the php key.
+
+This strategy creates multiple jobs based on the php values, allowing the same test suite to be run against different versions of PHP in parallel.
+
+For example, if the matrix was defined as:
+
+python
+Copy code
+matrix:
+  php: ['7.0', '7.1', '7.2']
+Then three jobs would be created, one for each PHP version:
+
+Copy code
+PHP 7.0
+PHP 7.1
+PHP 7.2
+In the job, the value of ${{matrix.php}} is used to set up the correct version of PHP and run the tests.

@@ -5,55 +5,52 @@ on:
     branches: none # [ "master" ]
   pull_request:
     branches: none # [ "master" ]
+    schedule:
+      - cron: '0 0 * * *'
+
+  permissions:
+    contents: read
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
-          MYSQL_USER: test_user
-          MYSQL_PASSWORD: secret
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.0,8.1, 8.2]
+
+    name: PHP ${{ matrix.php }}
+
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up PHP
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, pdo_mysql, exif, pcntl
-      - name: Install Composer Dependencies
-        run: composer install
-      - name: Docker ps
-        run: docker ps
-      - name: Create Environment File
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy environment file
         run: cp .env.example .env
-      - name: Generate Application Key
+
+      - name: Generate app key
         run: php artisan key:generate
-      - name: Run Migrations
-        run: php artisan migrate --force
-      - name: Run Seeder
-        run: php artisan db:seed
-      - name: Run Tests
-        #        run: vendor/bin/phpunit
+
+#      - name: Execute tests
+#        run: vendor/bin/phpunit
+      - name: Migrate seed
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --class=TestSeeder
+
+      - name: Run Testsuite
         run: php artisan test
-    env:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_DATABASE: test_db
-      DB_USERNAME: test_user
-      DB_PASSWORD: secret
-      REDIS_HOST: redis
-      REDIS_PORT: 6379

@@ -1,12 +1,20 @@
+name: Tests
+
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
+      - '*.x'
   pull_request:
-    branches: [ "master" ]
+  schedule:
+    - cron: '0 0 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-name: Tests
+
+  permissions:
+    contents: read
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
