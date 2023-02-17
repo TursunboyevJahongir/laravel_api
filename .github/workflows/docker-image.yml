@@ -22,10 +22,12 @@ jobs:
           MYSQL_PASSWORD: secret
         ports:
           - 3306:3306
-        health-check:
-          test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-          interval: 10s
-          retries: 3
+        options:
+          healthcheck:
+            test: ["CMD-SHELL", "mysqladmin ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
       redis:
         image: redis:alpine
         ports:
