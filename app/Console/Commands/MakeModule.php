@@ -56,7 +56,7 @@ class MakeModule extends Command
             die();
         }
 
-        if (File::exists("tests/Feature/{$module}Policy.php")) {
+        if (File::exists("tests/Feature/{$module}Test.php")) {
             $this->error("Feature Test already exists");
             die();
         }
