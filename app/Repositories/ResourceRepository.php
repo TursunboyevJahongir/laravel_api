@@ -22,13 +22,21 @@ class ResourceRepository
         \Storage::disk('public')->delete($model->path_512);
     }
 
-    public function create($relation, $type, $identifier, $path_original, $path_1024 = null, $path_512 = null)
-    {
+    public function create(
+        $relation,
+        $type,
+        $identifier,
+        $path_original,
+        $displayName = null,
+        $path_1024 = null,
+        $path_512 = null
+    ) {
         $relation->create(['path_original'         => $path_original,
                            'path_1024'             => $path_1024,
                            'path_512'              => $path_512,
                            'type'                  => $type,
                            'additional_identifier' => $identifier,
+                           'display_name'          => $displayName,
                           ]);
     }
 
