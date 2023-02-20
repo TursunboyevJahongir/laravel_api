@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\FeatureCore\Core;
+namespace App\Core\Test\Feature;
 
 use App\Models\User;
 use Arr;

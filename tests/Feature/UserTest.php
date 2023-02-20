@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Core\Test\Feature\ResourceTest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\FeatureCore\Core\ResourceTest;
 
-final class UsersTest extends ResourceTest
+final class UserTest extends ResourceTest
 {
     public array $relations = ['roles', 'author', 'avatar'];
 
