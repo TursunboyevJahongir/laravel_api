@@ -1,0 +1,26 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Core\Test\Feature\ResourceTest;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Testing\Fluent\AssertableJson;
+use #modelPath\#ModelName;
+
+final class #ClassNameTest extends ResourceTest
+{
+    public function getRouteName(): string
+    {
+        return '#namePlural';
+    }
+
+    public function getModel(): Model
+    {
+        return new #ModelName();
+    }
+
+    // public function testStore() todo need to implement
+
+    // public function testUpdate() todo need to implement
+}

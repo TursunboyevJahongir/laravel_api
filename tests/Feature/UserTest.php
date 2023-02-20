@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
 
-final class UsersTest extends ResourceTest
+final class UserTest extends ResourceTest
 {
     public array $relations = ['roles', 'author', 'avatar'];
 

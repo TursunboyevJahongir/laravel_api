@@ -89,6 +89,10 @@ class MakeModule extends Command
         $progressBar->advance();
         //$this->info("\n" . '<fg=green>route created</>');
 
+        new Generator($module, 'tests/Feature', 'featureResourceTest', $model);
+        $progressBar->advance();
+        //$this->info("\n" . '<fg=green>route created</>');
+
         $progressBar->finish();
         $this->info("\n" . 'Command completed successfully ✅');
     }

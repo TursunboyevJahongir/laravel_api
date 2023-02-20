@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
 
-final class CategoriesTest extends ResourceTest
+final class CategoryTest extends ResourceTest
 {
     public array $relations = ['ico', 'products', 'children', 'parent'];
     public array $appends   = ['sub_description'];
