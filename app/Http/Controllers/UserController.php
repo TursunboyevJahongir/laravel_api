@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function profile(): JsonResponse
     {
-        $user = $this->service->show(auth()->user());
+        //$user = $this->service->show(auth()->user());
 
         return $this->responseWith(compact('user'));
     }
