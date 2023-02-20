@@ -11,6 +11,7 @@ return new class extends Migration {
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
+            $table->string('display_name')->nullable();
             $table->string('additional_identifier')->nullable();
             $table->string('type')->nullable();
             $table->string('path_original');

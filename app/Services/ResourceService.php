@@ -49,12 +49,13 @@ class ResourceService
         string $path = 'files',
         string $identifier = null
     ) {
-        $type     = $file->getClientOriginalExtension();
-        $fileName = md5(time() . $file->getFilename()) . '.' . $type;
+        $type        = $file->getClientOriginalExtension();
+        $displayName = $file->getClientOriginalName();
+        $fileName    = md5(time() . $file->getFilename()) . '.' . $type;
         $file->storeAs("$path/original", $fileName);
         $this->imageCrop($file, $fileName, "$path/1024/", 1024, 1024);
         $this->imageCrop($file, $fileName, "$path/512/", 512, 512);
-        $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName", "uploads/$path/1024/$fileName", "uploads/$path/512/$fileName");
+        $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName", $displayName, "uploads/$path/1024/$fileName", "uploads/$path/512/$fileName");
     }
 
     /**
@@ -69,10 +70,11 @@ class ResourceService
         string $path = 'files',
         string $identifier = null
     ) {
-        $type     = $file->getClientOriginalExtension();
-        $fileName = md5(time() . $file->getFilename()) . '.' . $type;
+        $type        = $file->getClientOriginalExtension();
+        $displayName = $file->getClientOriginalName();
+        $fileName    = md5(time() . $file->getFilename()) . '.' . $type;
         $file->storeAs("$path/original", $fileName);
-        $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName");
+        $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName", $displayName);
     }
 
     /**
