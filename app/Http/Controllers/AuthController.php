@@ -26,6 +26,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         try {
+            dd();
             $result = $this->service->login($request);
 
             return $this->responseWith(compact('result'));
