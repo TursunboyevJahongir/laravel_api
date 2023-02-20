@@ -32,32 +32,32 @@ class MakeModule extends Command
         $module  = Str::studly($this->argument('Module'));
         $migrate = $this->option('m') ? '-m' : '';
         if ($this->option('model') && !File::exists(str_replace('\\', '/', config('modulegenerator.model_path')) . "/{$this->option('model')}.php")) {
-            $this->error("Model dosn't exists");
+            $this->error("'{$module}' Model dosn't exists");
             die();
         }
 
         if (File::exists(config('modulegenerator.repository_path') . "/{$module}Repository.php")) {
-            $this->error("Repository already exists");
+            $this->error("Repository '{$module}' already exists");
             die();
         }
 
         if (File::exists(config('modulegenerator.service_path') . "/{$module}Service.php")) {
-            $this->error("Service already exists");
+            $this->error("Service '{$module}' already exists");
             die();
         }
 
         if (config('modulegenerator.api') && File::exists(config('modulegenerator.controller_path') . "/{$module}Controller.php")) {
-            $this->error("Controller already exists");
+            $this->error("Controller '{$module}' already exists");
             die();
         }
 
         if (File::exists(config('modulegenerator.policy_path') . "/{$module}Policy.php")) {
-            $this->error("Policy already exists");
+            $this->error("Policy '{$module}' already exists");
             die();
         }
 
         if (File::exists("tests/Feature/{$module}Test.php")) {
-            $this->error("Feature Test already exists");
+            $this->error("Feature Test '{$module}' already exists");
             die();
         }
 
