@@ -56,6 +56,11 @@ class MakeModule extends Command
             die();
         }
 
+        if (File::exists("tests/Feature/{$module}Policy.php")) {
+            $this->error("Feature Test already exists");
+            die();
+        }
+
         $progressBar = $this->output->createProgressBar(10);
         $progressBar->start();
         $model = $this->option('model') ?? $module;
