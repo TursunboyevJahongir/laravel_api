@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Core\Test\Feature\CoreTest;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\FeatureCore\Core\CoreTest;
 
 final class AuthTest extends CoreTest
 {

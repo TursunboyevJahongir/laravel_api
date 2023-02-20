@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\FeatureCore\Interface;
+namespace App\Core\Contracts;
 
-interface ResourceInterface
+interface ResourceTestContract
 {
     public function testIndexNotAccess();
 

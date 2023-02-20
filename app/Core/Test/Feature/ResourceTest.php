@@ -1,14 +1,14 @@
 <?php
 
-namespace Tests\FeatureCore\Core;
+namespace App\Core\Test\Feature;
 
+use App\Core\Contracts\ResourceTestContract;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Tests\FeatureCore\Interface\ResourceInterface;
 
-abstract class ResourceTest extends CoreTest implements ResourceInterface
+abstract class ResourceTest extends CoreTest implements ResourceTestContract
 {
     public string|array $roles     = 'superadmin';
     public array        $relations = [];
