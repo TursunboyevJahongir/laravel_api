@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Controllers\{AuthController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
-    ->controller(AuthController::class)
+    ->controller('AuthController')
     ->withoutMiddleware(['auth:api', 'api', 'isActive'])
     ->group(function () {
         Route::post('register', 'register');
