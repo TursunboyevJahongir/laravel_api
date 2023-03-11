@@ -21,6 +21,7 @@ class RouteServiceProvider extends ServiceProvider
         $routeFiles = array_slice(scandir(base_path('routes/api')), 2);
         foreach ($routeFiles as $file) {
             Route::middleware(['api', 'setAppLocale', 'isActive', 'bindings'])
+                ->namespace('App\Http\Controllers')
                 ->group(base_path('routes/api/' . $file));
         }
 
