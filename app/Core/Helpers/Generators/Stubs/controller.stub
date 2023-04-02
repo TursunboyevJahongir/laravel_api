@@ -2,6 +2,7 @@
 
 namespace #controllerPath;
 
+use App\Core\Helpers\ResponseCode;
 use #servicePath\#ClassNameService;
 use #requestsPath\{#ClassNameCreateRequest, #ClassNameUpdateRequest};
 use #modelPath\#ModelName;
@@ -17,25 +18,33 @@ class #ClassNameController extends Controller
     }
 
     public function index(): JsonResponse
-    {
-        $#namePlural = $this->service->get();
+        {
+            try {
+                $#namePlural = $this->service->index();
 
-        return $this->responseWith(compact('#namePlural'));
-    }
+                return $this->responseWith(compact('#namePlural'));
+            } catch (\Exception $e) {
+                return $this->errorException($e);
+            }
+        }
 
-    public function show(#ModelName $#nameSingular): JsonResponse
-    {
-        $#nameSingular = $this->service->show($#nameSingular);
+        public function show(#ModelName $#nameSingular): JsonResponse
+        {
+            try {
+                $#nameSingular = $this->service->show($#nameSingular);
 
-        return $this->responseWith(compact('#nameSingular'));
-    }
+                return $this->responseWith(compact('#nameSingular'));
+            } catch (\Exception $e) {
+                return $this->errorException($e);
+            }
+        }
 
     public function store(#ClassNameCreateRequest $request): JsonResponse
     {
         try {
             $#nameSingular = $this->service->create($request);
 
-            return $this->responseWith(compact('#nameSingular'), 201);
+            return $this->responseWith(compact('#nameSingular'), ResponseCode::HTTP_CREATED);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -45,7 +54,7 @@ class #ClassNameController extends Controller
     {
         try {
             $this->service->update($#nameSingular, $request);
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -54,6 +63,6 @@ class #ClassNameController extends Controller
     public function destroy(#ModelName $#nameSingular): JsonResponse
     {
         $this->service->delete($#nameSingular);
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Core\Traits;
 
+use App\Core\Helpers\ResponseCode;
+
 trait EnumCasts
 {
     public function get($model, $key, $value, $attributes)
@@ -19,7 +21,7 @@ trait EnumCasts
     {
         if (!$this->isValid($value)) {
             throw new \Exception(__('validation.in_array',
-                                    ['attribute' => $value, 'other' => "$key:" . $this]), 422);
+                                    ['attribute' => $value, 'other' => "$key:" . $this]), ResponseCode::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return $value;

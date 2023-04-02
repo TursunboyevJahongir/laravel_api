@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\UserCreateRequest;
@@ -20,7 +21,7 @@ class AuthController extends Controller
     {
         $result = $this->service->register($request);
 
-        return $this->responseWith(compact('result'), 201);
+        return $this->responseWith(compact('result'), ResponseCode::HTTP_BAD_GATEWAY);
     }
 
     public function login(LoginRequest $request): JsonResponse

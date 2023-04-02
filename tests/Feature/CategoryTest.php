@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Test\Feature\ResourceTest;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +45,7 @@ final class CategoryTest extends ResourceTest
                        'ico'         => UploadedFile::fake()->image('ico.jpg'),
                    ]);
 
-        $response->assertStatus(201)
+        $response->assertStatus(ResponseCode::HTTP_CREATED)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data',
@@ -74,7 +75,7 @@ final class CategoryTest extends ResourceTest
                        'name' => $categoryName,
                    ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(ResponseCode::HTTP_UNPROCESSABLE_ENTITY);
 
         $face->forceDelete();
     }

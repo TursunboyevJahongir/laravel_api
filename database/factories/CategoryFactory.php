@@ -52,7 +52,7 @@ class CategoryFactory extends Factory
             ],
             'is_active'   => $this->faker->boolean,
             'position'    => $this->faker->numberBetween(0, 200),
-            "author_id"   => User::inRandomOrder()->value('id') ?? 1,
+            "author_id"   => User::inRandomOrder()->value('id'),
         ];
     }
 }

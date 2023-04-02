@@ -13,19 +13,10 @@ use App\Repositories\ResourceRepository;
 
 class ResourceService
 {
-    /**
-     * @param ResourceRepository $repository
-     */
     public function __construct(protected ResourceRepository $repository)
     {
     }
 
-    /**
-     * @param array $images
-     * @param MorphOne|MorphMany|MorphToMany $relation
-     * @param string $path
-     * @param string|null $identifier
-     */
     public function attachImages(
         array $images,
         MorphOne|MorphMany|MorphToMany $relation,
@@ -37,12 +28,6 @@ class ResourceService
         }
     }
 
-    /**
-     * @param UploadedFile $file
-     * @param MorphOne|MorphMany|MorphToMany $relation
-     * @param string $path
-     * @param string|null $identifier
-     */
     public function saveImage(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
@@ -58,12 +43,6 @@ class ResourceService
         $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName", $displayName, "uploads/$path/1024/$fileName", "uploads/$path/512/$fileName");
     }
 
-    /**
-     * @param UploadedFile $file
-     * @param MorphOne|MorphMany|MorphToMany $relation
-     * @param string $path
-     * @param string|null $identifier
-     */
     public function saveFile(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
@@ -77,12 +56,6 @@ class ResourceService
         $this->repository->create($relation, $type, $identifier, "uploads/$path/original/$fileName", $displayName);
     }
 
-    /**
-     * @param UploadedFile $file
-     * @param MorphOne|MorphMany|MorphToMany $relation
-     * @param string $path
-     * @param string|null $identifier
-     */
     public function updateImage(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
@@ -92,13 +65,6 @@ class ResourceService
         $this->deleteFile($relation);
         $this->saveImage($file, $relation, $path, $identifier);
     }
-
-    /**
-     * @param UploadedFile $file
-     * @param MorphOne|MorphMany|MorphToMany $relation
-     * @param string $path
-     * @param string|null $identifier
-     */
     public function updateFile(
         UploadedFile $file,
         MorphOne|MorphMany|MorphToMany $relation,
@@ -109,17 +75,11 @@ class ResourceService
         $this->saveFile($file, $relation, $path, $identifier);
     }
 
-    /**
-     * @param $images
-     */
     public function destroyImages($images)
     {
         $this->repository->destroy(Arr::wrap($images));
     }
 
-    /**
-     * @param $relation
-     */
     public function deleteFile($relation)
     {
         if ($relation->exists()) {

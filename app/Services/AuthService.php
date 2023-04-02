@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Core\Helpers\ResponseCode;
 use App\Repositories\UserRepository;
 use App\Core\Services\CoreService;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,7 +28,7 @@ class AuthService extends CoreService
     {
         $user = $this->repository->firstBy($request['phone'], 'phone', fail: false);
         if (!$user || !Hash::check($request['password'], $user->password)) {
-            throw new \Exception(__('auth.password'), 401);
+            throw new \Exception(__('auth.password'), ResponseCode::HTTP_UNAUTHORIZED);
         }
 
         return $this->repository->generateRefreshToken($user);
@@ -46,14 +47,14 @@ class AuthService extends CoreService
             $this->repository->delete($token);
         }
 
-        throw new \Exception('Unauthenticated', 401);
+        throw new \Exception('Unauthenticated', ResponseCode::HTTP_UNAUTHORIZED);
     }
 
     public function logout(Request $request)
     {
         $token = $this->repository->firstByToken($request);
         if (!$token) {
-            return throw new \Exception('Unauthenticated', 401);
+            return throw new \Exception('Unauthenticated', ResponseCode::HTTP_UNAUTHORIZED);
         }
         auth()->user()->currentAccessToken()?->delete();
 

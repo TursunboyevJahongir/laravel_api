@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Http\Requests\Role\PermissionRequest;
 use App\Http\Requests\Role\RoleCreateRequest;
@@ -39,7 +40,7 @@ class RoleController extends Controller
         try {
             $role = $this->service->create($request)->load('permissions');
 
-            return $this->responseWith(compact('role'), 201);
+            return $this->responseWith(compact('role'), ResponseCode::HTTP_CREATED);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage(), logging: true);
         }
@@ -50,7 +51,7 @@ class RoleController extends Controller
         try {
             $this->service->update($role, $request);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage(), logging: true);
         }
@@ -61,7 +62,7 @@ class RoleController extends Controller
         try {
             $this->service->delete($role);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage(), logging: true);
         }
@@ -77,7 +78,7 @@ class RoleController extends Controller
         $this->authorize('update-role', $role);
         $this->service->givePermissionTo($role, $request);
 
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 
     /**
@@ -90,7 +91,7 @@ class RoleController extends Controller
         $this->authorize('update-role', $role);
         $this->service->revokePermissionTo($role, $request);
 
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 
     /**
@@ -103,6 +104,6 @@ class RoleController extends Controller
         $this->authorize('update-role', $role);
         $this->service->syncPermissions($role, $request);
 
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 }

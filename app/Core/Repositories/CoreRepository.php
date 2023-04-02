@@ -3,6 +3,7 @@
 namespace App\Core\Repositories;
 
 use App\Core\Contracts\CoreRepositoryContract;
+use App\Core\Helpers\ResponseCode;
 use Illuminate\Database\Eloquent\{Builder as EloquentBuilder, Builder, Model, Relations\Relation};
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
@@ -135,7 +136,7 @@ abstract class CoreRepository implements CoreRepositoryContract
         }
 
         if ($fail) {
-            throw new \Exception(__('errors.no_records'), 404);
+            throw new \Exception(__('errors.no_records'), ResponseCode::HTTP_NOT_FOUND);
         }
 
         return null;

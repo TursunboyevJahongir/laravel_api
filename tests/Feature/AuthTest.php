@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Test\Feature\CoreTest;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -22,7 +23,7 @@ final class AuthTest extends CoreTest
                                     'avatar'                => UploadedFile::fake()->image('avatar.jpg'),
                                 ]);
 
-        $response->assertStatus(201)
+        $response->assertStatus(ResponseCode::HTTP_CREATED)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data',
@@ -85,7 +86,7 @@ final class AuthTest extends CoreTest
         $this->withToken($response->getData()->data->result->refresh_token)->postJson('/auth/refresh');
 
         $response = $this->withToken($response->getData()->data->result->refresh_token)->postJson('/auth/refresh');
-        $response->assertStatus(401)
+        $response->assertStatus(ResponseCode::HTTP_UNAUTHORIZED)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data'])

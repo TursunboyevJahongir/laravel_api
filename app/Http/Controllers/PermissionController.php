@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Http\Requests\Role\CheckPermissionsRequest;
 use App\Http\Requests\Role\PermissionCreateRequest;
@@ -30,7 +31,7 @@ class PermissionController extends Controller
     {
         $permission = $this->service->create($request);
 
-        return $this->responseWith(compact('permission'), 201);
+        return $this->responseWith(compact('permission'), ResponseCode::HTTP_CREATED);
     }
 
     public function show(Permission $permission): JsonResponse
@@ -44,7 +45,7 @@ class PermissionController extends Controller
     {
         $this->service->update($permission, $request);
 
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 
     public function destroy(Permission $permission): JsonResponse
@@ -52,7 +53,7 @@ class PermissionController extends Controller
         try {
             $this->service->delete($permission);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage(), logging: true);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Core\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Services\CoreService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -100,7 +101,7 @@ abstract class ApiResourceController extends CoreController
 
             return $this->responseWith([$this->show => $result]);
         } catch (ModelNotFoundException $e) {
-            return $this->responseWith(code: 404, message: __('messages.entity_not_found_exception'));
+            return $this->responseWith(code: ResponseCode::HTTP_NOT_FOUND, message: __('messages.entity_not_found_exception'));
         } catch (Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }
@@ -115,9 +116,9 @@ abstract class ApiResourceController extends CoreController
             }
             $result = $this->service->create($validator)->loadmissing($this->storeRelations);
 
-            return $this->responseWith([$this->show => $result], 201);
+            return $this->responseWith([$this->show => $result], ResponseCode::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return $this->responseWith(['errors' => $e->errors()], 422, __('messages.validation_exception'));
+            return $this->responseWith(['errors' => $e->errors()], ResponseCode::HTTP_UNPROCESSABLE_ENTITY, __('messages.validation_exception'));
         } catch (\Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }
@@ -132,11 +133,11 @@ abstract class ApiResourceController extends CoreController
             }
             $this->service->update((int)request()->route($this->requestParam), $validator);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return $this->responseWith(code: 404, message: __('messages.entity_not_found_exception'));
+            return $this->responseWith(code: ResponseCode::HTTP_NOT_FOUND, message: __('messages.entity_not_found_exception'));
         } catch (ValidationException $e) {
-            return $this->responseWith(['errors' => $e->errors()], 422, __('messages.validation_exception'));
+            return $this->responseWith(['errors' => $e->errors()], ResponseCode::HTTP_UNPROCESSABLE_ENTITY, __('messages.validation_exception'));
         } catch (\Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }
@@ -147,9 +148,9 @@ abstract class ApiResourceController extends CoreController
         try {
             $this->service->delete((int)request()->route($this->requestParam));
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return $this->responseWith(code: 404, message: __('messages.entity_not_found_exception'));
+            return $this->responseWith(code: ResponseCode::HTTP_NOT_FOUND, message: __('messages.entity_not_found_exception'));
         } catch (\Exception $e) {
             return $this->responseWith(['trace' => $e->getTrace()], $e->getCode(), $e->getMessage());
         }

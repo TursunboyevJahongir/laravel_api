@@ -2,7 +2,8 @@
 
 namespace App\Exceptions;
 
-use App\Core\Traits\Responsable as ResponsableTrait;
+use App\Core\Helpers\ResponseCode;
+use App\Core\Traits\Responsible as ResponsableTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Responsable;
@@ -10,7 +11,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Exceptions\PermissionAlreadyExists;
@@ -61,63 +61,63 @@ class Handler extends ExceptionHandler
                 $message = __('errors.no_records');
             }
 
-            return response()->json(['code'    => 404,
+            return response()->json(['code'    => ResponseCode::HTTP_NOT_FOUND,
                                      'message' => $message,
                                      'data'    => []],
-                                    404);
+                                    ResponseCode::HTTP_NOT_FOUND);
         }
 
         if ($e instanceof NotFoundHttpException) {//route not found
-            return response()->json(['code'    => 404,
+            return response()->json(['code'    => ResponseCode::HTTP_NOT_FOUND,
                                      'message' => __('errors.no_records'),
                                      'data'    => []],
-                                    404);
+                                    ResponseCode::HTTP_NOT_FOUND);
         }
         if ($e instanceof PermissionAlreadyExists) {
-            return response()->json(['code'    => 422,
+            return response()->json(['code'    => ResponseCode::HTTP_UNPROCESSABLE_ENTITY,
                                      'message' => 'Permission already exists for this guard',
                                      'data'    => []],
-                                    422);
+                                    ResponseCode::HTTP_UNPROCESSABLE_ENTITY);
         }
         if ($e instanceof AuthorizationException) {
-            return response()->json(['code'    => 403,
+            return response()->json(['code'    => ResponseCode::HTTP_FORBIDDEN,
                                      'message' => $e->getMessage(),
                                      'data'    => []],
-                                    403);
+                                    ResponseCode::HTTP_FORBIDDEN);
         }
 
         if ($e instanceof UnauthorizedException) {
-            return response()->json(['code'    => 403,
+            return response()->json(['code'    => ResponseCode::HTTP_FORBIDDEN,
                                      'message' => 'You dont have permissions to do this action',
                                      'data'    => []],
-                                    403);
+                                    ResponseCode::HTTP_FORBIDDEN);
         }
         if ($e instanceof RoleAlreadyExists) {
-            return response()->json(['code'    => 422,
+            return response()->json(['code'    => ResponseCode::HTTP_UNPROCESSABLE_ENTITY,
                                      'message' => 'This role already exists',
                                      'data'    => []],
-                                    422);
+                                    ResponseCode::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if ($e instanceof TypeError) {
-            return response()->json(['code'    => 500,
+            return response()->json(['code'    => ResponseCode::HTTP_INTERNAL_SERVER_ERROR,
                                      'message' => $e->getMessage(),
                                      'data'    => []],
-                                    500);
+                                    ResponseCode::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         if ($e instanceof MethodNotAllowedHttpException) {
-            return response()->json(['code'    => 405,
+            return response()->json(['code'    => ResponseCode::HTTP_METHOD_NOT_ALLOWED,
                                      'message' => $e->getMessage(),
                                      'data'    => []],
-                                    405);
+                                    ResponseCode::HTTP_METHOD_NOT_ALLOWED);
         }
 
         if ($e instanceof AuthenticationException) {
-            return response()->json(['code'    => 401,
+            return response()->json(['code'    => ResponseCode::HTTP_UNAUTHORIZED,
                                      'message' => $e->getMessage(),
                                      'data'    => []],
-                                    401);
+                                    ResponseCode::HTTP_UNAUTHORIZED);
         }
         // End
 
@@ -149,10 +149,10 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof \Exception) {
-            return response()->json(['code'    => 500,
+            return response()->json(['code'    => ResponseCode::HTTP_INTERNAL_SERVER_ERROR,
                                      'message' => $e->getMessage(),
                                      'data'    => $e->getTrace()],
-                                    500);
+                                    ResponseCode::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return $this->shouldReturnJson($request, $e)

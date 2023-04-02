@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Test\Feature\ResourceTest;
 use App\Models\Role;
 use App\Models\User;
@@ -39,7 +40,7 @@ final class UserTest extends ResourceTest
                        'avatar'                => UploadedFile::fake()->image('avatar.jpg'),
                    ]);
 
-        $response->assertStatus(201)
+        $response->assertStatus(ResponseCode::HTTP_CREATED)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data',

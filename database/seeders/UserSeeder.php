@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         for ($i = 1; $i <= 5; $i++) {
-            for ($j = 1; $j <= 1000; $j++) {
+            for ($j = 2; $j <= 1000; $j++) {
                 User::insert(['first_name'      => fake()->firstName(),
                               'last_name'       => fake()->lastName,
                               'phone'           => fake()->phoneNumber,
@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
                               'is_active'       => fake()->boolean,
                               'created_at'      => fake()->dateTime,
                               'updated_at'      => fake()->dateTime,
+                              'author_id'       => random_int(1, $i * $j - 1),
                              ]);
             }
         }

@@ -3,6 +3,7 @@
 namespace App\Core\Test\Feature;
 
 use App\Core\Contracts\ResourceTestContract;
+use App\Core\Helpers\ResponseCode;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
         $role = Role::factory()->create();
         [$user] = $this->createUser($role->name);
         $response = $this->actingAs($user)->get("/{$this->getRouteName()}");
-        $response->assertStatus(403)
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data'])
@@ -83,7 +84,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
         [$user] = $this->createUser($role->name);
         $model    = $this->getModel()::factory()->create();
         $response = $this->actingAs($user)->get("/{$this->getRouteName()}/{$model->{$model->getKeyName()}}");
-        $response->assertStatus(403)
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data'])
@@ -100,7 +101,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
         [$user] = $this->createUser($role->name);
         $response = $this->actingAs($user)->post("/{$this->getRouteName()}", []);
 
-        $response->assertStatus(403)
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data'])
@@ -118,7 +119,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
 
         $response = $this->actingAs($user)->patch("/{$this->getRouteName()}/{$model->id}", []);
 
-        $response->assertStatus(403)
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll(['code',
                                                                     'message',
                                                                     'data'])
@@ -134,7 +135,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
         /** @var Model $model */
         $model    = $this->getModel()::factory()->create();
         $response = $this->actingAs($this->user)->delete("/{$this->getRouteName()}/{$model->{$model->getKeyName()}}");
-        $response->assertStatus(204);
+        $response->assertStatus(ResponseCode::HTTP_NO_CONTENT);
 
         $model->forceDelete();
     }
@@ -147,7 +148,7 @@ abstract class ResourceTest extends CoreTest implements ResourceTestContract
         /** @var Model $model */
         $model    = $this->getModel()::factory()->create();
         $response = $this->actingAs($user)->delete("/{$this->getRouteName()}/{$model->{$model->getKeyName()}}");
-        $response->assertStatus(403);
+        $response->assertStatus(ResponseCode::HTTP_FORBIDDEN);
 
         $role->forceDelete();
         $model->forceDelete();

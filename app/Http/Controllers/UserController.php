@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\UserCreateRequest;
@@ -30,7 +31,7 @@ class UserController extends Controller
         try {
             $this->service->update(auth()->user(), $request);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -55,7 +56,7 @@ class UserController extends Controller
         try {
             $user = $this->service->create($request)->loadMissing('roles', 'avatar');
 
-            return $this->responseWith(compact('user'), 201);
+            return $this->responseWith(compact('user'), ResponseCode::HTTP_CREATED);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -66,7 +67,7 @@ class UserController extends Controller
         try {
             $this->service->update($user, $request);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage());
         }
@@ -76,6 +77,6 @@ class UserController extends Controller
     {
         $this->service->delete($user);
 
-        return $this->responseWith(code: 204);
+        return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
     }
 }

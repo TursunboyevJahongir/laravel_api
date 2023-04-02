@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\{Category, Product, User};
+use App\Models\{Book, Category, Product, User};
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -81,6 +81,13 @@ class DatabaseSeeder extends Seeder
         Category::factory()
             ->for($user, 'author')
             ->hasProducts(random_int(5, 10), ['is_active' => true]);
+
+        dump('Books');
+        Book::factory(20)->create();
+
+        dump('UserSeeder');
         $this->call(UserSeeder::class);
+
+
     }
 }

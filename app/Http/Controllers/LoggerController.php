@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\Helpers\ResponseCode;
 use App\Services\LoggerService;
 use App\Core\Http\Controllers\CoreController as Controller;
 use App\Models\Logger;
@@ -33,7 +34,7 @@ class LoggerController extends Controller
         try {
             $this->service->delete($logger);
 
-            return $this->responseWith(code: 204);
+            return $this->responseWith(code: ResponseCode::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return $this->responseWith(code: $e->getCode(), message: $e->getMessage(), logging: true);
         }

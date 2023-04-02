@@ -7,8 +7,8 @@ use #modelPath\#ModelName;
 
 class #ClassNameRepository extends Repository
 {
-      public function __construct(#ModelName $model)
-        {
-            parent::__construct($model);
-        }
+    public function __construct(#ModelName $model)
+    {
+        parent::__construct($model);
+    }
 }

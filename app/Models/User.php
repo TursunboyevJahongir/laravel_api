@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(RefreshToken::class, 'user');
     }
+
+    public function books()
+    {
+        return $this->belongsToMany(Book::class, 'book_writer', 'writer_id', 'book_id');
+    }
 }

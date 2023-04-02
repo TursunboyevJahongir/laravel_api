@@ -3,11 +3,11 @@
 
 namespace #servicePath;
 
-use #repositoryPath\#ClassNameRepository;
+use #repasitoryPath\#ClassNameRepository;
 
 use #CoreService as Service;
 
-class #ClassNameService extends CoreService
+class #ClassNameService extends Service
 {
     public function __construct(#ClassNameRepository $repository)
     {
