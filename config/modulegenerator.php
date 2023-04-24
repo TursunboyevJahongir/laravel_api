@@ -10,6 +10,7 @@ return [
     'repository_path' => 'App\Repositories',
     'service_path'    => 'App\Services',
     'model_path'      => 'App\Models',
+    'migration_path'  => 'Database\Migrations',
     'request_path'    => 'App\Http\Requests',
     'policy_path'     => 'App\Policies',
     'controller_path' => 'App\Http\Controllers',

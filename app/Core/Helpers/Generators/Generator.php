@@ -6,61 +6,60 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class Generator
+trait Generator
 {
-    public function __construct(
-        protected string $name,
-        protected $path,
-        protected $stub,
-        protected string|null $model = null,
-    ) {
-        $this->makeFolder();
-        $this->make();
-    }
+    private $getStubVariables = null;
 
     public function getStubVariables()
     {
-        return [
-            '#ClassName'    => $this->name,
-            '#ModelName'    => $this->model ?? $this->name,
-            '#namePlural'   => Str::plural(Str::camel($this->model ?? $this->name)),
-            '#nameSingular' => Str::singular(Str::camel($this->model ?? $this->name)),
+        return $this->getStubVariables ??
+            $this->getStubVariables = [
+                '#ClassName'    => $this->module,
+                '#ModelName'    => $this->model ?? $this->module,
+                '#namePlural'   => Str::plural(Str::camel($this->model ?? $this->module)),
+                '#nameSingular' => Str::singular(Str::camel($this->model ?? $this->module)),
 
-            '#CoreController' => config('modulegenerator.core_controller'),
-            '#CoreService'    => config('modulegenerator.core_service'),
-            '#CoreRepository' => config('modulegenerator.core_repository'),
+                '#CoreController' => config('modulegenerator.core_controller'),
+                '#CoreService'    => config('modulegenerator.core_service'),
+                '#CoreRepository' => config('modulegenerator.core_repository'),
 
-            '#webController' => config('modulegenerator.web.controller_path'),
-            '#webRoute'      => config('modulegenerator.web.route'),
+                '#webController' => config('modulegenerator.web.controller_path'),
+                '#webRoute'      => config('modulegenerator.web.route'),
 
-            '#apiController' => config('modulegenerator.api.controller_path'),
-            '#apiRoute'      => config('modulegenerator.api.route'),
+                '#apiController' => config('modulegenerator.api.controller_path'),
+                '#apiRoute'      => config('modulegenerator.api.route'),
 
-            '#controllerPath' => config('modulegenerator.controller_path'),
-            '#repasitoryPath' => config('modulegenerator.repository_path'),
-            '#routePath'      => config('modulegenerator.route_path'),
-            '#servicePath'    => config('modulegenerator.service_path'),
-            '#policyPath'     => config('modulegenerator.policy_path'),
-            '#modelPath'      => config('modulegenerator.model_path'),
-            '#requestsPath'   => config('modulegenerator.request_path'),
-        ];
+                '#controllerPath' => config('modulegenerator.controller_path'),
+                '#repasitoryPath' => config('modulegenerator.repository_path'),
+                '#routePath'      => config('modulegenerator.route_path'),
+                '#servicePath'    => config('modulegenerator.service_path'),
+                '#policyPath'     => config('modulegenerator.policy_path'),
+                '#modelPath'      => config('modulegenerator.model_path'),
+                '#requestsPath'   => config('modulegenerator.request_path'),
+            ];
     }
 
-    public function make()
+    private function generateByStub($path, $stub)
     {
-        foreach (Arr::wrap($this->stub) as $stub) {
-            $path = str_replace('\\', '/', $this->path) . '/' . $this->getFilename($stub);
-            dump($path);
-            if (!File::exists($path)) {
-                File::put($path, $this->getContents($stub), 0777);
-                echo "File $path created successfull \n";
+        $this->makeFolder($path);
+        $this->make($path, $stub);
+    }
+
+    public function make($path, $stub)
+    {
+        foreach (Arr::wrap($stub) as $stub) {
+            $_path = str_replace('\\', '/', $path) . '/' . $this->getFilename($stub);
+            $this->info('Path: ' . $_path);
+            if (!File::exists($_path)) {
+                File::put($_path, $this->getContents($stub), 0777);
+                echo 'File $_path created successfull \n';
             }
         }
     }
 
     public function getFilename($stub)
     {
-        return ($stub == 'route' ? strtolower($this->name) : $this->name . Str::studly($stub)) . '.php';
+        return ($stub == 'route' ? strtolower($this->module) : $this->module . Str::studly($stub)) . '.php';
     }
 
     public function getContents($stub)
@@ -74,18 +73,8 @@ class Generator
         return $contents;
     }
 
-    public function makeFolder()
+    public function makeFolder($path)
     {
-        File::makeDirectory(str_replace('\\', '/', $this->path), 0777, true, true);
-    }
-
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    public function getStub()
-    {
-        return $this->stub = Arr::wrap($this->stub);
+        File::makeDirectory(str_replace('\\', '/', $path), 0777, true, true);
     }
 }

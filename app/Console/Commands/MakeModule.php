@@ -3,19 +3,21 @@
 namespace App\Console\Commands;
 
 use App\Core\Helpers\Generators\Generator;
+use App\Core\Helpers\Generators\OwnGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class MakeModule extends Command
 {
+    use Generator, OwnGenerator;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'make:module {Module : module name} {--model= : Get Model from App/Model}{--m : create migration}';
+    protected $signature = 'make:module {Module : module name} {--model= : Get Model from App/Model}{--all : generate all}';
 
     /**
      * The console command description.
@@ -24,81 +26,168 @@ class MakeModule extends Command
      */
     protected $description = 'Simple way create module';
 
+    protected string  $module;
+    protected ?string $model = null;
+
+    private $options = ['model',
+                        'migration',
+                        'factory',
+                        'controller',
+                        'request_validator',
+                        'policy',
+                        'service',
+                        'repository',
+                        'featureResourceTest',
+                        'route',
+    ];
+
+    /** @var array<string> $fields */
+    private array $fields = [];
+
+    /** @var string ['own','default'] */
+    private string $generate = 'default';
+
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        $module  = Str::studly($this->argument('Module'));
-        $migrate = $this->option('m') ? '-m' : '';
-        if ($this->option('model') && !File::exists(str_replace('\\', '/', config('modulegenerator.model_path')) . "/{$this->option('model')}.php")) {
-            $this->error("'{$module}' Model dosn't exists");
-            die();
+        $this->module = Str::studly($this->argument('Module'));
+        $this->model  = $this->option('model') ?? $this->module;
+
+        $type = $this->choice('need custom or default stub ?', ['default', 'own'], 'default');
+
+        if ($type == 'own') {
+            $fieldsInMemory = cache()->rememberForever('module-fields', function () {
+                return [];
+            });
+
+            $input = $this->anticipate(
+                'you need to write fields with a comma(e.g. title,description)',
+                $fieldsInMemory
+            );
+            if (!in_array($input, $fieldsInMemory)) {
+                $fieldsInMemory[] = $input;
+            }
+
+            foreach (explode(',', $input) as $item) {
+                $field = Str::snake(trim($item));
+                if (!in_array($field, $fieldsInMemory)) {
+                    $fieldsInMemory[] = $field;
+                }
+
+                $this->fields[] = $field;
+            }
+
+            cache()->forever('module-fields', $fieldsInMemory);
+            $this->generate = 'own';
         }
 
-        if (File::exists(config('modulegenerator.repository_path') . "/{$module}Repository.php")) {
-            $this->error("Repository '{$module}' already exists");
-            die();
+        if ($this->option('all') || $this->confirm('Generate All ?', true)) {
+            $this->generateAll();
+        } else {
+            $this->confirmOptions();
         }
 
-        if (File::exists(config('modulegenerator.service_path') . "/{$module}Service.php")) {
-            $this->error("Service '{$module}' already exists");
-            die();
+        $this->info('\n' . 'Command completed successfully ✅');
+    }
+
+    protected function generateAll()
+    {
+        $options = array_fill_keys($this->options, true);
+        $this->generateOptions($options);
+    }
+
+    /**
+     * Confirm which options to generate.
+     *
+     * @return void
+     */
+    protected function confirmOptions()
+    {
+        $options = [];
+        $this->info('Please select options!');
+        foreach ($this->options as $option) {
+            $options[$option] = $this->confirm($option, true);
         }
 
-        if (config('modulegenerator.api') && File::exists(config('modulegenerator.controller_path') . "/{$module}Controller.php")) {
-            $this->error("Controller '{$module}' already exists");
-            die();
+        $this->generateOptions($options);
+    }
+
+    /**
+     * Generate the specified options.
+     *
+     * @param array $options
+     *
+     * @return void
+     */
+    protected function generateOptions(array $options)
+    {
+        $progressBar = $this->output->createProgressBar(count($options));
+
+        $migrate = $options['migration'] ? '-m' : '';
+        if ($options['model']) {
+            dump('make:model ' . $this->model . ' ' . $migrate);
+            if ($this->generate == 'own') {
+                $this->generateOwn(config('modulegenerator.model_path'), 'generateModel');
+            } else {
+                $model = $this->option('model') ?? $this->module;
+                Artisan::call("make:model " . str_replace('\\', '/', config('modulegenerator.model_path')) . '/' . $model . "$migrate");
+            }
+            $progressBar->advance();
         }
 
-        if (File::exists(config('modulegenerator.policy_path') . "/{$module}Policy.php")) {
-            $this->error("Policy '{$module}' already exists");
-            die();
+        if ($options['migration']) {
+            if ($this->generate == 'own') {
+                $this->createMigration(config('modulegenerator.migration_path'));
+            } else {
+                Artisan::call("make:migration " . 'create' . Str::studly(Str::snake($this->model)) . 'Table');
+            }
+
+            $progressBar->advance();
         }
 
-        if (File::exists("tests/Feature/{$module}Test.php")) {
-            $this->error("Feature Test '{$module}' already exists");
-            die();
+        if ($options['service']) {
+            $this->generateByStub(config('modulegenerator.service_path'), 'generateService');
+            $progressBar->advance();
         }
 
-        $progressBar = $this->output->createProgressBar(10);
-        $progressBar->start();
-        $model = $this->option('model') ?? $module;
-        Artisan::call("make:model " . str_replace('\\', '/', config('modulegenerator.model_path')) . '/' . $model . "$migrate");
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green> Model created</>');
+        if ($options['repository']) {
+            $this->generateByStub(config('modulegenerator.repository_path'), 'generateRepository');
+            $progressBar->advance();
+        }
 
-        new Generator($module, config('modulegenerator.repository_path'), 'repository', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>Repository created</>');
+        if ($options['controller']) {
+            $this->generateByStub(config('modulegenerator.controller_path'), 'generateController');
+            $progressBar->advance();
+        }
 
-        new Generator($module, config('modulegenerator.service_path'), 'service', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>Service created</>');
+        if ($options['request_validator']) {
+            if ($this->generate == 'own') {
+                $this->generateOwn(config('modulegenerator.request_path'), 'generateValidationCreateRequest');
+                $this->generateOwn(config('modulegenerator.request_path'), 'generateValidationUpdateRequest');
+            } else {
+                Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $this->module . "CreateRequest");
+                Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $this->module . "UpdateRequest");
+            }
+            $progressBar->advance();
+        }
 
-        new Generator($module, config('modulegenerator.controller_path'), 'controller', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>Controller created</>');
+        if ($options['policy']) {
+            $this->generateByStub(config('modulegenerator.policy_path'), 'generatePolicy');
+            $progressBar->advance();
+        }
 
-        //new Generator($module, config('modulegenerator.request_path'), 'request', $model);
-        Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "CreateRequest");
-        Artisan::call("make:request " . str_replace('\\', '/', config('modulegenerator.request_path')) . '/' . $module . "UpdateRequest");
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>Requests created</>');
+        if ($options['route']) {
+            $this->generateByStub(config('modulegenerator.policy_path'), 'route');
+            $progressBar->advance();
+        }
 
-        new Generator($module, config('modulegenerator.policy_path'), 'policy', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>Policy created</>');
-
-        new Generator($module, config('modulegenerator.route_path'), 'route', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>route created</>');
-
-        new Generator($module, 'tests/Feature', 'featureResourceTest', $model);
-        $progressBar->advance();
-        //$this->info("\n" . '<fg=green>route created</>');
+        if ($options['test']) {
+            $this->generateByStub('tests/Feature', 'featureResourceTest');
+            $progressBar->advance();
+        }
 
         $progressBar->finish();
-        $this->info("\n" . 'Command completed successfully ✅');
     }
 }

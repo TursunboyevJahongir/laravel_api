@@ -21,16 +21,6 @@ class Book extends Model
 
     protected array $searchable = ['name', 'author.first_name'];
 
-    public function image(): MorphOne
-    {
-        return $this->morphOne(Resource::class, 'resource')
-            ->withDefault([
-                              'path_original' => 'images/default/no_image_original.png',
-                              'path_1024'     => 'images/default/no_image_1024.png',
-                              'path_512'      => 'images/default/no_image_512.png',
-                          ]);
-    }
-
     public function writer(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'book_writer' , 'book_id','writer_id');
